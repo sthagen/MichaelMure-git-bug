@@ -1,0 +1,83 @@
+mutation BugCreate($input: BugCreateInput!) {
+  bugCreate(input: $input) {
+    bug {
+      id
+      humanId
+    }
+  }
+}
+
+mutation BugAddComment($input: BugAddCommentInput!) {
+  bugAddComment(input: $input) {
+    bug {
+      id
+    }
+  }
+}
+
+mutation BugAddCommentAndClose($input: BugAddCommentAndCloseInput!) {
+  bugAddCommentAndClose(input: $input) {
+    bug {
+      id
+    }
+  }
+}
+
+mutation BugAddCommentAndReopen($input: BugAddCommentAndReopenInput!) {
+  bugAddCommentAndReopen(input: $input) {
+    bug {
+      id
+    }
+  }
+}
+
+mutation BugEditComment($input: BugEditCommentInput!) {
+  bugEditComment(input: $input) {
+    bug {
+      id
+    }
+  }
+}
+
+mutation BugChangeLabels($input: BugChangeLabelInput) {
+  bugChangeLabels(input: $input) {
+    bug {
+      id
+      labels {
+        name
+        color {
+          R
+          G
+          B
+        }
+      }
+    }
+  }
+}
+
+mutation BugStatusOpen($input: BugStatusOpenInput!) {
+  bugStatusOpen(input: $input) {
+    bug {
+      id
+      status
+    }
+  }
+}
+
+mutation BugStatusClose($input: BugStatusCloseInput!) {
+  bugStatusClose(input: $input) {
+    bug {
+      id
+      status
+    }
+  }
+}
+
+mutation BugSetTitle($input: BugSetTitleInput!) {
+  bugSetTitle(input: $input) {
+    bug {
+      id
+      title
+    }
+  }
+}

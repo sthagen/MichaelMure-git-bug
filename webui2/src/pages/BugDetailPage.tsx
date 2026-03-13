@@ -1,0 +1,134 @@
+import { useParams, Link } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
+import { StatusBadge } from '@/components/bugs/StatusBadge'
+import { LabelEditor } from '@/components/bugs/LabelEditor'
+import { TitleEditor } from '@/components/bugs/TitleEditor'
+import { Timeline } from '@/components/bugs/Timeline'
+import { CommentBox } from '@/components/bugs/CommentBox'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { useBugDetailQuery } from '@/__generated__/graphql'
+import { useRepo } from '@/lib/repo'
+
+// Issue detail page (/:repo/issues/:id). Shows title, status, timeline of
+// comments and events, and a sidebar with labels and participants.
+export function BugDetailPage() {
+  const { id } = useParams<{ id: string }>()
+  const repo = useRepo()
+  const { data, loading, error } = useBugDetailQuery({
+    variables: { ref: repo, prefix: id! },
+  })
+
+  if (error) {
+    return (
+      <div className="py-16 text-center text-sm text-destructive">
+        Failed to load issue: {error.message}
+      </div>
+    )
+  }
+
+  if (loading && !data) {
+    return <BugDetailSkeleton />
+  }
+
+  const bug = data?.repository?.bug
+  if (!bug) {
+    return (
+      <div className="py-16 text-center text-sm text-muted-foreground">Issue not found.</div>
+    )
+  }
+
+  const issuesHref = repo ? `/${repo}/issues` : '/issues'
+  const authorHref = repo ? `/${repo}/user/${bug.author.humanId}` : `/user/${bug.author.humanId}`
+
+  return (
+    <div>
+      <Link
+        to={issuesHref}
+        className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+      >
+        <ArrowLeft className="size-3.5" />
+        Back to issues
+      </Link>
+
+      {/* Title row — hover reveals edit button when logged in */}
+      <div className="mb-3">
+        <TitleEditor bugPrefix={bug.humanId} title={bug.title} humanId={bug.humanId} ref_={repo} />
+      </div>
+
+      <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+        <StatusBadge status={bug.status} />
+        <span>
+          <Link to={authorHref} className="font-medium text-foreground hover:underline">
+            {bug.author.displayName}
+          </Link>{' '}
+          opened this issue {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
+        </span>
+      </div>
+
+      <Separator className="mb-6" />
+
+      <div className="flex gap-8">
+        {/* Timeline + comment box */}
+        <div className="min-w-0 flex-1 space-y-4">
+          <Timeline bugPrefix={bug.humanId} items={bug.timeline.nodes} />
+          <CommentBox bugPrefix={bug.humanId} bugStatus={bug.status} ref_={repo} />
+        </div>
+
+        {/* Sidebar */}
+        <aside className="w-56 shrink-0 space-y-6">
+          <LabelEditor bugPrefix={bug.humanId} currentLabels={bug.labels} ref_={repo} />
+
+          <Separator />
+
+          <div>
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Participants
+            </h3>
+            <div className="flex flex-wrap gap-1.5">
+              {bug.participants.nodes.map((p) => {
+                const participantHref = repo ? `/${repo}/user/${p.humanId}` : `/user/${p.humanId}`
+                return (
+                  <Link key={p.id} to={participantHref} title={p.displayName}>
+                    <Avatar className="size-6">
+                      <AvatarImage src={p.avatarUrl ?? undefined} alt={p.displayName} />
+                      <AvatarFallback className="text-[10px]">
+                        {p.displayName.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  )
+}
+
+function BugDetailSkeleton() {
+  return (
+    <div className="space-y-4">
+      <Skeleton className="h-8 w-2/3" />
+      <Skeleton className="h-4 w-1/3" />
+      <Separator />
+      <div className="flex gap-8">
+        <div className="flex-1 space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="rounded-md border border-border p-4">
+              <Skeleton className="mb-3 h-4 w-1/4" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          ))}
+        </div>
+        <div className="w-56 space-y-3">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+      </div>
+    </div>
+  )
+}

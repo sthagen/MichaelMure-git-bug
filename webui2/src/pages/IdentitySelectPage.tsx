@@ -1,0 +1,124 @@
+// Identity selection page (/_/auth/select-identity).
+//
+// Reached after a successful OAuth login when no existing git-bug identity
+// could be matched automatically (via provider metadata set by the bridge).
+// The user can either adopt an existing identity — which links it to their
+// OAuth account for future logins — or create a fresh one from their OAuth
+// profile.
+
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { UserCircle, Plus, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+
+interface IdentityItem {
+  repoSlug: string
+  id: string
+  humanId: string
+  displayName: string
+  login?: string
+  avatarUrl?: string
+}
+
+export function IdentitySelectPage() {
+  const navigate = useNavigate()
+  const [identities, setIdentities] = useState<IdentityItem[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [working, setWorking] = useState(false)
+
+  useEffect(() => {
+    fetch('/auth/identities', { credentials: 'include' })
+      .then((res) => {
+        if (!res.ok) throw new Error(`unexpected status ${res.status}`)
+        return res.json() as Promise<IdentityItem[]>
+      })
+      .then(setIdentities)
+      .catch((e) => setError(String(e)))
+  }, [])
+
+  async function adopt(identityId: string | null) {
+    setWorking(true)
+    try {
+      const res = await fetch('/auth/adopt', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(identityId ? { identityId } : {}),
+      })
+      if (!res.ok) throw new Error(`adopt failed: ${res.status}`)
+      // Full page reload to reset Apollo cache and auth state cleanly.
+      window.location.assign('/')
+    } catch (e) {
+      setError(String(e))
+      setWorking(false)
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-lg py-12">
+      <div className="mb-2 flex items-center gap-3">
+        <UserCircle className="size-6 text-muted-foreground" />
+        <h1 className="text-xl font-semibold">Choose your identity</h1>
+      </div>
+      <p className="mb-8 text-sm text-muted-foreground">
+        No git-bug identity was found linked to your account. Select an
+        existing identity to link it, or create a new one from your profile.
+      </p>
+
+      {error && (
+        <div className="mb-4 flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <AlertCircle className="size-4 shrink-0" />
+          {error}
+        </div>
+      )}
+
+      {!identities && !error && (
+        <div className="space-y-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-14 w-full rounded-md" />
+          ))}
+        </div>
+      )}
+
+      <div className="divide-y divide-border rounded-md border border-border">
+        {identities?.map((id) => (
+          <div key={id.id} className="flex items-center gap-3 px-4 py-3">
+            <div className="min-w-0 flex-1">
+              <p className="font-medium">{id.displayName}</p>
+              <p className="text-xs text-muted-foreground">
+                {id.login ? `@${id.login} · ` : ''}{id.repoSlug} · {id.humanId}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={working}
+              onClick={() => adopt(id.id)}
+            >
+              Adopt
+            </Button>
+          </div>
+        ))}
+
+        {/* Always offer to create a new identity */}
+        <div className="flex items-center gap-3 px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <p className="font-medium">Create new identity</p>
+            <p className="text-xs text-muted-foreground">
+              A fresh git-bug identity will be created from your OAuth profile.
+            </p>
+          </div>
+          <Button
+            size="sm"
+            disabled={working}
+            onClick={() => adopt(null)}
+          >
+            <Plus className="size-4" />
+            Create
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}

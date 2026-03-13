@@ -60,13 +60,20 @@ func (c *MultiRepoCache) DefaultRepo() (*RepoCache, error) {
 	panic("unreachable")
 }
 
-// ResolveRepo retrieves a repository by name
-func (c *MultiRepoCache) ResolveRepo(name string) (*RepoCache, error) {
-	r, ok := c.repos[name]
-	if !ok {
-		return nil, fmt.Errorf("unknown repo")
+// ResolveRepo retrieve a repository by name or slug
+func (c *MultiRepoCache) ResolveRepo(ref string) (*RepoCache, error) {
+	// Direct name lookup first
+	if r, ok := c.repos[ref]; ok {
+		return r, nil
 	}
-	return r, nil
+	// Slug lookup fallback — allows using the human-readable slug (derived
+	// from the path basename) instead of the internal cache name.
+	for _, r := range c.repos {
+		if r.Slug() == ref {
+			return r, nil
+		}
+	}
+	return nil, fmt.Errorf("unknown repo %q", ref)
 }
 
 // AllRepos returns all registered repositories. Order is not guaranteed.

@@ -1,0 +1,14 @@
+query ValidLabels($ref: String) {
+  repository(ref: $ref) {
+    validLabels {
+      nodes {
+        name
+        color {
+          R
+          G
+          B
+        }
+      }
+    }
+  }
+}

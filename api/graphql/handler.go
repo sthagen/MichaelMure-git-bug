@@ -26,8 +26,17 @@ type Handler struct {
 	io.Closer
 }
 
-func NewHandler(mrc *cache.MultiRepoCache, errorOut io.Writer) Handler {
-	rootResolver := resolvers.NewRootResolver(mrc)
+// ServerConfig carries server-level configuration that is passed down to
+// GraphQL resolvers. It is constructed once at startup and does not change.
+type ServerConfig struct {
+	// AuthMode is one of "local", "oauth", or "readonly".
+	AuthMode string
+	// OAuthProviders lists the names of enabled OAuth providers, e.g. ["github"].
+	OAuthProviders []string
+}
+
+func NewHandler(mrc *cache.MultiRepoCache, cfg ServerConfig, errorOut io.Writer) Handler {
+	rootResolver := resolvers.NewRootResolver(mrc, cfg.AuthMode, cfg.OAuthProviders)
 	config := graph.Config{Resolvers: rootResolver}
 
 	h := handler.New(graph.NewExecutableSchema(config))

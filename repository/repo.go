@@ -4,6 +4,7 @@ package repository
 import (
 	"errors"
 	"io"
+	"time"
 
 	"github.com/ProtonMail/go-crypto/openpgp"
 	"github.com/go-git/go-billy/v5"
@@ -74,6 +75,11 @@ type RepoCommon interface {
 
 	// GetRemotes returns the configured remotes repositories.
 	GetRemotes() (map[string]string, error)
+
+	// GetPath returns the root directory path of the repository (the directory
+	// that contains the .git folder for bare repos, or the .git folder itself
+	// for bare clones). Returns an empty string for in-memory/mock repos.
+	GetPath() string
 }
 
 type LocalStorage interface {
@@ -191,6 +197,58 @@ type RepoData interface {
 
 	// ListCommits will return the list of tree hashes of a ref, in chronological order
 	ListCommits(ref string) ([]Hash, error)
+}
+
+// CommitMeta holds the display-relevant metadata of a git commit.
+type CommitMeta struct {
+	Hash        Hash
+	ShortHash   string
+	Message     string // first line only
+	AuthorName  string
+	AuthorEmail string
+	Date        time.Time
+	Parents     []Hash
+}
+
+// RepoBrowse extends a repo with read-only methods needed for code browsing.
+// Implemented by GoGitRepo; not part of the core Repo interface because not
+// all repository implementations (e.g. in-memory test repos) need it.
+type RepoBrowse interface {
+	// GetDefaultBranch returns the short name of the branch HEAD points to.
+	GetDefaultBranch() (string, error)
+
+	// ReadCommitMeta reads full commit metadata including author and message.
+	ReadCommitMeta(hash Hash) (CommitMeta, error)
+
+	// CommitLog returns up to limit commits reachable from ref (short name or
+	// full ref), optionally filtered to commits that touch path.
+	// If after is non-empty, results start after that commit hash (pagination).
+	CommitLog(ref string, path string, limit int, after Hash) ([]CommitMeta, error)
+
+	// LastCommitForEntries walks the commit history once and returns the most
+	// recent commit that touched each named entry inside dirPath.
+	// dirPath is the directory being browsed (empty = repo root).
+	// names are the immediate child names (files/dirs) inside that directory.
+	// The returned map is keyed by entry name; missing entries were not found.
+	LastCommitForEntries(ref string, dirPath string, names []string) (map[string]CommitMeta, error)
+
+	// CommitDetail returns the full metadata for a single commit plus the list
+	// of files it changed relative to its first parent.
+	CommitDetail(hash Hash) (CommitDetail, error)
+}
+
+// ChangedFile describes a single file changed by a commit.
+type ChangedFile struct {
+	Path    string // current path (or old path for deletions)
+	OldPath string // only set for renames
+	Status  string // "added" | "modified" | "deleted" | "renamed"
+}
+
+// CommitDetail extends CommitMeta with the full message body and changed files.
+type CommitDetail struct {
+	CommitMeta
+	FullMessage string
+	Files       []ChangedFile
 }
 
 // RepoClock give access to Lamport clocks

@@ -1,0 +1,57 @@
+# Profile page query. We fetch open and closed counts unconditionally so both
+# can be shown in the toggle header regardless of which tab is active. The
+# paginated `bugs` alias fetches the selected status list separately.
+query UserProfile(
+  $ref: String
+  $prefix: String!
+  $openQuery: String!
+  $closedQuery: String!
+  $listQuery: String!
+  $after: String
+) {
+  repository(ref: $ref) {
+    identity(prefix: $prefix) {
+      id
+      humanId
+      name
+      email
+      login
+      displayName
+      avatarUrl
+      isProtected
+    }
+    # Always-fetched counts so we can show both numbers in the toggle.
+    openCount: allBugs(query: $openQuery, first: 1) {
+      totalCount
+    }
+    closedCount: allBugs(query: $closedQuery, first: 1) {
+      totalCount
+    }
+    # Paginated list for the currently-selected tab.
+    bugs: allBugs(query: $listQuery, first: 25, after: $after) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        humanId
+        status
+        title
+        labels {
+          name
+          color {
+            R
+            G
+            B
+          }
+        }
+        createdAt
+        comments {
+          totalCount
+        }
+      }
+    }
+  }
+}

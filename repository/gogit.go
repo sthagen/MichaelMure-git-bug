@@ -827,6 +827,288 @@ func (repo *GoGitRepo) ReadCommit(hash Hash) (Commit, error) {
 	return result, nil
 }
 
+var _ RepoBrowse = &GoGitRepo{}
+
+func (repo *GoGitRepo) GetDefaultBranch() (string, error) {
+	repo.rMutex.Lock()
+	defer repo.rMutex.Unlock()
+
+	head, err := repo.r.Head()
+	if err != nil {
+		return "main", nil // sensible fallback for detached HEAD
+	}
+	return head.Name().Short(), nil
+}
+
+func (repo *GoGitRepo) ReadCommitMeta(hash Hash) (CommitMeta, error) {
+	repo.rMutex.Lock()
+	defer repo.rMutex.Unlock()
+
+	commit, err := repo.r.CommitObject(plumbing.NewHash(hash.String()))
+	if err == plumbing.ErrObjectNotFound {
+		return CommitMeta{}, ErrNotFound
+	}
+	if err != nil {
+		return CommitMeta{}, err
+	}
+
+	return commitToMeta(commit), nil
+}
+
+func (repo *GoGitRepo) CommitLog(ref string, path string, limit int, after Hash) ([]CommitMeta, error) {
+	repo.rMutex.Lock()
+	defer repo.rMutex.Unlock()
+
+	h, err := repo.resolveShortRef(ref)
+	if err != nil {
+		return nil, err
+	}
+
+	opts := &gogit.LogOptions{From: h}
+	if path != "" {
+		opts.PathFilter = func(p string) bool {
+			return p == path || strings.HasPrefix(p, path+"/")
+		}
+		// PathFilter requires OrderCommitterTime for correct results
+		opts.Order = gogit.LogOrderCommitterTime
+	}
+
+	iter, err := repo.r.Log(opts)
+	if err != nil {
+		return nil, err
+	}
+	defer iter.Close()
+
+	var commits []CommitMeta
+	skipping := after != ""
+
+	for {
+		if len(commits) >= limit {
+			break
+		}
+		commit, err := iter.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		if skipping {
+			if Hash(commit.Hash.String()) == after {
+				skipping = false
+			}
+			continue
+		}
+		commits = append(commits, commitToMeta(commit))
+	}
+
+	return commits, nil
+}
+
+// resolveShortRef resolves a short branch/tag name or full ref to a commit hash.
+// Must be called with rMutex held.
+func (repo *GoGitRepo) resolveShortRef(ref string) (plumbing.Hash, error) {
+	// Try as full ref first, then refs/heads/, refs/tags/, then raw hash.
+	for _, prefix := range []string{"", "refs/heads/", "refs/tags/"} {
+		r, err := repo.r.Reference(plumbing.ReferenceName(prefix+ref), true)
+		if err == nil {
+			return r.Hash(), nil
+		}
+	}
+	// Fall back to treating it as a commit hash directly.
+	h := plumbing.NewHash(ref)
+	if !h.IsZero() {
+		return h, nil
+	}
+	return plumbing.ZeroHash, fmt.Errorf("cannot resolve ref %q", ref)
+}
+
+func commitToMeta(c *object.Commit) CommitMeta {
+	msg := strings.TrimSpace(c.Message)
+	if i := strings.IndexByte(msg, '\n'); i >= 0 {
+		msg = msg[:i]
+	}
+	parents := make([]Hash, len(c.ParentHashes))
+	for i, p := range c.ParentHashes {
+		parents[i] = Hash(p.String())
+	}
+	h := Hash(c.Hash.String())
+	return CommitMeta{
+		Hash:        h,
+		ShortHash:   h.String()[:7],
+		Message:     msg,
+		AuthorName:  c.Author.Name,
+		AuthorEmail: c.Author.Email,
+		Date:        c.Author.When,
+		Parents:     parents,
+	}
+}
+
+// LastCommitForEntries walks the commit history once (newest-first) and returns
+// the most recent commit that modified each named entry in dirPath.
+//
+// Instead of computing recursive tree diffs, it reads only the shallow tree at
+// dirPath for consecutive commits and compares entry hashes directly. This is
+// O(commits × entries) with cheap hash comparisons rather than O(commits × all
+// changed files in repo).
+func (repo *GoGitRepo) LastCommitForEntries(ref string, dirPath string, names []string) (map[string]CommitMeta, error) {
+	repo.rMutex.Lock()
+	defer repo.rMutex.Unlock()
+
+	h, err := repo.resolveShortRef(ref)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(map[string]CommitMeta, len(names))
+	if len(names) == 0 {
+		return result, nil
+	}
+
+	// Build lookup set for fast membership test.
+	want := make(map[string]bool, len(names))
+	for _, n := range names {
+		want[n] = true
+	}
+
+	iter, err := repo.r.Log(&gogit.LogOptions{From: h, Order: gogit.LogOrderCommitterTime})
+	if err != nil {
+		return nil, err
+	}
+	defer iter.Close()
+
+	// dirHashes reads the entry hashes at dirPath for the given commit tree.
+	// Returns a map of entry name → blob/tree hash (shallow, no recursion).
+	dirHashes := func(tree *object.Tree) map[string]plumbing.Hash {
+		t := tree
+		if dirPath != "" {
+			sub, err := tree.Tree(dirPath)
+			if err != nil {
+				return nil
+			}
+			t = sub
+		}
+		m := make(map[string]plumbing.Hash, len(t.Entries))
+		for _, e := range t.Entries {
+			if want[e.Name] {
+				m[e.Name] = e.Hash
+			}
+		}
+		return m
+	}
+
+	// Walk newest→oldest, comparing each commit's directory snapshot with the
+	// previous (newer) commit's snapshot. When a hash differs, the newer commit
+	// is the one that last changed that entry.
+	var prevHashes map[string]plumbing.Hash
+	var prevMeta CommitMeta
+
+	for len(result) < len(names) {
+		commit, err := iter.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return result, nil
+		}
+
+		tree, err := commit.Tree()
+		if err != nil {
+			continue
+		}
+		currHashes := dirHashes(tree)
+		meta := commitToMeta(commit)
+
+		if prevHashes != nil {
+			for name := range want {
+				if _, done := result[name]; done {
+					continue
+				}
+				prev, inPrev := prevHashes[name]
+				curr, inCurr := currHashes[name]
+				// If the entry existed in prevHashes but differs (or is gone now),
+				// the previous (newer) commit is when it was last changed.
+				if inPrev && (!inCurr || prev != curr) {
+					result[name] = prevMeta
+				}
+			}
+		}
+
+		prevHashes = currHashes
+		prevMeta = meta
+	}
+
+	// Any names still present in prevHashes were last changed at the oldest
+	// commit we reached (the entry existed there and we never saw it change).
+	for name := range want {
+		if _, done := result[name]; done {
+			continue
+		}
+		if _, exists := prevHashes[name]; exists {
+			result[name] = prevMeta
+		}
+	}
+
+	return result, nil
+}
+
+// CommitDetail returns full metadata for a commit plus its changed files.
+func (repo *GoGitRepo) CommitDetail(hash Hash) (CommitDetail, error) {
+	repo.rMutex.Lock()
+	defer repo.rMutex.Unlock()
+
+	commit, err := repo.r.CommitObject(plumbing.NewHash(hash.String()))
+	if err == plumbing.ErrObjectNotFound {
+		return CommitDetail{}, ErrNotFound
+	}
+	if err != nil {
+		return CommitDetail{}, err
+	}
+
+	detail := CommitDetail{
+		CommitMeta:  commitToMeta(commit),
+		FullMessage: strings.TrimSpace(commit.Message),
+	}
+
+	tree, err := commit.Tree()
+	if err != nil {
+		return detail, nil
+	}
+
+	var parentTree *object.Tree
+	if len(commit.ParentHashes) > 0 {
+		if parent, err := commit.Parent(0); err == nil {
+			parentTree, _ = parent.Tree()
+		}
+	}
+	if parentTree == nil {
+		parentTree = &object.Tree{}
+	}
+
+	changes, err := object.DiffTree(parentTree, tree)
+	if err != nil {
+		return detail, nil
+	}
+
+	for _, change := range changes {
+		from, to := change.From.Name, change.To.Name
+		var f ChangedFile
+		switch {
+		case from == "":
+			f = ChangedFile{Path: to, Status: "added"}
+		case to == "":
+			f = ChangedFile{Path: from, Status: "deleted"}
+		case from != to:
+			f = ChangedFile{Path: to, OldPath: from, Status: "renamed"}
+		default:
+			f = ChangedFile{Path: to, Status: "modified"}
+		}
+		detail.Files = append(detail.Files, f)
+	}
+
+	return detail, nil
+}
+
 func (repo *GoGitRepo) AllClocks() (map[string]lamport.Clock, error) {
 	repo.clocksMutex.Lock()
 	defer repo.clocksMutex.Unlock()
@@ -929,6 +1211,12 @@ func (repo *GoGitRepo) AddRemote(name string, url string) error {
 // GetLocalRemote return the URL to use to add this repo as a local remote
 func (repo *GoGitRepo) GetLocalRemote() string {
 	return repo.path
+}
+
+// GetPath returns the root directory of the repository (strips the trailing
+// /.git component so callers get the working-tree root, not the git dir).
+func (repo *GoGitRepo) GetPath() string {
+	return filepath.Clean(strings.TrimSuffix(repo.path, string(filepath.Separator)+".git"))
 }
 
 // EraseFromDisk delete this repository entirely from the disk

@@ -2,6 +2,10 @@ type Repository {
     """The name of the repository"""
     name: String
 
+    """URL-friendly slug for this repository. Named repos use their name;
+    the default (unnamed) repo derives the slug from the directory basename."""
+    slug: String!
+
     """All the bugs"""
     allBugs(
         """Returns the elements in the list that come after the specified cursor."""

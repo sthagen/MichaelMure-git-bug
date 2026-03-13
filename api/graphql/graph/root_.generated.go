@@ -377,6 +377,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Repositories func(childComplexity int, after *string, before *string, first *int, last *int) int
 		Repository   func(childComplexity int, ref *string) int
+		ServerConfig func(childComplexity int) int
 	}
 
 	Repository struct {
@@ -385,6 +386,7 @@ type ComplexityRoot struct {
 		Bug           func(childComplexity int, prefix string) int
 		Identity      func(childComplexity int, prefix string) int
 		Name          func(childComplexity int) int
+		Slug          func(childComplexity int) int
 		UserIdentity  func(childComplexity int) int
 		ValidLabels   func(childComplexity int, after *string, before *string, first *int, last *int) int
 	}
@@ -399,6 +401,11 @@ type ComplexityRoot struct {
 	RepositoryEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
+	}
+
+	ServerConfig struct {
+		AuthMode       func(childComplexity int) int
+		OauthProviders func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -1795,6 +1802,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.Repository(childComplexity, args["ref"].(*string)), true
 
+	case "Query.serverConfig":
+		if e.complexity.Query.ServerConfig == nil {
+			break
+		}
+
+		return e.complexity.Query.ServerConfig(childComplexity), true
+
 	case "Repository.allBugs":
 		if e.complexity.Repository.AllBugs == nil {
 			break
@@ -1849,6 +1863,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Repository.Name(childComplexity), true
+
+	case "Repository.slug":
+		if e.complexity.Repository.Slug == nil {
+			break
+		}
+
+		return e.complexity.Repository.Slug(childComplexity), true
 
 	case "Repository.userIdentity":
 		if e.complexity.Repository.UserIdentity == nil {
@@ -1910,6 +1931,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.RepositoryEdge.Node(childComplexity), true
+
+	case "ServerConfig.authMode":
+		if e.complexity.ServerConfig.AuthMode == nil {
+			break
+		}
+
+		return e.complexity.ServerConfig.AuthMode(childComplexity), true
+
+	case "ServerConfig.oauthProviders":
+		if e.complexity.ServerConfig.OauthProviders == nil {
+			break
+		}
+
+		return e.complexity.ServerConfig.OauthProviders(childComplexity), true
 
 	case "Subscription.allEvents":
 		if e.complexity.Subscription.AllEvents == nil {
@@ -2701,6 +2736,10 @@ type OperationEdge {
     """The name of the repository"""
     name: String
 
+    """URL-friendly slug for this repository. Named repos use their name;
+    the default (unnamed) repo derives the slug from the directory basename."""
+    slug: String!
+
     """All the bugs"""
     allBugs(
         """Returns the elements in the list that come after the specified cursor."""
@@ -2759,7 +2798,21 @@ type RepositoryEdge {
   node: Repository!
 }
 `, BuiltIn: false},
-	{Name: "../schema/root.graphql", Input: `type Query {
+	{Name: "../schema/root.graphql", Input: `"""Server-wide configuration, independent of any repository."""
+type ServerConfig {
+    """Authentication mode: 'local' (single user from git config),
+    'oauth' (multi-user via external providers), or 'readonly'."""
+    authMode: String!
+
+    """Names of the OAuth providers enabled on this server, e.g. ['github'].
+    Empty when authMode is not 'oauth'."""
+    oauthProviders: [String!]!
+}
+
+type Query {
+    """Server configuration and authentication mode."""
+    serverConfig: ServerConfig!
+
     """Access a repository by reference/name. If no ref is given, the default repository is returned if any."""
     repository(ref: String): Repository
 

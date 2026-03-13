@@ -1,0 +1,35 @@
+query BugList($ref: String, $query: String, $first: Int, $after: String) {
+  repository(ref: $ref) {
+    allBugs(query: $query, first: $first, after: $after) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        id
+        humanId
+        status
+        title
+        labels {
+          name
+          color {
+            R
+            G
+            B
+          }
+        }
+        author {
+          id
+          humanId
+          displayName
+          avatarUrl
+        }
+        createdAt
+        comments {
+          totalCount
+        }
+      }
+    }
+  }
+}

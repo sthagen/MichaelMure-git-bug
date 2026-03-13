@@ -119,6 +119,11 @@ func (r *mockRepoCommon) GetRemotes() (map[string]string, error) {
 	}, nil
 }
 
+// GetPath returns an empty string for in-memory mock repos.
+func (r *mockRepoCommon) GetPath() string {
+	return ""
+}
+
 var _ RepoStorage = &mockRepoStorage{}
 
 type mockRepoStorage struct {

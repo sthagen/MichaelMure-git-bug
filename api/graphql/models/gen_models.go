@@ -342,5 +342,15 @@ type RepositoryEdge struct {
 	Node   *Repository `json:"node"`
 }
 
+// Server-wide configuration, independent of any repository.
+type ServerConfig struct {
+	// Authentication mode: 'local' (single user from git config),
+	//     'oauth' (multi-user via external providers), or 'readonly'.
+	AuthMode string `json:"authMode"`
+	// Names of the OAuth providers enabled on this server, e.g. ['github'].
+	//     Empty when authMode is not 'oauth'.
+	OauthProviders []string `json:"oauthProviders"`
+}
+
 type Subscription struct {
 }

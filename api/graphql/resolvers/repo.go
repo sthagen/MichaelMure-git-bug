@@ -21,6 +21,12 @@ func (repoResolver) Name(_ context.Context, obj *models.Repository) (*string, er
 	return &name, nil
 }
 
+// Slug returns the URL-friendly identifier for the repo, used as the /:repo
+// path segment in the frontend.
+func (repoResolver) Slug(_ context.Context, obj *models.Repository) (string, error) {
+	return obj.Repo.Slug(), nil
+}
+
 func (repoResolver) AllBugs(_ context.Context, obj *models.Repository, after *string, before *string, first *int, last *int, queryStr *string) (*models.BugConnection, error) {
 	input := models.ConnectionInput{
 		Before: before,

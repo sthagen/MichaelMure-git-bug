@@ -17,14 +17,16 @@ git-bug webui [flags]
 ### Options
 
 ```
-      --host string    Network address or hostname to listen to (default to 127.0.0.1) (default "127.0.0.1")
-      --open           Automatically open the web UI in the default browser
-      --no-open        Prevent the automatic opening of the web UI in the default browser
-  -p, --port int       Port to listen to (default to random available port)
-      --read-only      Whether to run the web UI in read-only mode
-      --log-errors     Whether to log errors
-  -q, --query string   The query to open in the web UI bug list
-  -h, --help           help for webui
+      --host string                   Network address or hostname to listen to (default to 127.0.0.1) (default "127.0.0.1")
+      --open                          Automatically open the web UI in the default browser
+      --no-open                       Prevent the automatic opening of the web UI in the default browser
+  -p, --port int                      Port to listen to (default to random available port)
+      --read-only                     Whether to run the web UI in read-only mode
+      --log-errors                    Whether to log errors
+  -q, --query string                  The query to open in the web UI bug list
+      --github-client-id string       GitHub OAuth application client ID (enables GitHub login)
+      --github-client-secret string   GitHub OAuth application client secret
+  -h, --help                          help for webui
 ```
 
 ### SEE ALSO

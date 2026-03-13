@@ -1,0 +1,81 @@
+/* highlight.js theme must be imported before any @layer rules (PostCSS requirement) */
+@import 'highlight.js/styles/github.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* zinc palette — clean neutral, GitHub-adjacent */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.375rem;
+  }
+
+  .dark {
+    /* dimmed dark — comfortable grey, not pitch black */
+    --background: 220 13% 13%;
+    --foreground: 220 10% 88%;
+    --card: 220 13% 16%;
+    --card-foreground: 220 10% 88%;
+    --popover: 220 13% 16%;
+    --popover-foreground: 220 10% 88%;
+    --primary: 220 10% 90%;
+    --primary-foreground: 220 13% 11%;
+    --secondary: 220 10% 22%;
+    --secondary-foreground: 220 10% 88%;
+    --muted: 220 10% 22%;
+    --muted-foreground: 220 8% 55%;
+    --accent: 220 10% 22%;
+    --accent-foreground: 220 10% 88%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 10% 26%;
+    --input: 220 10% 26%;
+    --ring: 220 10% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ── Dark-mode overrides for highlight.js (imported above) ──────────────── */
+.dark .hljs {
+  background: hsl(220, 13%, 16%);
+  color: hsl(220, 10%, 85%);
+}
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-built_in { color: #ff7b72; }
+.dark .hljs-string,
+.dark .hljs-attr { color: #a5d6ff; }
+.dark .hljs-comment { color: hsl(220, 8%, 50%); }
+.dark .hljs-number,
+.dark .hljs-literal { color: #79c0ff; }
+.dark .hljs-title,
+.dark .hljs-name { color: #d2a8ff; }
+.dark .hljs-type { color: #ffa657; }
