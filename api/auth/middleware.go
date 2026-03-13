@@ -18,6 +18,19 @@ func Middleware(fixedUserId entity.Id) func(http.Handler) http.Handler {
 	}
 }
 
+// RequireAuth is middleware that rejects unauthenticated requests with 401.
+// Use this on subrouters that must never be accessible without a valid session
+// (e.g. the REST API in oauth mode when the server is publicly deployed).
+func RequireAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, ok := r.Context().Value(identityCtxKey).(entity.Id); !ok {
+			http.Error(w, "authentication required", http.StatusUnauthorized)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 // SessionMiddleware reads the session cookie on every request and, when a
 // valid session exists, injects the corresponding identity ID into the context.
 //

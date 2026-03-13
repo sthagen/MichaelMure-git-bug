@@ -7,7 +7,6 @@
 // profile.
 
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { UserCircle, Plus, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -22,7 +21,6 @@ interface IdentityItem {
 }
 
 export function IdentitySelectPage() {
-  const navigate = useNavigate()
   const [identities, setIdentities] = useState<IdentityItem[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [working, setWorking] = useState(false)

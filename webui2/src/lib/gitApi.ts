@@ -1,5 +1,8 @@
 // REST API client for git repository browsing.
-// Endpoints are served by the Go backend at /api/git/*.
+// Endpoints are served by the Go backend under /api/repos/{owner}/{repo}/git/*.
+// "_" is the wildcard value for both owner and repo (resolves to local / default).
+
+const BASE = '/api/repos/_/_'
 
 export interface GitRef {
   name: string       // full ref: "refs/heads/main"
@@ -54,8 +57,8 @@ export interface GitCommitDetail extends GitCommit {
 
 async function get<T>(path: string, params: Record<string, string> = {}): Promise<T> {
   const search = new URLSearchParams(params).toString()
-  const url = `/api/git${path}${search ? `?${search}` : ''}`
-  const res = await fetch(url)
+  const url = `${BASE}${path}${search ? `?${search}` : ''}`
+  const res = await fetch(url, { credentials: 'include' })
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText)
     throw new Error(text || res.statusText)
@@ -66,15 +69,19 @@ async function get<T>(path: string, params: Record<string, string> = {}): Promis
 // ── API calls ─────────────────────────────────────────────────────────────────
 
 export function getRefs(): Promise<GitRef[]> {
-  return get('/refs')
+  return get('/git/refs')
 }
 
 export function getTree(ref: string, path: string): Promise<GitTreeEntry[]> {
-  return get('/tree', { ref, path })
+  return get(`/git/trees/${encodeURIComponent(ref)}`, path ? { path } : {})
 }
 
 export function getBlob(ref: string, path: string): Promise<GitBlob> {
-  return get('/blob', { ref, path })
+  return get(`/git/blobs/${encodeURIComponent(ref)}`, { path })
+}
+
+export function getRawUrl(ref: string, path: string): string {
+  return `${BASE}/git/raw/${encodeURIComponent(ref)}/${path}`
 }
 
 export function getCommits(
@@ -84,9 +91,9 @@ export function getCommits(
   const params: Record<string, string> = { ref, limit: String(opts.limit ?? 20) }
   if (opts.path) params.path = opts.path
   if (opts.after) params.after = opts.after
-  return get('/commits', params)
+  return get('/git/commits', params)
 }
 
-export function getCommit(hash: string): Promise<GitCommitDetail> {
-  return get('/commit', { hash })
+export function getCommit(sha: string): Promise<GitCommitDetail> {
+  return get(`/git/commits/${sha}`)
 }

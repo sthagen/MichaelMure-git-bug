@@ -3,16 +3,18 @@ import hljs from 'highlight.js'
 import { Copy, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getRawUrl } from '@/lib/gitApi'
 import type { GitBlob } from '@/lib/gitApi'
 
 interface FileViewerProps {
   blob: GitBlob
+  ref: string
   loading?: boolean
 }
 
 // Syntax-highlighted file viewer with line numbers, copy, and download buttons.
 // Uses highlight.js for highlighting; binary files show a placeholder.
-export function FileViewer({ blob, loading }: FileViewerProps) {
+export function FileViewer({ blob, ref, loading }: FileViewerProps) {
   const { html, lineCount } = useMemo(() => {
     if (blob.isBinary || !blob.content) return { html: '', lineCount: 0 }
     const ext = blob.path.split('.').pop() ?? ''
@@ -49,7 +51,7 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
             <Copy className="size-3.5" />
           </Button>
           <Button variant="ghost" size="icon" className="size-7" asChild title="Download">
-            <a href={`/gitfile/default/${blob.path}`} download>
+            <a href={getRawUrl(ref, blob.path)} download>
               <Download className="size-3.5" />
             </a>
           </Button>

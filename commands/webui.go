@@ -172,17 +172,30 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 		router.Path("/auth/adopt").Methods("POST").HandlerFunc(ah.HandleAdopt)
 	}
 
-	// Routes
+	// Top-level API routes
 	router.Path("/playground").Handler(playground.Handler("git-bug", "/graphql"))
 	router.Path("/graphql").Handler(graphqlHandler)
-	router.Path("/gitfile/{repo}/{hash}").Handler(httpapi.NewGitFileHandler(mrc))
-	router.Path("/upload/{repo}").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
-	// Git browsing API (used by the code browser UI)
-	router.Path("/api/git/refs").Methods("GET").Handler(httpapi.NewGitRefsHandler(mrc))
-	router.Path("/api/git/tree").Methods("GET").Handler(httpapi.NewGitTreeHandler(mrc))
-	router.Path("/api/git/blob").Methods("GET").Handler(httpapi.NewGitBlobHandler(mrc))
-	router.Path("/api/git/commits").Methods("GET").Handler(httpapi.NewGitCommitsHandler(mrc))
-	router.Path("/api/git/commit").Methods("GET").Handler(httpapi.NewGitCommitHandler(mrc))
+
+	// /api/repos/{owner}/{repo}/ subrouter.
+	// owner is reserved for future use; "_" means "local".
+	// repo "_" resolves to the default repository.
+	//
+	// In oauth mode all API endpoints require a valid session, making the
+	// server safe to deploy publicly. In local and readonly modes the
+	// middleware only injects identity without blocking.
+	apiRepos := router.PathPrefix("/api/repos/{owner}/{repo}").Subrouter()
+	if authMode == "oauth" {
+		apiRepos.Use(auth.RequireAuth)
+	}
+	apiRepos.Path("/git/refs").Methods("GET").Handler(httpapi.NewGitRefsHandler(mrc))
+	apiRepos.Path("/git/trees/{ref}").Methods("GET").Handler(httpapi.NewGitTreeHandler(mrc))
+	apiRepos.Path("/git/blobs/{ref}").Methods("GET").Handler(httpapi.NewGitBlobHandler(mrc))
+	apiRepos.Path("/git/raw/{ref}/{path:.*}").Methods("GET").Handler(httpapi.NewGitRawHandler(mrc))
+	apiRepos.Path("/git/commits").Methods("GET").Handler(httpapi.NewGitCommitsHandler(mrc))
+	apiRepos.Path("/git/commits/{sha}").Methods("GET").Handler(httpapi.NewGitCommitHandler(mrc))
+	apiRepos.Path("/file/{hash}").Methods("GET").Handler(httpapi.NewGitFileHandler(mrc))
+	apiRepos.Path("/upload").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
+
 	router.PathPrefix("/").Handler(webui.NewHandler())
 
 	srv := &http.Server{

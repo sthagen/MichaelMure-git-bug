@@ -2,20 +2,19 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
 	"github.com/gorilla/mux"
 
-	"github.com/git-bug/git-bug/api/auth"
 	"github.com/git-bug/git-bug/cache"
 )
 
 // implement a http.Handler that will accept and store content into git blob.
 //
 // Expected gorilla/mux parameters:
-//   - "repo" : the ref of the repo or "" for the default one
+//   - "owner" : ignored (reserved for future multi-owner support); "_" for local
+//   - "repo"  : the name of the repo, or "_" for the default one
 type gitUploadFileHandler struct {
 	mrc *cache.MultiRepoCache
 }
@@ -29,24 +28,14 @@ func (gufh *gitUploadFileHandler) ServeHTTP(rw http.ResponseWriter, r *http.Requ
 	var err error
 
 	repoVar := mux.Vars(r)["repo"]
-	switch repoVar {
-	case "":
+	if repoVar == "_" {
 		repo, err = gufh.mrc.DefaultRepo()
-	default:
+	} else {
 		repo, err = gufh.mrc.ResolveRepo(repoVar)
 	}
 
 	if err != nil {
 		http.Error(rw, "invalid repo reference", http.StatusBadRequest)
-		return
-	}
-
-	_, err = auth.UserFromCtx(r.Context(), repo)
-	if err == auth.ErrNotAuthenticated {
-		http.Error(rw, "read-only mode or not logged in", http.StatusForbidden)
-		return
-	} else if err != nil {
-		http.Error(rw, fmt.Sprintf("loading identity: %v", err), http.StatusInternalServerError)
 		return
 	}
 

@@ -14,8 +14,9 @@ import (
 // implement a http.Handler that will read and server git blob.
 //
 // Expected gorilla/mux parameters:
-//   - "repo" : the ref of the repo or "" for the default one
-//   - "hash" : the git hash of the file to retrieve
+//   - "owner" : ignored (reserved for future multi-owner support); "_" for local
+//   - "repo"  : the name of the repo, or "_" for the default one
+//   - "hash"  : the git hash of the file to retrieve
 type gitFileHandler struct {
 	mrc *cache.MultiRepoCache
 }
@@ -29,10 +30,9 @@ func (gfh *gitFileHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	var err error
 
 	repoVar := mux.Vars(r)["repo"]
-	switch repoVar {
-	case "":
+	if repoVar == "_" {
 		repo, err = gfh.mrc.DefaultRepo()
-	default:
+	} else {
 		repo, err = gfh.mrc.ResolveRepo(repoVar)
 	}
 

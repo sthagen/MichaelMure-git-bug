@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gorilla/mux"
+
 	"github.com/git-bug/git-bug/cache"
 	"github.com/git-bug/git-bug/repository"
 )
@@ -20,10 +22,20 @@ func writeJSON(w http.ResponseWriter, v any) {
 	}
 }
 
-// browseRepo resolves the default repo from the cache and type-asserts to
-// RepoBrowse. All four handlers use this helper.
-func browseRepo(mrc *cache.MultiRepoCache) (repository.ClockedRepo, repository.RepoBrowse, error) {
-	rc, err := mrc.DefaultRepo()
+// repoFromPath resolves the repository from the {owner} and {repo} mux path
+// variables. "_" is the wildcard value: owner is always ignored (single-owner
+// for now), and repo "_" resolves to the default repository.
+func repoFromPath(mrc *cache.MultiRepoCache, r *http.Request) (*cache.RepoCache, error) {
+	repoVar := mux.Vars(r)["repo"]
+	if repoVar == "_" {
+		return mrc.DefaultRepo()
+	}
+	return mrc.ResolveRepo(repoVar)
+}
+
+// browseRepo resolves the repository and asserts it implements RepoBrowse.
+func browseRepo(mrc *cache.MultiRepoCache, r *http.Request) (repository.ClockedRepo, repository.RepoBrowse, error) {
+	rc, err := repoFromPath(mrc, r)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -35,8 +47,18 @@ func browseRepo(mrc *cache.MultiRepoCache) (repository.ClockedRepo, repository.R
 	return underlying, br, nil
 }
 
+// resolveRef tries refs/heads/<ref>, refs/tags/<ref>, then a raw hash.
+func resolveRef(repo repository.ClockedRepo, ref string) (repository.Hash, error) {
+	for _, prefix := range []string{"refs/heads/", "refs/tags/", ""} {
+		h, err := repo.ResolveRef(prefix + ref)
+		if err == nil {
+			return h, nil
+		}
+	}
+	return "", repository.ErrNotFound
+}
+
 // resolveTreeAtPath walks the git tree of a commit down to the given path.
-// path may be empty (returns root tree entries) or a slash-separated directory path.
 func resolveTreeAtPath(repo repository.ClockedRepo, commitHash repository.Hash, path string) ([]repository.TreeEntry, error) {
 	commit, err := repo.ReadCommit(commitHash)
 	if err != nil {
@@ -92,7 +114,17 @@ func resolveBlobAtPath(repo repository.ClockedRepo, commitHash repository.Hash, 
 	return entry.Hash, nil
 }
 
-// ── GET /api/git/refs ─────────────────────────────────────────────────────────
+// isBinaryContent returns true if data contains a null byte (simple heuristic).
+func isBinaryContent(data []byte) bool {
+	for _, b := range data {
+		if b == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+// ── GET /api/repos/{owner}/{repo}/git/refs ────────────────────────────────────
 
 type gitRefsHandler struct{ mrc *cache.MultiRepoCache }
 
@@ -109,7 +141,7 @@ type refResponse struct {
 }
 
 func (h *gitRefsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	repo, br, err := browseRepo(h.mrc)
+	repo, br, err := browseRepo(h.mrc, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -118,7 +150,6 @@ func (h *gitRefsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defaultBranch, _ := br.GetDefaultBranch()
 
 	var refs []refResponse
-
 	for _, prefix := range []string{"refs/heads/", "refs/tags/"} {
 		names, err := repo.ListRefs(prefix)
 		if err != nil {
@@ -148,7 +179,7 @@ func (h *gitRefsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, refs)
 }
 
-// ── GET /api/git/tree ─────────────────────────────────────────────────────────
+// ── GET /api/repos/{owner}/{repo}/git/trees/{ref}?path= ──────────────────────
 
 type gitTreeHandler struct{ mrc *cache.MultiRepoCache }
 
@@ -165,15 +196,10 @@ type treeEntryResponse struct {
 }
 
 func (h *gitTreeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ref := r.URL.Query().Get("ref")
+	ref := mux.Vars(r)["ref"]
 	path := r.URL.Query().Get("path")
 
-	if ref == "" {
-		http.Error(w, "missing ref", http.StatusBadRequest)
-		return
-	}
-
-	repo, br, err := browseRepo(h.mrc)
+	repo, br, err := browseRepo(h.mrc, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -181,7 +207,7 @@ func (h *gitTreeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	commitHash, err := resolveRef(repo, ref)
 	if err != nil {
-		http.Error(w, "ref not found: "+ref, http.StatusNotFound)
+		http.Error(w, "ref not found", http.StatusNotFound)
 		return
 	}
 
@@ -195,12 +221,11 @@ func (h *gitTreeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Collect entry names and fetch last commits in one shallow history pass.
 	names := make([]string, len(entries))
 	for i, e := range entries {
 		names[i] = e.Name
 	}
-	lastCommits, _ := br.LastCommitForEntries(ref, path, names) // best-effort
+	lastCommits, _ := br.LastCommitForEntries(ref, path, names)
 
 	resp := make([]treeEntryResponse, 0, len(entries))
 	for _, e := range entries {
@@ -210,7 +235,6 @@ func (h *gitTreeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			objType = "tree"
 			mode = "040000"
 		}
-
 		item := treeEntryResponse{
 			Name: e.Name,
 			Type: objType,
@@ -220,14 +244,13 @@ func (h *gitTreeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if cm, ok := lastCommits[e.Name]; ok {
 			item.LastCommit = toCommitMetaResponse(cm)
 		}
-
 		resp = append(resp, item)
 	}
 
 	writeJSON(w, resp)
 }
 
-// ── GET /api/git/blob ─────────────────────────────────────────────────────────
+// ── GET /api/repos/{owner}/{repo}/git/blobs/{ref}?path= ──────────────────────
 
 type gitBlobHandler struct{ mrc *cache.MultiRepoCache }
 
@@ -243,15 +266,15 @@ type blobResponse struct {
 }
 
 func (h *gitBlobHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ref := r.URL.Query().Get("ref")
+	ref := mux.Vars(r)["ref"]
 	path := r.URL.Query().Get("path")
 
-	if ref == "" || path == "" {
-		http.Error(w, "missing ref or path", http.StatusBadRequest)
+	if path == "" {
+		http.Error(w, "missing path", http.StatusBadRequest)
 		return
 	}
 
-	repo, _, err := browseRepo(h.mrc)
+	repo, _, err := browseRepo(h.mrc, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -259,7 +282,7 @@ func (h *gitBlobHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	commitHash, err := resolveRef(repo, ref)
 	if err != nil {
-		http.Error(w, "ref not found: "+ref, http.StatusNotFound)
+		http.Error(w, "ref not found", http.StatusNotFound)
 		return
 	}
 
@@ -293,7 +316,62 @@ func (h *gitBlobHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ── GET /api/git/commits ──────────────────────────────────────────────────────
+// ── GET /api/repos/{owner}/{repo}/git/raw/{ref}/{path} ───────────────────────
+// Serves the raw file content for download. ref and path are both in the URL
+// path, producing human-readable download URLs like:
+//
+//	/api/repos/_/_/git/raw/main/src/foo/bar.go
+
+type gitRawHandler struct{ mrc *cache.MultiRepoCache }
+
+func NewGitRawHandler(mrc *cache.MultiRepoCache) http.Handler {
+	return &gitRawHandler{mrc: mrc}
+}
+
+func (h *gitRawHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ref := mux.Vars(r)["ref"]
+	path := mux.Vars(r)["path"]
+
+	if path == "" {
+		http.Error(w, "missing path", http.StatusBadRequest)
+		return
+	}
+
+	repo, _, err := browseRepo(h.mrc, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	commitHash, err := resolveRef(repo, ref)
+	if err != nil {
+		http.Error(w, "ref not found", http.StatusNotFound)
+		return
+	}
+
+	blobHash, err := resolveBlobAtPath(repo, commitHash, path)
+	if err == repository.ErrNotFound {
+		http.Error(w, "path not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data, err := repo.ReadData(blobHash)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fileName := path[strings.LastIndex(path, "/")+1:]
+	w.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename=%q`, fileName))
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Write(data)
+}
+
+// ── GET /api/repos/{owner}/{repo}/git/commits?ref=&path=&limit=&after= ───────
 
 type gitCommitsHandler struct{ mrc *cache.MultiRepoCache }
 
@@ -302,12 +380,12 @@ func NewGitCommitsHandler(mrc *cache.MultiRepoCache) http.Handler {
 }
 
 type commitMetaResponse struct {
-	Hash        string `json:"hash"`
-	ShortHash   string `json:"shortHash"`
-	Message     string `json:"message"`
-	AuthorName  string `json:"authorName"`
-	AuthorEmail string `json:"authorEmail"`
-	Date        string `json:"date"` // RFC3339
+	Hash        string   `json:"hash"`
+	ShortHash   string   `json:"shortHash"`
+	Message     string   `json:"message"`
+	AuthorName  string   `json:"authorName"`
+	AuthorEmail string   `json:"authorEmail"`
+	Date        string   `json:"date"` // RFC3339
 	Parents     []string `json:"parents"`
 }
 
@@ -344,7 +422,7 @@ func (h *gitCommitsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, br, err := browseRepo(h.mrc)
+	_, br, err := browseRepo(h.mrc, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -363,7 +441,7 @@ func (h *gitCommitsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, resp)
 }
 
-// ── GET /api/git/commit ───────────────────────────────────────────────────────
+// ── GET /api/repos/{owner}/{repo}/git/commits/{sha} ──────────────────────────
 
 type gitCommitHandler struct{ mrc *cache.MultiRepoCache }
 
@@ -384,19 +462,15 @@ type commitDetailResponse struct {
 }
 
 func (h *gitCommitHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	hash := r.URL.Query().Get("hash")
-	if hash == "" {
-		http.Error(w, "missing hash", http.StatusBadRequest)
-		return
-	}
+	sha := mux.Vars(r)["sha"]
 
-	_, br, err := browseRepo(h.mrc)
+	_, br, err := browseRepo(h.mrc, r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	detail, err := br.CommitDetail(repository.Hash(hash))
+	detail, err := br.CommitDetail(repository.Hash(sha))
 	if err == repository.ErrNotFound {
 		http.Error(w, "commit not found", http.StatusNotFound)
 		return
@@ -416,27 +490,4 @@ func (h *gitCommitHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FullMessage:        detail.FullMessage,
 		Files:              files,
 	})
-}
-
-// ── utilities ─────────────────────────────────────────────────────────────────
-
-// resolveRef tries refs/heads/<ref>, refs/tags/<ref>, then raw hash.
-func resolveRef(repo repository.ClockedRepo, ref string) (repository.Hash, error) {
-	for _, prefix := range []string{"refs/heads/", "refs/tags/", ""} {
-		h, err := repo.ResolveRef(prefix + ref)
-		if err == nil {
-			return h, nil
-		}
-	}
-	return "", repository.ErrNotFound
-}
-
-// isBinaryContent returns true if data contains a null byte (simple heuristic).
-func isBinaryContent(data []byte) bool {
-	for _, b := range data {
-		if b == 0 {
-			return true
-		}
-	}
-	return false
 }

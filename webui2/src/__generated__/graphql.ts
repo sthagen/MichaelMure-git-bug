@@ -26,7 +26,7 @@ export type Authored = {
   author: Identity;
 };
 
-export type Bug = Authored & {
+export type Bug = Authored & Entity & {
   __typename?: 'Bug';
   /** The actors of the bug. Actors are Identity that have interacted with the bug. */
   actors: IdentityConnection;
@@ -356,6 +356,12 @@ export type BugEditCommentPayload = {
   operation: BugEditCommentOperation;
 };
 
+export type BugEvent = {
+  __typename?: 'BugEvent';
+  bug: Bug;
+  type: EntityEventType;
+};
+
 export type BugLabelChangeOperation = Authored & Operation & {
   __typename?: 'BugLabelChangeOperation';
   added: Array<Label>;
@@ -515,8 +521,28 @@ export type Color = {
   R: Scalars['Int']['output'];
 };
 
+/** An entity (identity, bug, ...). */
+export type Entity = {
+  /** The human version (truncated) identifier for this entity */
+  humanId: Scalars['String']['output'];
+  /** The identifier for this entity */
+  id: Scalars['ID']['output'];
+};
+
+export type EntityEvent = {
+  __typename?: 'EntityEvent';
+  entity?: Maybe<Entity>;
+  type: EntityEventType;
+};
+
+export enum EntityEventType {
+  Created = 'CREATED',
+  Removed = 'REMOVED',
+  Updated = 'UPDATED'
+}
+
 /** Represents an identity */
-export type Identity = {
+export type Identity = Entity & {
   __typename?: 'Identity';
   /** An url to an avatar */
   avatarUrl?: Maybe<Scalars['String']['output']>;
@@ -551,6 +577,12 @@ export type IdentityEdge = {
   __typename?: 'IdentityEdge';
   cursor: Scalars['String']['output'];
   node: Identity;
+};
+
+export type IdentityEvent = {
+  __typename?: 'IdentityEvent';
+  identity: Identity;
+  type: EntityEventType;
 };
 
 /** Label for a bug. */
@@ -810,6 +842,32 @@ export enum Status {
   Closed = 'CLOSED',
   Open = 'OPEN'
 }
+
+export type Subscription = {
+  __typename?: 'Subscription';
+  /** Subscribe to events on all entities. For events on a specific repo you can provide a repo reference. Without it, you get the unique default repo or all repo events. */
+  allEvents: EntityEvent;
+  /** Subscribe to bug entity events. For events on a specific repo you can provide a repo reference. Without it, you get the unique default repo or all repo events. */
+  bugEvents: BugEvent;
+  /** Subscribe to identity entity events. For events on a specific repo you can provide a repo reference. Without it, you get the unique default repo or all repo events. */
+  identityEvents: IdentityEvent;
+};
+
+
+export type SubscriptionAllEventsArgs = {
+  repoRef?: InputMaybe<Scalars['String']['input']>;
+  typename?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type SubscriptionBugEventsArgs = {
+  repoRef?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type SubscriptionIdentityEventsArgs = {
+  repoRef?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type AllIdentitiesQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;

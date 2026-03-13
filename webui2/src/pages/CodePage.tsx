@@ -172,7 +172,7 @@ export function CodePage() {
           onNavigateUp={handleNavigateUp}
         />
       ) : (
-        <FileViewer blob={blob} loading={contentLoading} />
+        <FileViewer blob={blob} ref={currentRef} loading={contentLoading} />
       )}
     </div>
   )
