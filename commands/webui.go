@@ -193,6 +193,7 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 	apiRepos.Path("/git/raw/{ref}/{path:.*}").Methods("GET").Handler(httpapi.NewGitRawHandler(mrc))
 	apiRepos.Path("/git/commits").Methods("GET").Handler(httpapi.NewGitCommitsHandler(mrc))
 	apiRepos.Path("/git/commits/{sha}").Methods("GET").Handler(httpapi.NewGitCommitHandler(mrc))
+	apiRepos.Path("/git/commits/{sha}/diff").Methods("GET").Handler(httpapi.NewGitCommitDiffHandler(mrc))
 	apiRepos.Path("/file/{hash}").Methods("GET").Handler(httpapi.NewGitFileHandler(mrc))
 	apiRepos.Path("/upload").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
 

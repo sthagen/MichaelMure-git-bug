@@ -19,6 +19,7 @@ import (
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/filemode"
+	"github.com/go-git/go-git/v5/plumbing/format/diff"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/sys/execabs"
@@ -1107,6 +1108,177 @@ func (repo *GoGitRepo) CommitDetail(hash Hash) (CommitDetail, error) {
 	}
 
 	return detail, nil
+}
+
+// CommitFileDiff returns the structured diff for a single file in a commit.
+func (repo *GoGitRepo) CommitFileDiff(hash Hash, filePath string) (FileDiff, error) {
+	repo.rMutex.Lock()
+	defer repo.rMutex.Unlock()
+
+	commit, err := repo.r.CommitObject(plumbing.NewHash(hash.String()))
+	if err == plumbing.ErrObjectNotFound {
+		return FileDiff{}, ErrNotFound
+	}
+	if err != nil {
+		return FileDiff{}, err
+	}
+
+	tree, err := commit.Tree()
+	if err != nil {
+		return FileDiff{}, err
+	}
+
+	var parentTree *object.Tree
+	if len(commit.ParentHashes) > 0 {
+		if parent, err := commit.Parent(0); err == nil {
+			parentTree, _ = parent.Tree()
+		}
+	}
+	if parentTree == nil {
+		parentTree = &object.Tree{}
+	}
+
+	changes, err := object.DiffTree(parentTree, tree)
+	if err != nil {
+		return FileDiff{}, err
+	}
+
+	for _, change := range changes {
+		from, to := change.From.Name, change.To.Name
+		if to != filePath && from != filePath {
+			continue
+		}
+
+		patch, err := change.Patch()
+		if err != nil {
+			return FileDiff{}, err
+		}
+
+		fps := patch.FilePatches()
+		if len(fps) == 0 {
+			return FileDiff{}, ErrNotFound
+		}
+		fp := fps[0]
+
+		fromFile, toFile := fp.Files()
+		fd := FileDiff{
+			IsBinary: fp.IsBinary(),
+			IsNew:    fromFile == nil,
+			IsDelete: toFile == nil,
+		}
+		if toFile != nil {
+			fd.Path = toFile.Path()
+		} else if fromFile != nil {
+			fd.Path = fromFile.Path()
+		}
+		if fromFile != nil && toFile != nil && fromFile.Path() != toFile.Path() {
+			fd.OldPath = fromFile.Path()
+		}
+
+		if !fd.IsBinary {
+			fd.Hunks = buildDiffHunks(fp.Chunks())
+		}
+		return fd, nil
+	}
+
+	return FileDiff{}, ErrNotFound
+}
+
+// buildDiffHunks converts go-git diff chunks into DiffHunks with context lines.
+func buildDiffHunks(chunks []diff.Chunk) []DiffHunk {
+	const ctx = 3
+
+	type line struct {
+		op      diff.Operation
+		content string
+		oldLine int
+		newLine int
+	}
+
+	// Expand chunks into individual lines.
+	var lines []line
+	oldN, newN := 1, 1
+	for _, chunk := range chunks {
+		parts := strings.Split(chunk.Content(), "\n")
+		// Split always produces a trailing empty element if content ends with \n.
+		if len(parts) > 0 && parts[len(parts)-1] == "" {
+			parts = parts[:len(parts)-1]
+		}
+		for _, p := range parts {
+			l := line{op: chunk.Type(), content: p}
+			switch chunk.Type() {
+			case diff.Equal:
+				l.oldLine, l.newLine = oldN, newN
+				oldN++
+				newN++
+			case diff.Add:
+				l.newLine = newN
+				newN++
+			case diff.Delete:
+				l.oldLine = oldN
+				oldN++
+			}
+			lines = append(lines, l)
+		}
+	}
+
+	// Collect indices of changed lines.
+	var changed []int
+	for i, l := range lines {
+		if l.op != diff.Equal {
+			changed = append(changed, i)
+		}
+	}
+	if len(changed) == 0 {
+		return nil
+	}
+
+	// Merge overlapping/adjacent change windows into hunk ranges.
+	type hunkRange struct{ start, end int }
+	var ranges []hunkRange
+	i := 0
+	for i < len(changed) {
+		start := max(0, changed[i]-ctx)
+		end := changed[i]
+		j := i
+		for j < len(changed) && changed[j] <= end+ctx {
+			end = changed[j]
+			j++
+		}
+		end = min(len(lines)-1, end+ctx)
+		ranges = append(ranges, hunkRange{start, end})
+		i = j
+	}
+
+	// Build DiffHunks from ranges.
+	hunks := make([]DiffHunk, 0, len(ranges))
+	for _, r := range ranges {
+		hunk := DiffHunk{}
+		for _, l := range lines[r.start : r.end+1] {
+			if hunk.OldStart == 0 && l.oldLine > 0 {
+				hunk.OldStart = l.oldLine
+			}
+			if hunk.NewStart == 0 && l.newLine > 0 {
+				hunk.NewStart = l.newLine
+			}
+			dl := DiffLine{Content: l.content, OldLine: l.oldLine, NewLine: l.newLine}
+			switch l.op {
+			case diff.Equal:
+				dl.Type = "context"
+				hunk.OldLines++
+				hunk.NewLines++
+			case diff.Add:
+				dl.Type = "added"
+				hunk.NewLines++
+			case diff.Delete:
+				dl.Type = "deleted"
+				hunk.OldLines++
+			}
+			hunk.Lines = append(hunk.Lines, dl)
+		}
+		hunks = append(hunks, hunk)
+	}
+	return hunks
 }
 
 func (repo *GoGitRepo) AllClocks() (map[string]lamport.Clock, error) {

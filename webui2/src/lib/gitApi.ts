@@ -53,6 +53,30 @@ export interface GitCommitDetail extends GitCommit {
   }>
 }
 
+export interface DiffLine {
+  type: 'context' | 'added' | 'deleted'
+  content: string
+  oldLine: number
+  newLine: number
+}
+
+export interface DiffHunk {
+  oldStart: number
+  oldLines: number
+  newStart: number
+  newLines: number
+  lines: DiffLine[]
+}
+
+export interface FileDiff {
+  path: string
+  oldPath?: string
+  isBinary: boolean
+  isNew: boolean
+  isDelete: boolean
+  hunks: DiffHunk[]
+}
+
 // ── Fetch helpers ─────────────────────────────────────────────────────────────
 
 async function get<T>(path: string, params: Record<string, string> = {}): Promise<T> {
@@ -96,4 +120,8 @@ export function getCommits(
 
 export function getCommit(sha: string): Promise<GitCommitDetail> {
   return get(`/git/commits/${sha}`)
+}
+
+export function getCommitDiff(sha: string, path: string): Promise<FileDiff> {
+  return get(`/git/commits/${sha}/diff`, { path })
 }

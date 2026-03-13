@@ -1,22 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
-import { ArrowLeft, FilePlus, FileMinus, FileEdit, GitCommit } from 'lucide-react'
+import { ArrowLeft, GitCommit } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getCommit } from '@/lib/gitApi'
 import type { GitCommitDetail } from '@/lib/gitApi'
 import { useRepo } from '@/lib/repo'
-
-const statusIcon = {
-  added:    <FilePlus className="size-4 text-green-600 dark:text-green-400" />,
-  deleted:  <FileMinus className="size-4 text-red-500 dark:text-red-400" />,
-  modified: <FileEdit className="size-4 text-yellow-500 dark:text-yellow-400" />,
-  renamed:  <FileEdit className="size-4 text-blue-500 dark:text-blue-400" />,
-}
-
-const statusLabel = {
-  added: 'A', deleted: 'D', modified: 'M', renamed: 'R',
-}
+import { FileDiffView } from '@/components/code/FileDiffView'
 
 // Commit detail page (/:repo/commit/:hash). Shows commit metadata, full message,
 // parent links, and the list of files changed with add/modify/delete/rename status.
@@ -104,7 +94,7 @@ export function CommitPage() {
         </div>
       </div>
 
-      {/* Changed files */}
+      {/* Changed files — each row is collapsible and loads its diff lazily */}
       <div>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
           {commit.files.length} file{commit.files.length !== 1 ? 's' : ''} changed
@@ -114,28 +104,13 @@ export function CommitPage() {
             <p className="px-4 py-4 text-sm text-muted-foreground">No file changes.</p>
           )}
           {commit.files.map((file) => (
-            <div key={file.path} className="flex items-center gap-3 px-4 py-2.5">
-              <span
-                className="w-4 shrink-0 text-center font-mono text-xs font-bold"
-                title={file.status}
-              >
-                {statusIcon[file.status]}
-              </span>
-              <span className="min-w-0 flex-1 font-mono text-sm">
-                {file.status === 'renamed' ? (
-                  <>
-                    <span className="text-muted-foreground line-through">{file.oldPath}</span>
-                    {' → '}
-                    <span>{file.path}</span>
-                  </>
-                ) : (
-                  file.path
-                )}
-              </span>
-              <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-                {statusLabel[file.status]}
-              </span>
-            </div>
+            <FileDiffView
+              key={file.path}
+              sha={commit.hash}
+              path={file.path}
+              oldPath={file.oldPath}
+              status={file.status}
+            />
           ))}
         </div>
       </div>

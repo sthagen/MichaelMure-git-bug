@@ -235,6 +235,38 @@ type RepoBrowse interface {
 	// CommitDetail returns the full metadata for a single commit plus the list
 	// of files it changed relative to its first parent.
 	CommitDetail(hash Hash) (CommitDetail, error)
+
+	// CommitFileDiff returns the structured diff for a single file in a commit
+	// relative to its first parent. path is the current file path (or old path
+	// for deletions).
+	CommitFileDiff(hash Hash, path string) (FileDiff, error)
+}
+
+// DiffLine is a single line in a diff hunk.
+type DiffLine struct {
+	Type    string // "context" | "added" | "deleted"
+	Content string
+	OldLine int // 0 for added lines
+	NewLine int // 0 for deleted lines
+}
+
+// DiffHunk is a contiguous block of changes with surrounding context.
+type DiffHunk struct {
+	OldStart int
+	OldLines int
+	NewStart int
+	NewLines int
+	Lines    []DiffLine
+}
+
+// FileDiff holds the diff for a single file in a commit.
+type FileDiff struct {
+	Path     string
+	OldPath  string // non-empty for renames
+	IsBinary bool
+	IsNew    bool
+	IsDelete bool
+	Hunks    []DiffHunk
 }
 
 // ChangedFile describes a single file changed by a commit.

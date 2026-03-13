@@ -449,6 +449,79 @@ func NewGitCommitHandler(mrc *cache.MultiRepoCache) http.Handler {
 	return &gitCommitHandler{mrc: mrc}
 }
 
+// ── GET /api/repos/{owner}/{repo}/git/commits/{sha}/diff?path= ───────────────
+
+type gitCommitDiffHandler struct{ mrc *cache.MultiRepoCache }
+
+func NewGitCommitDiffHandler(mrc *cache.MultiRepoCache) http.Handler {
+	return &gitCommitDiffHandler{mrc: mrc}
+}
+
+func (h *gitCommitDiffHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	sha := mux.Vars(r)["sha"]
+	filePath := r.URL.Query().Get("path")
+	if filePath == "" {
+		http.Error(w, "missing path", http.StatusBadRequest)
+		return
+	}
+
+	_, br, err := browseRepo(h.mrc, r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fd, err := br.CommitFileDiff(repository.Hash(sha), filePath)
+	if err == repository.ErrNotFound {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	type diffLineResp struct {
+		Type    string `json:"type"`
+		Content string `json:"content"`
+		OldLine int    `json:"oldLine,omitempty"`
+		NewLine int    `json:"newLine,omitempty"`
+	}
+	type diffHunkResp struct {
+		OldStart int            `json:"oldStart"`
+		OldLines int            `json:"oldLines"`
+		NewStart int            `json:"newStart"`
+		NewLines int            `json:"newLines"`
+		Lines    []diffLineResp `json:"lines"`
+	}
+	type fileDiffResp struct {
+		Path     string         `json:"path"`
+		OldPath  string         `json:"oldPath,omitempty"`
+		IsBinary bool           `json:"isBinary"`
+		IsNew    bool           `json:"isNew"`
+		IsDelete bool           `json:"isDelete"`
+		Hunks    []diffHunkResp `json:"hunks"`
+	}
+
+	hunks := make([]diffHunkResp, len(fd.Hunks))
+	for i, h := range fd.Hunks {
+		lines := make([]diffLineResp, len(h.Lines))
+		for j, l := range h.Lines {
+			lines[j] = diffLineResp{Type: l.Type, Content: l.Content, OldLine: l.OldLine, NewLine: l.NewLine}
+		}
+		hunks[i] = diffHunkResp{OldStart: h.OldStart, OldLines: h.OldLines, NewStart: h.NewStart, NewLines: h.NewLines, Lines: lines}
+	}
+
+	writeJSON(w, fileDiffResp{
+		Path:     fd.Path,
+		OldPath:  fd.OldPath,
+		IsBinary: fd.IsBinary,
+		IsNew:    fd.IsNew,
+		IsDelete: fd.IsDelete,
+		Hunks:    hunks,
+	})
+}
+
 type changedFileResponse struct {
 	Path    string `json:"path"`
 	OldPath string `json:"oldPath,omitempty"`
