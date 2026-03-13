@@ -1,4 +1,4 @@
-// Identity selection page (/_/auth/select-identity).
+// Identity selection page (/auth/select-identity).
 //
 // Reached after a successful OAuth login when no existing git-bug identity
 // could be matched automatically (via provider metadata set by the bridge).

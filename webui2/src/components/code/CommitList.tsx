@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getCommits } from '@/lib/gitApi'
 import type { GitCommit as GitCommitType } from '@/lib/gitApi'
+import { useRepo } from '@/lib/repo'
 
 interface CommitListProps {
   ref_: string
@@ -17,6 +18,7 @@ const PAGE_SIZE = 30
 // Paginated commit history grouped by calendar date. Each row links to the
 // commit detail page. Used in CodePage's "History" view.
 export function CommitList({ ref_, path }: CommitListProps) {
+  const repo = useRepo()
   const [commits, setCommits] = useState<GitCommitType[]>([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -72,7 +74,7 @@ export function CommitList({ ref_, path }: CommitListProps) {
           </h3>
           <div className="overflow-hidden rounded-md border border-border divide-y divide-border">
             {group.map((commit) => (
-              <CommitRow key={commit.hash} commit={commit} />
+              <CommitRow key={commit.hash} commit={commit} repo={repo} />
             ))}
           </div>
         </div>
@@ -89,14 +91,15 @@ export function CommitList({ ref_, path }: CommitListProps) {
   )
 }
 
-function CommitRow({ commit }: { commit: GitCommitType }) {
+function CommitRow({ commit, repo }: { commit: GitCommitType; repo: string | null }) {
+  const commitPath = repo ? `/${repo}/commit/${commit.hash}` : `/commit/${commit.hash}`
   return (
     <div className="flex items-center gap-3 bg-background px-4 py-3 hover:bg-muted/30">
       <GitCommit className="size-4 shrink-0 text-muted-foreground" />
 
       <div className="min-w-0 flex-1">
         <Link
-          to={`/commit/${commit.hash}`}
+          to={commitPath}
           className="block truncate font-medium text-foreground hover:text-primary hover:underline"
         >
           {commit.message}
@@ -108,7 +111,7 @@ function CommitRow({ commit }: { commit: GitCommitType }) {
       </div>
 
       <Link
-        to={`/commit/${commit.hash}`}
+        to={commitPath}
         className="shrink-0 font-mono text-xs text-muted-foreground hover:text-foreground hover:underline"
         title={commit.hash}
       >

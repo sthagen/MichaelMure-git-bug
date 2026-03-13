@@ -29,7 +29,7 @@ import (
 	"github.com/git-bug/git-bug/commands/execenv"
 	"github.com/git-bug/git-bug/entities/identity"
 	"github.com/git-bug/git-bug/repository"
-	"github.com/git-bug/git-bug/webui"
+	"github.com/git-bug/git-bug/webui2"
 )
 
 const webUIOpenConfigKey = "git-bug.webui.open"
@@ -196,7 +196,7 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 	apiRepos.Path("/file/{hash}").Methods("GET").Handler(httpapi.NewGitFileHandler(mrc))
 	apiRepos.Path("/upload").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
 
-	router.PathPrefix("/").Handler(webui.NewHandler())
+	router.PathPrefix("/").Handler(webui2.NewHandler())
 
 	srv := &http.Server{
 		Addr:    addr,
@@ -222,11 +222,6 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 		}
 
 		// Teardown
-		err := graphqlHandler.Close()
-		if err != nil {
-			env.Out.Println(err)
-		}
-
 		err = mrc.Close()
 		if err != nil {
 			env.Out.Println(err)

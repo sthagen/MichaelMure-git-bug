@@ -386,7 +386,6 @@ type ComplexityRoot struct {
 		Bug           func(childComplexity int, prefix string) int
 		Identity      func(childComplexity int, prefix string) int
 		Name          func(childComplexity int) int
-		Slug          func(childComplexity int) int
 		UserIdentity  func(childComplexity int) int
 		ValidLabels   func(childComplexity int, after *string, before *string, first *int, last *int) int
 	}
@@ -1864,13 +1863,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Repository.Name(childComplexity), true
 
-	case "Repository.slug":
-		if e.complexity.Repository.Slug == nil {
-			break
-		}
-
-		return e.complexity.Repository.Slug(childComplexity), true
-
 	case "Repository.userIdentity":
 		if e.complexity.Repository.UserIdentity == nil {
 			break
@@ -2733,12 +2725,8 @@ type OperationEdge {
 }
 `, BuiltIn: false},
 	{Name: "../schema/repository.graphql", Input: `type Repository {
-    """The name of the repository"""
+    """The name of the repository. Null for the default (unnamed) repository."""
     name: String
-
-    """URL-friendly slug for this repository. Named repos use their name;
-    the default (unnamed) repo derives the slug from the directory basename."""
-    slug: String!
 
     """All the bugs"""
     allBugs(

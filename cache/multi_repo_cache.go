@@ -62,16 +62,13 @@ func (c *MultiRepoCache) DefaultRepo() (*RepoCache, error) {
 
 // ResolveRepo retrieve a repository by name or slug
 func (c *MultiRepoCache) ResolveRepo(ref string) (*RepoCache, error) {
-	// Direct name lookup first
+	// "_" is the conventional placeholder for the default repository,
+	// consistent with the REST API path convention /api/repos/_/_/...
+	if ref == "_" {
+		return c.DefaultRepo()
+	}
 	if r, ok := c.repos[ref]; ok {
 		return r, nil
-	}
-	// Slug lookup fallback — allows using the human-readable slug (derived
-	// from the path basename) instead of the internal cache name.
-	for _, r := range c.repos {
-		if r.Slug() == ref {
-			return r, nil
-		}
 	}
 	return nil, fmt.Errorf("unknown repo %q", ref)
 }

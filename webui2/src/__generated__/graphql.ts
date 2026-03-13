@@ -761,13 +761,8 @@ export type Repository = {
   allIdentities: IdentityConnection;
   bug?: Maybe<Bug>;
   identity?: Maybe<Identity>;
-  /** The name of the repository */
+  /** The name of the repository. Null for the default (unnamed) repository. */
   name?: Maybe<Scalars['String']['output']>;
-  /**
-   * URL-friendly slug for this repository. Named repos use their name;
-   * the default (unnamed) repo derives the slug from the directory basename.
-   */
-  slug: Scalars['String']['output'];
   /** The identity created or selected by the user as its own */
   userIdentity?: Maybe<Identity>;
   /** List of valid labels. */
@@ -960,7 +955,7 @@ export type BugSetTitleMutation = { __typename?: 'Mutation', bugSetTitle: { __ty
 export type RepositoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type RepositoriesQuery = { __typename?: 'Query', repositories: { __typename?: 'RepositoryConnection', totalCount: number, nodes: Array<{ __typename?: 'Repository', name?: string | null, slug: string }> } };
+export type RepositoriesQuery = { __typename?: 'Query', repositories: { __typename?: 'RepositoryConnection', totalCount: number, nodes: Array<{ __typename?: 'Repository', name?: string | null }> } };
 
 export type ServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1591,7 +1586,6 @@ export const RepositoriesDocument = gql`
   repositories {
     nodes {
       name
-      slug
     }
     totalCount
   }

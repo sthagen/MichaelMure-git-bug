@@ -20,12 +20,6 @@ import (
 	"github.com/git-bug/git-bug/cache"
 )
 
-// Handler is the root GraphQL http handler
-type Handler struct {
-	http.Handler
-	io.Closer
-}
-
 // ServerConfig carries server-level configuration that is passed down to
 // GraphQL resolvers. It is constructed once at startup and does not change.
 type ServerConfig struct {
@@ -35,7 +29,7 @@ type ServerConfig struct {
 	OAuthProviders []string
 }
 
-func NewHandler(mrc *cache.MultiRepoCache, cfg ServerConfig, errorOut io.Writer) Handler {
+func NewHandler(mrc *cache.MultiRepoCache, cfg ServerConfig, errorOut io.Writer) http.Handler {
 	rootResolver := resolvers.NewRootResolver(mrc, cfg.AuthMode, cfg.OAuthProviders)
 	config := graph.Config{Resolvers: rootResolver}
 
@@ -63,8 +57,5 @@ func NewHandler(mrc *cache.MultiRepoCache, cfg ServerConfig, errorOut io.Writer)
 		h.Use(&Tracer{Out: errorOut})
 	}
 
-	return Handler{
-		Handler: h,
-		Closer:  rootResolver,
-	}
+	return h
 }

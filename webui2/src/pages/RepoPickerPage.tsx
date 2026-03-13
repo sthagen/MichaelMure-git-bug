@@ -1,14 +1,30 @@
-// Repository picker page (/). Shows all registered repos and lets the user
-// navigate into one. When there is only one repo, the list still renders
-// (no auto-redirect) so the user always knows which repo they're entering.
+// Repository picker page (/). Auto-redirects when there is exactly one repo.
+// Shows a list when multiple repos are registered.
 
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { GitFork, FolderOpen, AlertCircle } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRepositoriesQuery } from '@/__generated__/graphql'
 
+function repoSlug(name: string | null | undefined): string {
+  return name ?? '_'
+}
+
+function repoLabel(name: string | null | undefined): string {
+  return name ?? 'default'
+}
+
 export function RepoPickerPage() {
   const { data, loading, error } = useRepositoriesQuery()
+  const navigate = useNavigate()
+
+  // Auto-redirect when there is exactly one repo — no need to pick.
+  useEffect(() => {
+    if (data?.repositories.nodes.length === 1) {
+      navigate('/' + repoSlug(data.repositories.nodes[0].name), { replace: true })
+    }
+  }, [data, navigate])
 
   return (
     <div className="mx-auto max-w-lg py-12">
@@ -24,7 +40,7 @@ export function RepoPickerPage() {
         </div>
       )}
 
-      {loading && !data && (
+      {(loading && !data) && (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-16 w-full rounded-md" />
@@ -35,12 +51,12 @@ export function RepoPickerPage() {
       <div className="divide-y divide-border rounded-md border border-border">
         {data?.repositories.nodes.map((repo) => (
           <Link
-            key={repo.slug}
-            to={`/${repo.slug}`}
+            key={repoSlug(repo.name)}
+            to={`/${repoSlug(repo.name)}`}
             className="flex items-center gap-3 px-4 py-4 hover:bg-muted/50 transition-colors"
           >
             <FolderOpen className="size-5 shrink-0 text-muted-foreground" />
-            <p className="font-medium text-foreground">{repo.slug}</p>
+            <p className="font-medium text-foreground">{repoLabel(repo.name)}</p>
           </Link>
         ))}
 

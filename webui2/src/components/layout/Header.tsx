@@ -39,8 +39,8 @@ export function Header() {
   const repoMatch = useMatch({ path: '/:repo/*', end: false })
   const repo = repoMatch?.params.repo ?? null
 
-  // Don't match /_/auth/* as a repo slug.
-  const effectiveRepo = repo === '_' ? null : repo
+  // Don't show repo nav on the /auth/* pages.
+  const effectiveRepo = repo === 'auth' ? null : repo
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">

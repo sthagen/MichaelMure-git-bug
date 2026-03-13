@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"path/filepath"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -12,28 +11,18 @@ import (
 	"github.com/git-bug/git-bug/util/multierr"
 )
 
+// Name returns the registered name of this repository, or empty string for
+// the default (unnamed) repository.
 func (c *RepoCache) Name() string {
+	if c.name == defaultRepoName {
+		return ""
+	}
 	return c.name
 }
 
 // GetPath returns the root directory path of the underlying git repository.
 func (c *RepoCache) GetPath() string {
 	return c.repo.GetPath()
-}
-
-// Slug returns a URL-friendly identifier for this repository.
-// Named repos use their registered name. The default ("__default") repo
-// derives its slug from the last component of the filesystem path so
-// URLs look like /git-bug/issues rather than /__default/issues.
-func (c *RepoCache) Slug() string {
-	if c.name != defaultRepoName {
-		return c.name
-	}
-	path := c.repo.GetPath()
-	if path == "" {
-		return c.name
-	}
-	return filepath.Base(path)
 }
 
 // LocalConfig give access to the repository scoped configuration

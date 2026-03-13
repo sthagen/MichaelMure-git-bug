@@ -14,7 +14,7 @@
 // The flow for a first-time user:
 //
 //	browser → /auth/login → provider → /auth/callback
-//	       → store pending → /_/auth/select-identity
+//	       → store pending → /auth/select-identity
 //	       → POST /auth/adopt → set cookie → /
 package http
 
@@ -212,7 +212,7 @@ func (h *AuthHandler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
 	})
-	http.Redirect(w, r, "/_/auth/select-identity", http.StatusFound)
+	http.Redirect(w, r, "/auth/select-identity", http.StatusFound)
 }
 
 // HandleUser returns the current authenticated user as JSON.
@@ -284,7 +284,7 @@ func (h *AuthHandler) HandleIdentities(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			identities = append(identities, identityJSON{
-				RepoSlug:    repo.Slug(),
+				RepoSlug:    repo.Name(),
 				Id:          i.Id().String(),
 				HumanId:     i.Id().Human(),
 				DisplayName: i.DisplayName(),

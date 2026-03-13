@@ -2,6 +2,7 @@ import { Folder, File } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useRepo } from '@/lib/repo'
 import type { GitTreeEntry } from '@/lib/gitApi'
 
 interface FileTreeProps {
@@ -57,6 +58,7 @@ function FileTreeRow({
   onNavigate: (entry: GitTreeEntry) => void
 }) {
   const isDir = entry.type === 'tree'
+  const repo = useRepo()
 
   return (
     <tr
@@ -78,7 +80,7 @@ function FileTreeRow({
       <td className="hidden max-w-xs truncate px-3 py-2 text-muted-foreground md:table-cell">
         {entry.lastCommit && (
           <Link
-            to={`/commit/${entry.lastCommit.hash}`}
+            to={repo ? `/${repo}/commit/${entry.lastCommit.hash}` : `/commit/${entry.lastCommit.hash}`}
             className="hover:text-foreground hover:underline"
             onClick={(e) => e.stopPropagation()}
           >

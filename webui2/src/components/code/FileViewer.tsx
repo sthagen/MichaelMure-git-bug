@@ -1,5 +1,4 @@
-import { useMemo } from 'react'
-import hljs from 'highlight.js'
+import { useState, useEffect } from 'react'
 import { Copy, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -13,21 +12,33 @@ interface FileViewerProps {
 }
 
 // Syntax-highlighted file viewer with line numbers, copy, and download buttons.
-// Uses highlight.js for highlighting; binary files show a placeholder.
+// highlight.js is loaded lazily (dynamic import) so it doesn't bloat the initial bundle.
 export function FileViewer({ blob, ref, loading }: FileViewerProps) {
-  const { html, lineCount } = useMemo(() => {
-    if (blob.isBinary || !blob.content) return { html: '', lineCount: 0 }
-    const ext = blob.path.split('.').pop() ?? ''
-    const result = hljs.getLanguage(ext)
-      ? hljs.highlight(blob.content, { language: ext })
-      : hljs.highlightAuto(blob.content)
-    return {
-      html: result.value,
-      lineCount: blob.content.split('\n').length,
+  const [highlighted, setHighlighted] = useState<{ html: string; lineCount: number } | null>(null)
+
+  useEffect(() => {
+    if (blob.isBinary || !blob.content) {
+      setHighlighted({ html: '', lineCount: 0 })
+      return
     }
+    setHighlighted(null)
+    let cancelled = false
+    import('highlight.js').then(({ default: hljs }) => {
+      if (cancelled) return
+      const ext = blob.path.split('.').pop() ?? ''
+      const result = hljs.getLanguage(ext)
+        ? hljs.highlight(blob.content, { language: ext })
+        : hljs.highlightAuto(blob.content)
+      setHighlighted({
+        html: result.value,
+        lineCount: blob.content.split('\n').length,
+      })
+    })
+    return () => { cancelled = true }
   }, [blob])
 
-  if (loading) return <FileViewerSkeleton />
+  if (loading || highlighted === null) return <FileViewerSkeleton />
+  const { html, lineCount } = highlighted
 
   function copyToClipboard() {
     navigator.clipboard.writeText(blob.content)

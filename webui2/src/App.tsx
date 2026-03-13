@@ -9,28 +9,21 @@ import { CodePage } from '@/pages/CodePage'
 import { UserProfilePage } from '@/pages/UserProfilePage'
 import { CommitPage } from '@/pages/CommitPage'
 import { IdentitySelectPage } from '@/pages/IdentitySelectPage'
+import { ErrorPage } from '@/pages/ErrorPage'
 
 // Route structure:
-//   /                          → repo picker
+//   /                          → repo picker (or redirect if single repo)
 //   /:repo                     → code browser (repo home)
 //   /:repo/issues              → issue list
-//   /_/auth/select-identity    → OAuth identity adoption (first-time login)
-//
-// The /_/auth/* prefix uses "_" as a reserved namespace so it never collides
-// with a real repo slug.
+//   /auth/select-identity      → OAuth identity adoption (first-time login)
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Shell />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <RepoPickerPage /> },
-      // Reserved namespace for app-level pages that are not repo-scoped.
-      {
-        path: '_',
-        children: [
-          { path: 'auth/select-identity', element: <IdentitySelectPage /> },
-        ],
-      },
+      { path: 'auth/select-identity', element: <IdentitySelectPage /> },
       {
         path: ':repo',
         element: <RepoShell />,
