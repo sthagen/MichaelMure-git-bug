@@ -385,6 +385,7 @@ type ComplexityRoot struct {
 		AllIdentities func(childComplexity int, after *string, before *string, first *int, last *int) int
 		Bug           func(childComplexity int, prefix string) int
 		Identity      func(childComplexity int, prefix string) int
+		LocalName     func(childComplexity int) int
 		Name          func(childComplexity int) int
 		UserIdentity  func(childComplexity int) int
 		ValidLabels   func(childComplexity int, after *string, before *string, first *int, last *int) int
@@ -1856,6 +1857,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Repository.Identity(childComplexity, args["prefix"].(string)), true
 
+	case "Repository.localName":
+		if e.complexity.Repository.LocalName == nil {
+			break
+		}
+
+		return e.complexity.Repository.LocalName(childComplexity), true
+
 	case "Repository.name":
 		if e.complexity.Repository.Name == nil {
 			break
@@ -2727,6 +2735,9 @@ type OperationEdge {
 	{Name: "../schema/repository.graphql", Input: `type Repository {
     """The name of the repository. Null for the default (unnamed) repository."""
     name: String
+
+    """The local directory name of the repository (basename only, no path)."""
+    localName: String!
 
     """All the bugs"""
     allBugs(

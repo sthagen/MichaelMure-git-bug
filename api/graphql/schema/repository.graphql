@@ -2,6 +2,9 @@ type Repository {
     """The name of the repository. Null for the default (unnamed) repository."""
     name: String
 
+    """The local directory name of the repository (basename only, no path)."""
+    localName: String!
+
     """All the bugs"""
     allBugs(
         """Returns the elements in the list that come after the specified cursor."""

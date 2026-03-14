@@ -197,6 +197,12 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 	apiRepos.Path("/file/{hash}").Methods("GET").Handler(httpapi.NewGitFileHandler(mrc))
 	apiRepos.Path("/upload").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
 
+	// Git smart HTTP — clone, fetch, push.
+	gitSrv := httpapi.NewGitServeHandler(mrc, opts.readOnly)
+	apiRepos.Path("/info/refs").Methods("GET").HandlerFunc(gitSrv.ServeInfoRefs)
+	apiRepos.Path("/git-upload-pack").Methods("POST").HandlerFunc(gitSrv.ServeUploadPack)
+	apiRepos.Path("/git-receive-pack").Methods("POST").HandlerFunc(gitSrv.ServeReceivePack)
+
 	router.PathPrefix("/").Handler(webui2.NewHandler())
 
 	srv := &http.Server{

@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -246,4 +247,23 @@ func (c *RepoCache) GetUserIdentityExcerpt() (*IdentityExcerpt, error) {
 
 func (c *RepoCache) IsUserIdentitySet() (bool, error) {
 	return identity.IsUserIdentitySet(c.repo)
+}
+
+// SyncLocalRefs updates the cache for each ref that was updated externally
+// (e.g. after a git push). Each ref is matched against the subcaches by
+// namespace and the corresponding entity is re-read from git.
+func (c *RepoCache) SyncLocalRefs(refs []string) error {
+	for _, ref := range refs {
+		id := entity.RefToId(ref)
+		for _, subcache := range c.subcaches {
+			ns := subcache.GetNamespace()
+			if strings.Contains(ref, "/"+ns+"/") {
+				if err := subcache.SyncLocalRef(id); err != nil {
+					return err
+				}
+				break
+			}
+		}
+	}
+	return nil
 }

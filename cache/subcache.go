@@ -613,6 +613,9 @@ func (sc *SubCache[EntityT, ExcerptT, CacheT]) MergeAll(remote string) <-chan en
 				sc.cached[result.Id] = cached
 				sc.mu.Unlock()
 				sc.notifyObservers(EntityEventUpdated, result.Id)
+
+			default:
+				// nothing
 			}
 		}
 
@@ -675,6 +678,50 @@ func (sc *SubCache[EntityT, ExcerptT, CacheT]) updateExcerptAndIndex(id entity.I
 	}
 
 	return sc.write()
+}
+
+// SyncLocalRef re-reads the entity with the given id from git and updates the
+// in-memory cache, search index, and on-disk excerpt cache. It is used to
+// refresh an entity after its git ref was updated externally (e.g. by a push).
+func (sc *SubCache[EntityT, ExcerptT, CacheT]) SyncLocalRef(id entity.Id) error {
+	sc.mu.Lock()
+	_, existed := sc.excerpts[id]
+	delete(sc.cached, id)
+	sc.lru.Remove(id)
+	sc.mu.Unlock()
+
+	e, err := sc.actions.ReadWithResolver(sc.repo, sc.resolvers(), id)
+	if err != nil {
+		return err
+	}
+
+	cached := sc.makeCached(e, sc.entityUpdated)
+
+	sc.mu.Lock()
+	sc.excerpts[id] = sc.makeExcerpt(cached)
+	sc.cached[id] = cached
+	sc.lru.Add(id)
+	sc.mu.Unlock()
+
+	sc.evictIfNeeded()
+
+	index, err := sc.repo.GetIndex(sc.namespace)
+	if err != nil {
+		return err
+	}
+	if err = index.IndexOne(id.String(), sc.makeIndexData(cached)); err != nil {
+		return err
+	}
+	if err = sc.write(); err != nil {
+		return err
+	}
+
+	if existed {
+		sc.notifyObservers(EntityEventUpdated, id)
+	} else {
+		sc.notifyObservers(EntityEventCreated, id)
+	}
+	return nil
 }
 
 // evictIfNeeded will evict an entity from the cache if needed

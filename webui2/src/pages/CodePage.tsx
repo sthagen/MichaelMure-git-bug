@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { gql, useQuery } from '@apollo/client'
-import { AlertCircle, GitCommit } from 'lucide-react'
+import { AlertCircle, Check, Copy, GitCommit } from 'lucide-react'
 import { CodeBreadcrumb } from '@/components/code/CodeBreadcrumb'
 import { RefSelector } from '@/components/code/RefSelector'
 import { FileTree } from '@/components/code/FileTree'
@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { getRefs, getTree, getBlob } from '@/lib/gitApi'
 import type { GitRef, GitTreeEntry, GitBlob } from '@/lib/gitApi'
 import { useRepo } from '@/lib/repo'
+import { Markdown } from '@/components/content/Markdown'
 
 const REPO_NAME_QUERY = gql`
   query RepoName($ref: String) {
@@ -35,6 +36,7 @@ export function CodePage() {
 
   const [entries, setEntries] = useState<GitTreeEntry[]>([])
   const [blob, setBlob] = useState<GitBlob | null>(null)
+  const [readme, setReadme] = useState<string | null>(null)
   const [contentLoading, setContentLoading] = useState(false)
 
   const currentRef = searchParams.get('ref') ?? ''
@@ -67,11 +69,26 @@ export function CodePage() {
     setContentLoading(true)
     setEntries([])
     setBlob(null)
+    setReadme(null)
 
     const load =
       viewMode === 'blob'
         ? getBlob(currentRef, currentPath).then((b) => setBlob(b))
-        : getTree(currentRef, currentPath).then((e) => setEntries(e))
+        : getTree(currentRef, currentPath).then((e) => {
+            setEntries(e)
+            const readmeEntry = e.find((entry) =>
+              entry.type === 'blob' &&
+              /^readme(\.md|\.txt|\.rst)?$/i.test(entry.name),
+            )
+            if (readmeEntry) {
+              const readmePath = currentPath
+                ? `${currentPath}/${readmeEntry.name}`
+                : readmeEntry.name
+              getBlob(currentRef, readmePath)
+                .then((b) => !b.isBinary && setReadme(b.content))
+                .catch(() => {/* best-effort */})
+            }
+          })
 
     load
       .catch((e: Error) => setError(e.message))
@@ -107,7 +124,17 @@ export function CodePage() {
   }
 
   const { data: repoData } = useQuery(REPO_NAME_QUERY, { variables: { ref: repo } })
-  const repoName = repoData?.repository?.name ?? repo ?? 'git-bug'
+  const repoName = repoData?.repository?.name ?? repo ?? 'default-repo'
+
+  const cloneUrl = `${window.location.origin}/api/repos/_/_`
+  const cloneCmd = `git clone ${cloneUrl} ${repoName}`
+  const [copied, setCopied] = useState(false)
+  function handleCopy() {
+    navigator.clipboard.writeText(cloneCmd).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    })
+  }
 
   if (error) {
     return (
@@ -160,17 +187,38 @@ export function CodePage() {
         </div>
       </div>
 
+      {/* Clone command */}
+      <div className="flex items-center gap-2 rounded-md border bg-muted/40 px-3 py-1.5">
+        <span className="text-xs text-muted-foreground shrink-0">clone</span>
+        <code className="flex-1 truncate text-xs">{cloneCmd}</code>
+        <Button variant="ghost" size="icon" className="size-6 shrink-0" onClick={handleCopy}>
+          {copied ? <Check className="size-3 text-green-600" /> : <Copy className="size-3" />}
+        </Button>
+      </div>
+
       {/* Content */}
       {viewMode === 'commits' ? (
         <CommitList ref_={currentRef} path={currentPath || undefined} />
       ) : viewMode === 'tree' || !blob ? (
-        <FileTree
-          entries={entries}
-          path={currentPath}
-          loading={contentLoading}
-          onNavigate={handleEntryClick}
-          onNavigateUp={handleNavigateUp}
-        />
+        <>
+          <FileTree
+            entries={entries}
+            path={currentPath}
+            loading={contentLoading}
+            onNavigate={handleEntryClick}
+            onNavigateUp={handleNavigateUp}
+          />
+          {readme && (
+            <div className="rounded-md border">
+              <div className="border-b px-4 py-2 text-xs font-medium text-muted-foreground">
+                README
+              </div>
+              <div className="px-6 py-4">
+                <Markdown content={readme} />
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <FileViewer blob={blob} ref={currentRef} loading={contentLoading} />
       )}

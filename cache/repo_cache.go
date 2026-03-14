@@ -41,6 +41,7 @@ type cacheMgmt interface {
 	RegisterObserver(repoName string, observer Observer)
 	UnregisterObserver(observer Observer)
 	Close() error
+	SyncLocalRef(id entity.Id) error
 }
 
 // RepoCache is a cache for a Repository. This cache has multiple functions:
