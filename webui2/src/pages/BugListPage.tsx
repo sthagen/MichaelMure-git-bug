@@ -31,20 +31,27 @@ export function BugListPage() {
   const [cursors, setCursors] = useState<(string | undefined)[]>([undefined])
   const page = cursors.length - 1  // 0-indexed current page
 
-  const query = buildQueryString(statusFilter, selectedLabels, selectedAuthorQuery, freeText)
+  // Build separate query strings: two for the always-visible counts (open/closed),
+  // one for the paginated list. The count queries share all filters except status.
+  const baseQuery = buildBaseQuery(selectedLabels, selectedAuthorQuery, freeText)
+  const openQuery = `status:open ${baseQuery}`.trim()
+  const closedQuery = `status:closed ${baseQuery}`.trim()
+  const listQuery = buildQueryString(statusFilter, selectedLabels, selectedAuthorQuery, freeText)
 
   const { data, loading, error } = useBugListQuery({
-    variables: { ref: repo, query, first: PAGE_SIZE, after: cursors[page] },
+    variables: { ref: repo, openQuery, closedQuery, listQuery, first: PAGE_SIZE, after: cursors[page] },
   })
 
-  const bugs = data?.repository?.allBugs
+  const openCount = data?.repository?.openCount.totalCount ?? 0
+  const closedCount = data?.repository?.closedCount.totalCount ?? 0
+  const bugs = data?.repository?.bugs
   const totalCount = bugs?.totalCount ?? 0
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
   const hasNext = bugs?.pageInfo.hasNextPage ?? false
   const hasPrev = page > 0
 
-  // Reset to page 1 whenever the query changes.
-  useEffect(() => { setCursors([undefined]) }, [query])
+  // Reset to page 1 whenever the list query changes.
+  useEffect(() => { setCursors([undefined]) }, [listQuery])
 
   // Apply all filters at once, keeping draft in sync with the structured state.
   function applyFilters(
@@ -92,7 +99,7 @@ export function BugListPage() {
           onSubmit={handleSearch}
           placeholder="status:open author:… label:…"
         />
-        <Button type="submit" variant="outline">
+        <Button type="submit">
           Search
         </Button>
       </form>
@@ -113,11 +120,9 @@ export function BugListPage() {
             >
               <CircleDot className={cn('size-4', statusFilter === 'open' && 'text-green-600 dark:text-green-400')} />
               Open
-              {bugs && statusFilter === 'open' && (
-                <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none">
-                  {bugs.totalCount}
-                </span>
-              )}
+              <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none tabular-nums">
+                {openCount}
+              </span>
             </button>
 
             <button
@@ -131,11 +136,9 @@ export function BugListPage() {
             >
               <CircleCheck className={cn('size-4', statusFilter === 'closed' && 'text-purple-600 dark:text-purple-400')} />
               Closed
-              {bugs && statusFilter === 'closed' && (
-                <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none">
-                  {bugs.totalCount}
-                </span>
-              )}
+              <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none tabular-nums">
+                {closedCount}
+              </span>
             </button>
           </div>
 
@@ -145,7 +148,7 @@ export function BugListPage() {
               onLabelsChange={(labels) => applyFilters(statusFilter, labels, selectedAuthorId, selectedAuthorQuery, freeText)}
               selectedAuthorId={selectedAuthorId}
               onAuthorChange={(id, qv) => applyFilters(statusFilter, selectedLabels, id, qv, freeText)}
-              recentAuthorIds={bugs?.nodes.map((b) => b.author.humanId) ?? []}
+              recentAuthorIds={bugs?.nodes?.map((b) => b.author.humanId) ?? []}
             />
           </div>
         </div>
@@ -217,6 +220,20 @@ export function BugListPage() {
   )
 }
 
+// buildBaseQuery returns the filter parts (labels, author, freeText) without
+// the status prefix, so it can be combined with "status:open" / "status:closed".
+function buildBaseQuery(labels: string[], author: string | null, freeText: string): string {
+  const parts: string[] = []
+  for (const label of labels) {
+    parts.push(label.includes(' ') ? `label:"${label}"` : `label:${label}`)
+  }
+  if (author) {
+    parts.push(author.includes(' ') ? `author:"${author}"` : `author:${author}`)
+  }
+  if (freeText.trim()) parts.push(freeText.trim())
+  return parts.join(' ')
+}
+
 // Build the structured query string sent to the GraphQL allBugs(query:) argument.
 // Multi-word label/author values are wrapped in quotes so the backend parser
 // treats them as a single token (e.g. label:"my label" vs label:my label).
@@ -226,15 +243,7 @@ function buildQueryString(
   author: string | null,
   freeText: string,
 ): string {
-  const parts = [`status:${status}`]
-  for (const label of labels) {
-    parts.push(label.includes(' ') ? `label:"${label}"` : `label:${label}`)
-  }
-  if (author) {
-    parts.push(author.includes(' ') ? `author:"${author}"` : `author:${author}`)
-  }
-  if (freeText.trim()) parts.push(freeText.trim())
-  return parts.join(' ')
+  return `status:${status} ${buildBaseQuery(labels, author, freeText)}`.trim()
 }
 
 // Tokenize a query string, keeping quoted spans (e.g. author:"René Descartes")

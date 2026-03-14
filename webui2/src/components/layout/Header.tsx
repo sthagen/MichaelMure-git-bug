@@ -3,7 +3,7 @@
 //   - Root: shows logo only, no Code/Issues links
 //   - Repo: shows Code + Issues nav links scoped to the current repo slug
 //
-// In oauth mode, shows a "Sign in" button when logged out and a sign-out
+// In external mode, shows a "Sign in" button when logged out and a sign-out
 // action when logged in.
 
 import { Link, useMatch, NavLink } from 'react-router-dom'
@@ -30,7 +30,7 @@ function SignOutButton() {
 }
 
 export function Header() {
-  const { user, mode, oauthProviders } = useAuth()
+  const { user, mode, loginProviders } = useAuth()
   const { theme, toggle } = useTheme()
 
   // Detect if we're inside a /:repo route and grab the slug.
@@ -89,19 +89,19 @@ export function Header() {
             {theme === 'light' ? <Moon className="size-4" /> : <Sun className="size-4" />}
           </Button>
 
-          {/* OAuth mode: show sign-in buttons when logged out */}
-          {mode === 'oauth' && !user && oauthProviders.map((provider) => (
-            <Button key={provider} asChild size="sm" variant="outline">
-              <a href={`/auth/login?provider=${provider}`}>
+          {/* External mode: show sign-in buttons when logged out */}
+          {mode === 'external' && !user && loginProviders.map((p) => (
+            <Button key={p} asChild size="sm">
+              <a href={`/auth/login?provider=${p}`}>
                 <LogIn className="size-4" />
-                Sign in with {providerLabel(provider)}
+                Sign in with {providerLabel(p)}
               </a>
             </Button>
           ))}
 
           {user && effectiveRepo && (
             <>
-              <Button asChild size="sm" variant="outline">
+              <Button asChild size="sm">
                 <Link to={`/${effectiveRepo}/issues/new`}>
                   <Plus className="size-4" />
                   New issue
@@ -118,8 +118,8 @@ export function Header() {
             </>
           )}
 
-          {/* Sign out only shown in oauth mode when logged in */}
-          {mode === 'oauth' && user && <SignOutButton />}
+          {/* Sign out only shown in external mode when logged in */}
+          {mode === 'external' && user && <SignOutButton />}
         </div>
       </div>
     </header>

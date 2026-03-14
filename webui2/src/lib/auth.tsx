@@ -5,8 +5,8 @@
 //   local    Single-user mode. The identity is taken from git config at
 //            server startup. No login UI is needed.
 //
-//   oauth    Multi-user mode. Users log in via an OAuth provider. The
-//            current user is fetched from GET /auth/user and can be null
+//   external Multi-user mode. Users log in via an OAuth or OIDC provider.
+//            The current user is fetched from GET /auth/user and can be null
 //            (not logged in) even while the server is running.
 //
 //   readonly No writes allowed. No identity is ever returned.
@@ -30,22 +30,22 @@ export interface AuthUser {
 }
 
 // 'local'    — single-user mode, identity from git config
-// 'oauth'    — multi-user mode, identity from OAuth session
+// 'external' — multi-user mode, identity from OAuth/OIDC session
 // 'readonly' — no identity, write operations disabled
-export type AuthMode = 'local' | 'oauth' | 'readonly'
+export type AuthMode = 'local' | 'external' | 'readonly'
 
 export interface AuthContextValue {
   user: AuthUser | null
   mode: AuthMode
-  // List of enabled OAuth provider names, e.g. ['github']. Only set in oauth mode.
-  oauthProviders: string[]
+  // List of enabled login provider names, e.g. ['github']. Only set in external mode.
+  loginProviders: string[]
   loading: boolean
 }
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
   mode: 'readonly',
-  oauthProviders: [],
+  loginProviders: [],
   loading: true,
 })
 
@@ -69,32 +69,32 @@ const USER_IDENTITY_QUERY = gql`
 
 function LocalAuthProvider({
   children,
-  oauthProviders,
+  loginProviders,
 }: {
   children: ReactNode
-  oauthProviders: string[]
+  loginProviders: string[]
 }) {
   const { data, loading } = useQuery(USER_IDENTITY_QUERY)
   const user: AuthUser | null = data?.repository?.userIdentity ?? null
   const mode: AuthMode = loading ? 'local' : user ? 'local' : 'readonly'
   return (
-    <AuthContext.Provider value={{ user, mode, oauthProviders, loading }}>
+    <AuthContext.Provider value={{ user, mode, loginProviders, loading }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-// ── OAuth mode ────────────────────────────────────────────────────────────────
+// ── External (OAuth / OIDC) mode ──────────────────────────────────────────────
 
-// OAuthAuthProvider fetches the current user from the REST endpoint that the
+// ExternalAuthProvider fetches the current user from the REST endpoint that the
 // Go auth handler exposes. A 401 response means "not logged in" (user is null),
 // not an error.
-function OAuthAuthProvider({
+function ExternalAuthProvider({
   children,
-  oauthProviders,
+  loginProviders,
 }: {
   children: ReactNode
-  oauthProviders: string[]
+  loginProviders: string[]
 }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
@@ -113,7 +113,7 @@ function OAuthAuthProvider({
 
   return (
     <AuthContext.Provider
-      value={{ user, mode: 'oauth', oauthProviders, loading }}
+      value={{ user, mode: 'external', loginProviders, loading }}
     >
       {children}
     </AuthContext.Provider>
@@ -125,7 +125,7 @@ function OAuthAuthProvider({
 function ReadonlyAuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
-      value={{ user: null, mode: 'readonly', oauthProviders: [], loading: false }}
+      value={{ user: null, mode: 'readonly', loginProviders: [], loading: false }}
     >
       {children}
     </AuthContext.Provider>
@@ -143,30 +143,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Keep the default context (readonly + loading:true) while the config loads.
     return (
       <AuthContext.Provider
-        value={{ user: null, mode: 'readonly', oauthProviders: [], loading: true }}
+        value={{ user: null, mode: 'readonly', loginProviders: [], loading: true }}
       >
         {children}
       </AuthContext.Provider>
     )
   }
 
-  const { authMode, oauthProviders } = data.serverConfig
+  const { authMode, loginProviders } = data.serverConfig
 
   if (authMode === 'readonly') {
     return <ReadonlyAuthProvider>{children}</ReadonlyAuthProvider>
   }
 
-  if (authMode === 'oauth') {
+  if (authMode === 'external') {
     return (
-      <OAuthAuthProvider oauthProviders={oauthProviders}>
+      <ExternalAuthProvider loginProviders={loginProviders}>
         {children}
-      </OAuthAuthProvider>
+      </ExternalAuthProvider>
     )
   }
 
   // Default: 'local'
   return (
-    <LocalAuthProvider oauthProviders={oauthProviders}>
+    <LocalAuthProvider loginProviders={loginProviders}>
       {children}
     </LocalAuthProvider>
   )

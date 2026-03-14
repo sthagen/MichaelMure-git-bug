@@ -2,6 +2,6 @@
 query ServerConfig {
   serverConfig {
     authMode
-    oauthProviders
+    loginProviders
   }
 }

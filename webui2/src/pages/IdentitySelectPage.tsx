@@ -90,7 +90,6 @@ export function IdentitySelectPage() {
             </div>
             <Button
               size="sm"
-              variant="outline"
               disabled={working}
               onClick={() => adopt(id.id)}
             >

@@ -404,7 +404,7 @@ type ComplexityRoot struct {
 
 	ServerConfig struct {
 		AuthMode       func(childComplexity int) int
-		OauthProviders func(childComplexity int) int
+		LoginProviders func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -1931,12 +1931,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.ServerConfig.AuthMode(childComplexity), true
 
-	case "ServerConfig.oauthProviders":
-		if e.complexity.ServerConfig.OauthProviders == nil {
+	case "ServerConfig.loginProviders":
+		if e.complexity.ServerConfig.LoginProviders == nil {
 			break
 		}
 
-		return e.complexity.ServerConfig.OauthProviders(childComplexity), true
+		return e.complexity.ServerConfig.LoginProviders(childComplexity), true
 
 	case "Subscription.allEvents":
 		if e.complexity.Subscription.AllEvents == nil {
@@ -2789,12 +2789,12 @@ type RepositoryEdge {
 	{Name: "../schema/root.graphql", Input: `"""Server-wide configuration, independent of any repository."""
 type ServerConfig {
     """Authentication mode: 'local' (single user from git config),
-    'oauth' (multi-user via external providers), or 'readonly'."""
+    'external' (multi-user via OAuth/OIDC providers), or 'readonly'."""
     authMode: String!
 
-    """Names of the OAuth providers enabled on this server, e.g. ['github'].
-    Empty when authMode is not 'oauth'."""
-    oauthProviders: [String!]!
+    """Names of the login providers enabled on this server, e.g. ['github'].
+    Empty when authMode is not 'external'."""
+    loginProviders: [String!]!
 }
 
 type Query {

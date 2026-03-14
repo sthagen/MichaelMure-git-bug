@@ -28,13 +28,13 @@ import (
 	"time"
 
 	apiauth "github.com/git-bug/git-bug/api/auth"
-	"github.com/git-bug/git-bug/api/auth/oauth"
+	"github.com/git-bug/git-bug/api/auth/provider"
 	"github.com/git-bug/git-bug/cache"
 	"github.com/git-bug/git-bug/entity"
 )
 
 const (
-	oauthStateCookie   = "git-bug-oauth-state"
+	authStateCookie    = "git-bug-auth-state"
 	oauthPendingCookie = "git-bug-pending"
 )
 
@@ -47,31 +47,31 @@ func providerMetaKey(providerName string) string {
 	return providerName + "-login"
 }
 
-// oauthState is JSON-encoded as the OAuth2 state parameter.
+// authState is JSON-encoded as the OAuth2/OIDC state parameter.
 // It carries both a CSRF nonce and the provider name, so the callback can
 // verify the request and dispatch to the right provider without extra cookies.
-type oauthState struct {
+type authState struct {
 	Nonce    string `json:"nonce"`
 	Provider string `json:"provider"`
 }
 
-// pendingAuth holds the OAuth profile for a user who has authenticated with
-// the provider but has not yet been linked to a git-bug identity.
+// pendingAuth holds the provider profile for a user who has authenticated
+// but has not yet been linked to a git-bug identity.
 // It expires after 10 minutes to limit the window for token reuse.
 type pendingAuth struct {
-	UserInfo  *oauth.UserInfo
+	UserInfo  *provider.UserInfo
 	Provider  string
 	ExpiresAt time.Time
 }
 
-// AuthHandler handles the full OAuth2 login flow. It is intentionally
-// provider-agnostic: concrete providers implement oauth.Provider and are
-// passed in at construction time.
+// AuthHandler handles the external login flow (OAuth 2.0 or OIDC).
+// It is protocol-agnostic: concrete providers implement provider.Provider and
+// are passed in at construction time.
 type AuthHandler struct {
 	mrc       *cache.MultiRepoCache
 	sessions  *apiauth.SessionStore
-	providers map[string]oauth.Provider // provider name → implementation
-	baseURL   string                    // e.g. "http://localhost:3000"
+	providers map[string]provider.Provider // provider name → implementation
+	baseURL   string                       // e.g. "http://localhost:3000"
 
 	// pending maps a short-lived random token (stored in a cookie) to an
 	// OAuth profile that needs identity selection before a real session is
@@ -80,8 +80,8 @@ type AuthHandler struct {
 	pending   map[string]*pendingAuth
 }
 
-func NewAuthHandler(mrc *cache.MultiRepoCache, sessions *apiauth.SessionStore, providers []oauth.Provider, baseURL string) *AuthHandler {
-	pm := make(map[string]oauth.Provider, len(providers))
+func NewAuthHandler(mrc *cache.MultiRepoCache, sessions *apiauth.SessionStore, providers []provider.Provider, baseURL string) *AuthHandler {
+	pm := make(map[string]provider.Provider, len(providers))
 	for _, p := range providers {
 		pm[p.Name()] = p
 	}
@@ -125,14 +125,14 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	stateData, _ := json.Marshal(oauthState{Nonce: nonce, Provider: providerName})
+	stateData, _ := json.Marshal(authState{Nonce: nonce, Provider: providerName})
 	stateEncoded := base64.RawURLEncoding.EncodeToString(stateData)
 
 	// Store the state in a short-lived cookie for CSRF verification on callback.
 	http.SetCookie(w, &http.Cookie{
-		Name:     oauthStateCookie,
+		Name:     authStateCookie,
 		Value:    stateEncoded,
-		MaxAge:   300, // 5 minutes — enough time to complete the OAuth redirect
+		MaxAge:   300, // 5 minutes — enough time to complete the login redirect
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
@@ -145,19 +145,19 @@ func (h *AuthHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
 // GET /auth/callback?code=...&state=...
 func (h *AuthHandler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 	// CSRF: verify that the state parameter matches the cookie we set.
-	stateCookie, err := r.Cookie(oauthStateCookie)
+	stateCookie, err := r.Cookie(authStateCookie)
 	if err != nil || stateCookie.Value != r.URL.Query().Get("state") {
-		http.Error(w, "invalid OAuth state", http.StatusBadRequest)
+		http.Error(w, "invalid auth state", http.StatusBadRequest)
 		return
 	}
-	http.SetCookie(w, &http.Cookie{Name: oauthStateCookie, MaxAge: -1, Path: "/"})
+	http.SetCookie(w, &http.Cookie{Name: authStateCookie, MaxAge: -1, Path: "/"})
 
 	stateBytes, err := base64.RawURLEncoding.DecodeString(stateCookie.Value)
 	if err != nil {
 		http.Error(w, "malformed state", http.StatusBadRequest)
 		return
 	}
-	var state oauthState
+	var state authState
 	if err := json.Unmarshal(stateBytes, &state); err != nil {
 		http.Error(w, "malformed state", http.StatusBadRequest)
 		return

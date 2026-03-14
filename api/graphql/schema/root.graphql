@@ -1,12 +1,12 @@
 """Server-wide configuration, independent of any repository."""
 type ServerConfig {
     """Authentication mode: 'local' (single user from git config),
-    'oauth' (multi-user via external providers), or 'readonly'."""
+    'external' (multi-user via OAuth/OIDC providers), or 'readonly'."""
     authMode: String!
 
-    """Names of the OAuth providers enabled on this server, e.g. ['github'].
-    Empty when authMode is not 'oauth'."""
-    oauthProviders: [String!]!
+    """Names of the login providers enabled on this server, e.g. ['github'].
+    Empty when authMode is not 'external'."""
+    loginProviders: [String!]!
 }
 
 type Query {

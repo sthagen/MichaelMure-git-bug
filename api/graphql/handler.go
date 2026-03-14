@@ -23,14 +23,14 @@ import (
 // ServerConfig carries server-level configuration that is passed down to
 // GraphQL resolvers. It is constructed once at startup and does not change.
 type ServerConfig struct {
-	// AuthMode is one of "local", "oauth", or "readonly".
+	// AuthMode is one of "local", "external", or "readonly".
 	AuthMode string
-	// OAuthProviders lists the names of enabled OAuth providers, e.g. ["github"].
-	OAuthProviders []string
+	// LoginProviders lists the names of enabled login providers, e.g. ["github"].
+	LoginProviders []string
 }
 
 func NewHandler(mrc *cache.MultiRepoCache, cfg ServerConfig, errorOut io.Writer) http.Handler {
-	rootResolver := resolvers.NewRootResolver(mrc, cfg.AuthMode, cfg.OAuthProviders)
+	rootResolver := resolvers.NewRootResolver(mrc, cfg.AuthMode, cfg.LoginProviders)
 	config := graph.Config{Resolvers: rootResolver}
 
 	h := handler.New(graph.NewExecutableSchema(config))

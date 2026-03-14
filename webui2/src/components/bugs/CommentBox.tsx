@@ -122,6 +122,7 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
             size="sm"
             onClick={handleToggleStatus}
             disabled={busy}
+            className="min-w-[7.5rem]"
           >
             {isOpen ? 'Close issue' : 'Reopen issue'}
           </Button>

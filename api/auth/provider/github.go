@@ -1,4 +1,4 @@
-package oauth
+package provider
 
 import (
 	"context"
@@ -15,6 +15,9 @@ var _ Provider = &GitHub{}
 // GitHub implements Provider for GitHub OAuth2.
 // It uses the standard authorization-code flow (not the device flow used by
 // the bridge) because the webui has a browser redirect available.
+//
+// GitHub does not support OpenID Connect, so this provider uses the GitHub
+// REST API to fetch profile and public key data after the token exchange.
 type GitHub struct {
 	clientID     string
 	clientSecret string
@@ -50,6 +53,22 @@ func (g *GitHub) Exchange(ctx context.Context, code, callbackURL string) (*UserI
 	}
 
 	client := g.config(callbackURL).Client(ctx, token)
+
+	user, err := g.fetchProfile(client)
+	if err != nil {
+		return nil, err
+	}
+
+	user.PublicKeys, err = g.fetchPublicKeys(client, user.Login)
+	if err != nil {
+		// Public keys are best-effort; a failure here should not block login.
+		user.PublicKeys = nil
+	}
+
+	return user, nil
+}
+
+func (g *GitHub) fetchProfile(client *http.Client) (*UserInfo, error) {
 	resp, err := client.Get("https://api.github.com/user")
 	if err != nil {
 		return nil, fmt.Errorf("github: fetch profile: %w", err)
@@ -76,4 +95,31 @@ func (g *GitHub) Exchange(ctx context.Context, code, callbackURL string) (*UserI
 		Name:      u.Name,
 		AvatarURL: u.AvatarURL,
 	}, nil
+}
+
+// fetchPublicKeys retrieves the user's public SSH keys from the GitHub API.
+// Returns the raw key strings (e.g. "ssh-ed25519 AAAA...").
+func (g *GitHub) fetchPublicKeys(client *http.Client, login string) ([]string, error) {
+	resp, err := client.Get("https://api.github.com/users/" + login + "/keys")
+	if err != nil {
+		return nil, fmt.Errorf("github: fetch keys: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("github: unexpected status %d from /keys", resp.StatusCode)
+	}
+
+	var keys []struct {
+		Key string `json:"key"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&keys); err != nil {
+		return nil, fmt.Errorf("github: decode keys: %w", err)
+	}
+
+	result := make([]string, len(keys))
+	for i, k := range keys {
+		result[i] = k.Key
+	}
+	return result, nil
 }

@@ -13,14 +13,14 @@ type RootResolver struct {
 	bugRootSubResolver
 
 	authMode       string
-	oauthProviders []string
+	loginProviders []string
 }
 
-func NewRootResolver(mrc *cache.MultiRepoCache, authMode string, oauthProviders []string) *RootResolver {
+func NewRootResolver(mrc *cache.MultiRepoCache, authMode string, loginProviders []string) *RootResolver {
 	return &RootResolver{
 		MultiRepoCache: mrc,
 		authMode:       authMode,
-		oauthProviders: oauthProviders,
+		loginProviders: loginProviders,
 	}
 }
 
@@ -28,7 +28,7 @@ func (r RootResolver) Query() graph.QueryResolver {
 	return &rootQueryResolver{
 		cache:          r.MultiRepoCache,
 		authMode:       r.authMode,
-		oauthProviders: r.oauthProviders,
+		loginProviders: r.loginProviders,
 	}
 }
 

@@ -1065,8 +1065,8 @@ func (ec *executionContext) fieldContext_Query_serverConfig(_ context.Context, f
 			switch field.Name {
 			case "authMode":
 				return ec.fieldContext_ServerConfig_authMode(ctx, field)
-			case "oauthProviders":
-				return ec.fieldContext_ServerConfig_oauthProviders(ctx, field)
+			case "loginProviders":
+				return ec.fieldContext_ServerConfig_loginProviders(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ServerConfig", field.Name)
 		},
@@ -1382,8 +1382,8 @@ func (ec *executionContext) fieldContext_ServerConfig_authMode(_ context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _ServerConfig_oauthProviders(ctx context.Context, field graphql.CollectedField, obj *models.ServerConfig) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ServerConfig_oauthProviders(ctx, field)
+func (ec *executionContext) _ServerConfig_loginProviders(ctx context.Context, field graphql.CollectedField, obj *models.ServerConfig) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ServerConfig_loginProviders(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1396,7 +1396,7 @@ func (ec *executionContext) _ServerConfig_oauthProviders(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.OauthProviders, nil
+		return obj.LoginProviders, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1413,7 +1413,7 @@ func (ec *executionContext) _ServerConfig_oauthProviders(ctx context.Context, fi
 	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ServerConfig_oauthProviders(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_ServerConfig_loginProviders(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ServerConfig",
 		Field:      field,
@@ -1672,8 +1672,8 @@ func (ec *executionContext) _ServerConfig(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "oauthProviders":
-			out.Values[i] = ec._ServerConfig_oauthProviders(ctx, field, obj)
+		case "loginProviders":
+			out.Values[i] = ec._ServerConfig_loginProviders(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

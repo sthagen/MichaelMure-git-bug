@@ -823,14 +823,14 @@ export type ServerConfig = {
   __typename?: 'ServerConfig';
   /**
    * Authentication mode: 'local' (single user from git config),
-   * 'oauth' (multi-user via external providers), or 'readonly'.
+   * 'external' (multi-user via OAuth/OIDC providers), or 'readonly'.
    */
   authMode: Scalars['String']['output'];
   /**
-   * Names of the OAuth providers enabled on this server, e.g. ['github'].
-   * Empty when authMode is not 'oauth'.
+   * Names of the login providers enabled on this server, e.g. ['github'].
+   * Empty when authMode is not 'external'.
    */
-  oauthProviders: Array<Scalars['String']['output']>;
+  loginProviders: Array<Scalars['String']['output']>;
 };
 
 export enum Status {
@@ -881,13 +881,15 @@ export type BugDetailQuery = { __typename?: 'Query', repository?: { __typename?:
 
 export type BugListQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
-  query?: InputMaybe<Scalars['String']['input']>;
+  openQuery: Scalars['String']['input'];
+  closedQuery: Scalars['String']['input'];
+  listQuery: Scalars['String']['input'];
   first?: InputMaybe<Scalars['Int']['input']>;
   after?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type BugListQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', allBugs: { __typename?: 'BugConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } }> } } | null };
+export type BugListQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', openCount: { __typename?: 'BugConnection', totalCount: number }, closedCount: { __typename?: 'BugConnection', totalCount: number }, bugs: { __typename?: 'BugConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } }> } } | null };
 
 export type BugCreateMutationVariables = Exact<{
   input: BugCreateInput;
@@ -960,7 +962,7 @@ export type RepositoriesQuery = { __typename?: 'Query', repositories: { __typena
 export type ServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ServerConfigQuery = { __typename?: 'Query', serverConfig: { __typename?: 'ServerConfig', authMode: string, oauthProviders: Array<string> } };
+export type ServerConfigQuery = { __typename?: 'Query', serverConfig: { __typename?: 'ServerConfig', authMode: string, loginProviders: Array<string> } };
 
 export type UserProfileQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
@@ -1179,9 +1181,15 @@ export type BugDetailLazyQueryHookResult = ReturnType<typeof useBugDetailLazyQue
 export type BugDetailSuspenseQueryHookResult = ReturnType<typeof useBugDetailSuspenseQuery>;
 export type BugDetailQueryResult = Apollo.QueryResult<BugDetailQuery, BugDetailQueryVariables>;
 export const BugListDocument = gql`
-    query BugList($ref: String, $query: String, $first: Int, $after: String) {
+    query BugList($ref: String, $openQuery: String!, $closedQuery: String!, $listQuery: String!, $first: Int, $after: String) {
   repository(ref: $ref) {
-    allBugs(query: $query, first: $first, after: $after) {
+    openCount: allBugs(query: $openQuery, first: 1) {
+      totalCount
+    }
+    closedCount: allBugs(query: $closedQuery, first: 1) {
+      totalCount
+    }
+    bugs: allBugs(query: $listQuery, first: $first, after: $after) {
       totalCount
       pageInfo {
         hasNextPage
@@ -1229,13 +1237,15 @@ export const BugListDocument = gql`
  * const { data, loading, error } = useBugListQuery({
  *   variables: {
  *      ref: // value for 'ref'
- *      query: // value for 'query'
+ *      openQuery: // value for 'openQuery'
+ *      closedQuery: // value for 'closedQuery'
+ *      listQuery: // value for 'listQuery'
  *      first: // value for 'first'
  *      after: // value for 'after'
  *   },
  * });
  */
-export function useBugListQuery(baseOptions?: Apollo.QueryHookOptions<BugListQuery, BugListQueryVariables>) {
+export function useBugListQuery(baseOptions: Apollo.QueryHookOptions<BugListQuery, BugListQueryVariables> & ({ variables: BugListQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
       }
@@ -1630,7 +1640,7 @@ export const ServerConfigDocument = gql`
     query ServerConfig {
   serverConfig {
     authMode
-    oauthProviders
+    loginProviders
   }
 }
     `;

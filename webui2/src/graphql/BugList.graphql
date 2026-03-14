@@ -1,6 +1,22 @@
-query BugList($ref: String, $query: String, $first: Int, $after: String) {
+# Always fetch open and closed counts unconditionally so both numbers are
+# visible in the toggle header regardless of which tab is active.
+# The paginated `bugs` alias fetches the selected-status list separately.
+query BugList(
+  $ref: String
+  $openQuery: String!
+  $closedQuery: String!
+  $listQuery: String!
+  $first: Int
+  $after: String
+) {
   repository(ref: $ref) {
-    allBugs(query: $query, first: $first, after: $after) {
+    openCount: allBugs(query: $openQuery, first: 1) {
+      totalCount
+    }
+    closedCount: allBugs(query: $closedQuery, first: 1) {
+      totalCount
+    }
+    bugs: allBugs(query: $listQuery, first: $first, after: $after) {
       totalCount
       pageInfo {
         hasNextPage

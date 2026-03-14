@@ -14,20 +14,20 @@ var _ graph.QueryResolver = &rootQueryResolver{}
 type rootQueryResolver struct {
 	cache          *cache.MultiRepoCache
 	authMode       string
-	oauthProviders []string
+	loginProviders []string
 }
 
 // ServerConfig returns static server configuration including the auth mode.
 // The frontend uses this to decide whether to show a login button, show "Read only",
 // or operate silently in single-user local mode.
 func (r rootQueryResolver) ServerConfig(_ context.Context) (*models.ServerConfig, error) {
-	providers := r.oauthProviders
+	providers := r.loginProviders
 	if providers == nil {
 		providers = []string{}
 	}
 	return &models.ServerConfig{
 		AuthMode:       r.authMode,
-		OauthProviders: providers,
+		LoginProviders: providers,
 	}, nil
 }
 

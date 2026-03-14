@@ -14,6 +14,7 @@ import {
   BugDetailDocument,
 } from '@/__generated__/graphql'
 import { useAuth } from '@/lib/auth'
+import { useRepo } from '@/lib/repo'
 
 type TimelineNode = NonNullable<
   NonNullable<NonNullable<BugDetailQuery['repository']>['bug']>['timeline']['nodes'][number]
@@ -58,6 +59,7 @@ type CommentItem = Extract<
 
 function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string }) {
   const { user } = useAuth()
+  const repo = useRepo()
   const [editing, setEditing] = useState(false)
   const [editValue, setEditValue] = useState(item.message ?? '')
 
@@ -93,7 +95,7 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
 
       <div className="min-w-0 flex-1 rounded-md border border-border">
         <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-2 text-sm">
-          <Link to={`/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">
+          <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">
             {item.author.displayName}
           </Link>
           <span className="text-muted-foreground">
@@ -164,10 +166,11 @@ function EventRow({ icon, children }: { icon: React.ReactNode; children: React.R
 }
 
 function LabelChangeItem({ item }: { item: LabelChangeItem }) {
+  const repo = useRepo()
   return (
     <EventRow icon={<Tag className="size-4" />}>
       <span>
-        <Link to={`/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link>{' '}
+        <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link>{' '}
         {item.added.length > 0 && (
           <>
             added{' '}
@@ -191,6 +194,7 @@ function LabelChangeItem({ item }: { item: LabelChangeItem }) {
 }
 
 function StatusChangeItem({ item }: { item: StatusChangeItem }) {
+  const repo = useRepo()
   const isOpen = item.status === Status.Open
   return (
     <EventRow
@@ -203,7 +207,7 @@ function StatusChangeItem({ item }: { item: StatusChangeItem }) {
       }
     >
       <span>
-        <Link to={`/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link>{' '}
+        <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link>{' '}
         {isOpen ? 'reopened' : 'closed'} this{' '}
         {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
       </span>
@@ -212,10 +216,11 @@ function StatusChangeItem({ item }: { item: StatusChangeItem }) {
 }
 
 function TitleChangeItem({ item }: { item: TitleChangeItem }) {
+  const repo = useRepo()
   return (
     <EventRow icon={<Pencil className="size-4" />}>
       <span>
-        <Link to={`/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link> changed the
+        <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link> changed the
         title from <span className="line-through">{item.was}</span> to{' '}
         <span className="font-medium text-foreground">{item.title}</span>{' '}
         {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
