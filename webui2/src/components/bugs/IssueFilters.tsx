@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, Tag, User, X, Search, Check } from 'lucide-react'
+import { ArrowUpDown, ChevronDown, Tag, User, X, Search, Check } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { LabelBadge } from './LabelBadge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -26,6 +26,15 @@ function authorQueryValue(i: { login?: string | null; name?: string | null; huma
   return i.login || i.name || i.humanId
 }
 
+export type SortValue = 'creation-desc' | 'creation-asc' | 'edit-desc' | 'edit-asc'
+
+const SORT_OPTIONS: { value: SortValue; label: string }[] = [
+  { value: 'creation-desc', label: 'Newest' },
+  { value: 'creation-asc',  label: 'Oldest' },
+  { value: 'edit-desc',     label: 'Recently updated' },
+  { value: 'edit-asc',      label: 'Least recently updated' },
+]
+
 interface IssueFiltersProps {
   selectedLabels: string[]
   onLabelsChange: (labels: string[]) => void
@@ -33,6 +42,8 @@ interface IssueFiltersProps {
   onAuthorChange: (humanId: string | null, queryValue: string | null) => void
   /** humanIds of authors appearing in the current bug list, used to rank the initial suggestions */
   recentAuthorIds?: string[]
+  sort: SortValue
+  onSortChange: (sort: SortValue) => void
 }
 
 // Label and author filter dropdowns shown in the issue list header bar.
@@ -52,6 +63,8 @@ export function IssueFilters({
   selectedAuthorId,
   onAuthorChange,
   recentAuthorIds = [],
+  sort,
+  onSortChange,
 }: IssueFiltersProps) {
   const { user } = useAuth()
   const repo = useRepo()
@@ -135,7 +148,7 @@ export function IssueFilters({
   const selectedAuthorIdentity = allIdentities.find((i) => i.humanId === selectedAuthorId)
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex shrink-0 items-center gap-1">
       {/* Label filter */}
       <Popover onOpenChange={(open) => { if (!open) setLabelSearch('') }}>
         <PopoverTrigger asChild>
@@ -296,6 +309,36 @@ export function IssueFilters({
               </button>
             </div>
           )}
+        </PopoverContent>
+      </Popover>
+
+      {/* Sort */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap',
+              sort !== 'creation-desc'
+                ? 'bg-accent text-accent-foreground'
+                : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+            )}
+          >
+            <ArrowUpDown className="size-3.5" />
+            {SORT_OPTIONS.find((o) => o.value === sort)?.label ?? 'Sort'}
+            <ChevronDown className="size-3" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" className="w-56 p-1 bg-popover shadow-lg">
+          {SORT_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => onSortChange(opt.value)}
+              className="flex w-full items-center gap-2 whitespace-nowrap rounded px-2 py-1.5 text-sm hover:bg-muted"
+            >
+              {opt.label}
+              {sort === opt.value && <Check className="ml-auto size-3.5 shrink-0 text-foreground" />}
+            </button>
+          ))}
         </PopoverContent>
       </Popover>
     </div>

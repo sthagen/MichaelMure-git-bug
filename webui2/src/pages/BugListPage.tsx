@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BugRow } from '@/components/bugs/BugRow'
 import { IssueFilters } from '@/components/bugs/IssueFilters'
+import type { SortValue } from '@/components/bugs/IssueFilters'
 import { QueryInput } from '@/components/bugs/QueryInput'
 import { useBugListQuery } from '@/__generated__/graphql'
 import { cn } from '@/lib/utils'
@@ -24,7 +25,8 @@ export function BugListPage() {
   // query value (login/name) — what goes into author:... in the query string
   const [selectedAuthorQuery, setSelectedAuthorQuery] = useState<string | null>(null)
   const [freeText, setFreeText] = useState('')
-  const [draft, setDraft] = useState(() => buildQueryString('open', [], null, ''))
+  const [sort, setSort] = useState<SortValue>('creation-desc')
+  const [draft, setDraft] = useState(() => buildQueryString('open', [], null, '', 'creation-desc'))
 
   // Cursor-stack pagination: cursors[i] is the `after` value to fetch page i.
   // cursors[0] is always undefined (first page needs no cursor).
@@ -36,7 +38,7 @@ export function BugListPage() {
   const baseQuery = buildBaseQuery(selectedLabels, selectedAuthorQuery, freeText)
   const openQuery = `status:open ${baseQuery}`.trim()
   const closedQuery = `status:closed ${baseQuery}`.trim()
-  const listQuery = buildQueryString(statusFilter, selectedLabels, selectedAuthorQuery, freeText)
+  const listQuery = buildQueryString(statusFilter, selectedLabels, selectedAuthorQuery, freeText, sort)
 
   const { data, loading, error } = useBugListQuery({
     variables: { ref: repo, openQuery, closedQuery, listQuery, first: PAGE_SIZE, after: cursors[page] },
@@ -60,13 +62,15 @@ export function BugListPage() {
     authorId: string | null,
     authorQuery: string | null,
     text: string,
+    sortVal: SortValue = sort,
   ) {
     setStatusFilter(status)
     setSelectedLabels(labels)
     setSelectedAuthorId(authorId)
     setSelectedAuthorQuery(authorQuery)
     setFreeText(text)
-    setDraft(buildQueryString(status, labels, authorQuery, text))
+    setSort(sortVal)
+    setDraft(buildQueryString(status, labels, authorQuery, text, sortVal))
   }
 
   // Parse the draft text box on submit so manual edits update the dropdowns too.
@@ -76,7 +80,7 @@ export function BugListPage() {
   function handleSearch(e?: React.FormEvent) {
     e?.preventDefault()
     const p = parseQueryString(draft)
-    applyFilters(p.status, p.labels, null, p.author, p.freeText)
+    applyFilters(p.status, p.labels, null, p.author, p.freeText, p.sort)
   }
 
   function goNext() {
@@ -107,8 +111,8 @@ export function BugListPage() {
       {/* List container */}
       <div className="rounded-md border border-border">
         {/* Open / Closed toggle + filter dropdowns */}
-        <div className="flex items-center border-b border-border px-4 py-2">
-          <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2 overflow-x-auto border-b border-border px-4 py-2">
+          <div className="flex shrink-0 items-center gap-1">
             <button
               onClick={() => applyFilters('open', selectedLabels, selectedAuthorId, selectedAuthorQuery, freeText)}
               className={cn(
@@ -149,6 +153,8 @@ export function BugListPage() {
               selectedAuthorId={selectedAuthorId}
               onAuthorChange={(id, qv) => applyFilters(statusFilter, selectedLabels, id, qv, freeText)}
               recentAuthorIds={bugs?.nodes?.map((b) => b.author.humanId) ?? []}
+              sort={sort}
+              onSortChange={(s) => applyFilters(statusFilter, selectedLabels, selectedAuthorId, selectedAuthorQuery, freeText, s)}
             />
           </div>
         </div>
@@ -242,8 +248,13 @@ function buildQueryString(
   labels: string[],
   author: string | null,
   freeText: string,
+  sort: SortValue = 'creation-desc',
 ): string {
-  return `status:${status} ${buildBaseQuery(labels, author, freeText)}`.trim()
+  const parts = [`status:${status}`]
+  const base = buildBaseQuery(labels, author, freeText)
+  if (base) parts.push(base)
+  if (sort !== 'creation-desc') parts.push(`sort:${sort}`)
+  return parts.join(' ')
 }
 
 // Tokenize a query string, keeping quoted spans (e.g. author:"René Descartes")
@@ -266,15 +277,19 @@ function tokenizeQuery(input: string): string[] {
 // manual edits to the search box are reflected in the dropdown UI on submit.
 // Strips surrounding quotes from values (they're an encoding detail, not part
 // of the value itself). Unknown tokens fall through to freeText.
+const VALID_SORTS = new Set<SortValue>(['creation-desc', 'creation-asc', 'edit-desc', 'edit-asc'])
+
 function parseQueryString(input: string): {
   status: StatusFilter
   labels: string[]
   author: string | null
   freeText: string
+  sort: SortValue
 } {
   let status: StatusFilter = 'open'
   const labels: string[] = []
   let author: string | null = null
+  let sort: SortValue = 'creation-desc'
   const free: string[] = []
 
   for (const token of tokenizeQuery(input)) {
@@ -282,10 +297,14 @@ function parseQueryString(input: string): {
     else if (token === 'status:closed') status = 'closed'
     else if (token.startsWith('label:')) labels.push(token.slice(6))
     else if (token.startsWith('author:')) author = token.slice(7).replace(/^"|"$/g, '')
+    else if (token.startsWith('sort:')) {
+      const v = token.slice(5) as SortValue
+      if (VALID_SORTS.has(v)) sort = v
+    }
     else free.push(token)
   }
 
-  return { status, labels, author, freeText: free.join(' ') }
+  return { status, labels, author, freeText: free.join(' '), sort }
 }
 
 function BugListSkeleton() {
