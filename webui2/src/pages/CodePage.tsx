@@ -1,7 +1,10 @@
-import { useState, useEffect } from 'react'
+// Code browser page. Switches between tree view, file viewer, and commit
+// history via ?type= search param. Ref is selected via ?ref=.
+
+import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { gql, useQuery } from '@apollo/client'
-import { AlertCircle, Check, Copy, GitCommit } from 'lucide-react'
+import { AlertCircle, GitCommit } from 'lucide-react'
 import { CodeBreadcrumb } from '@/components/code/CodeBreadcrumb'
 import { RefSelector } from '@/components/code/RefSelector'
 import { FileTree } from '@/components/code/FileTree'
@@ -9,103 +12,147 @@ import { FileViewer } from '@/components/code/FileViewer'
 import { CommitList } from '@/components/code/CommitList'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { getRefs, getTree, getBlob } from '@/lib/gitApi'
-import type { GitRef, GitTreeEntry, GitBlob } from '@/lib/gitApi'
 import { useRepo } from '@/lib/repo'
 import { Markdown } from '@/components/content/Markdown'
+import type { GitRef, GitTreeEntry, GitBlob, GitLastCommit } from '@/__generated__/graphql'
+import type { TreeEntryWithCommit } from '@/components/code/FileTree'
 
-const REPO_NAME_QUERY = gql`
-  query RepoName($ref: String) {
-    repository(ref: $ref) {
+const REFS_QUERY = gql`
+  query CodePageRefs($repo: String) {
+    repository(ref: $repo) {
       name
+      refs {
+        nodes {
+          name
+          shortName
+          type
+          hash
+          isDefault
+        }
+      }
+    }
+  }
+`
+
+const TREE_QUERY = gql`
+  query CodePageTree($repo: String, $ref: String!, $path: String) {
+    repository(ref: $repo) {
+      tree(ref: $ref, path: $path) {
+        name
+        type
+        hash
+      }
+    }
+  }
+`
+
+const LAST_COMMITS_QUERY = gql`
+  query CodePageLastCommits($repo: String, $ref: String!, $path: String, $names: [String!]!) {
+    repository(ref: $repo) {
+      lastCommits(ref: $ref, path: $path, names: $names) {
+        name
+        commit {
+          hash
+          shortHash
+          message
+          date
+        }
+      }
+    }
+  }
+`
+
+const BLOB_QUERY = gql`
+  query CodePageBlob($repo: String, $ref: String!, $path: String!) {
+    repository(ref: $repo) {
+      blob(ref: $ref, path: $path) {
+        path
+        hash
+        text
+        size
+        isBinary
+        isTruncated
+      }
     }
   }
 `
 
 type ViewMode = 'tree' | 'blob' | 'commits'
 
-// Code browser page (/:repo). Switches between tree view, file viewer, and
-// commit history via the ?type= search param. Ref is selected via ?ref=.
 export function CodePage() {
   const repo = useRepo()
   const [searchParams, setSearchParams] = useSearchParams()
-
-  const [refs, setRefs] = useState<GitRef[]>([])
-  const [refsLoading, setRefsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const [entries, setEntries] = useState<GitTreeEntry[]>([])
-  const [blob, setBlob] = useState<GitBlob | null>(null)
-  const [readme, setReadme] = useState<string | null>(null)
-  const [contentLoading, setContentLoading] = useState(false)
 
   const currentRef = searchParams.get('ref') ?? ''
   const currentPath = searchParams.get('path') ?? ''
   const viewMode: ViewMode = (searchParams.get('type') as ViewMode) ?? 'tree'
 
-  // Load refs once on mount
+  const { data: refsData, loading: refsLoading, error: refsError } = useQuery(REFS_QUERY, {
+    variables: { repo },
+  })
+  const refs: GitRef[] = refsData?.repository?.refs?.nodes ?? []
+
+  // Set default ref from query result once loaded
   useEffect(() => {
-    getRefs()
-      .then((data) => {
-        setRefs(data)
-        // If no ref in URL yet, use the default branch
-        if (!searchParams.get('ref')) {
-          const defaultRef = data.find((r) => r.isDefault) ?? data[0]
-          if (defaultRef) {
-            setSearchParams(
-              (prev) => { prev.set('ref', defaultRef.shortName); return prev },
-              { replace: true },
-            )
-          }
-        }
-      })
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setRefsLoading(false))
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    if (refsLoading || refs.length === 0 || searchParams.get('ref')) return
+    const defaultRef = refs.find((r: GitRef) => r.isDefault) ?? refs[0]
+    if (defaultRef) {
+      setSearchParams(
+        (prev) => { prev.set('ref', defaultRef.shortName); return prev },
+        { replace: true },
+      )
+    }
+  }, [refsLoading, refs.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Load tree or blob when ref/path/mode changes
-  useEffect(() => {
-    if (!currentRef) return
-    setContentLoading(true)
-    setEntries([])
-    setBlob(null)
-    setReadme(null)
+  const inTreeMode = viewMode === 'tree' && !!currentRef
+  const inBlobMode = viewMode === 'blob' && !!currentRef && !!currentPath
 
-    const load =
-      viewMode === 'blob'
-        ? getBlob(currentRef, currentPath).then((b) => setBlob(b))
-        : getTree(currentRef, currentPath).then((e) => {
-            setEntries(e)
-            const readmeEntry = e.find((entry) =>
-              entry.type === 'blob' &&
-              /^readme(\.md|\.txt|\.rst)?$/i.test(entry.name),
-            )
-            if (readmeEntry) {
-              const readmePath = currentPath
-                ? `${currentPath}/${readmeEntry.name}`
-                : readmeEntry.name
-              getBlob(currentRef, readmePath)
-                .then((b) => !b.isBinary && setReadme(b.content))
-                .catch(() => {/* best-effort */})
-            }
-          })
+  const { data: treeData, loading: treeLoading } = useQuery(TREE_QUERY, {
+    variables: { repo, ref: currentRef, path: currentPath || null },
+    skip: !inTreeMode,
+  })
+  const entries: GitTreeEntry[] = treeData?.repository?.tree ?? []
 
-    load
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setContentLoading(false))
-  }, [currentRef, currentPath, viewMode])
+  const entryNames = entries.map((e: GitTreeEntry) => e.name)
+  const { data: lastCommitsData } = useQuery(LAST_COMMITS_QUERY, {
+    variables: { repo, ref: currentRef, path: currentPath || null, names: entryNames },
+    skip: !inTreeMode || entryNames.length === 0,
+  })
+  const lastCommitsByName = new Map<string, GitLastCommit>(
+    (lastCommitsData?.repository?.lastCommits ?? []).map((lc: GitLastCommit) => [lc.name, lc]),
+  )
+  const entriesWithCommits: TreeEntryWithCommit[] = entries.map((e: GitTreeEntry) => ({
+    ...e,
+    lastCommit: lastCommitsByName.get(e.name)?.commit ?? undefined,
+  }))
+
+  const { data: blobData, loading: blobLoading } = useQuery(BLOB_QUERY, {
+    variables: { repo, ref: currentRef, path: currentPath },
+    skip: !inBlobMode,
+  })
+  const blob: GitBlob | null = blobData?.repository?.blob ?? null
+
+  const readmeEntry = entries.find(
+    (e: GitTreeEntry) => e.type === 'BLOB' && /^readme(\.md|\.txt|\.rst)?$/i.test(e.name),
+  )
+  const readmePath = readmeEntry
+    ? (currentPath ? `${currentPath}/${readmeEntry.name}` : readmeEntry.name)
+    : null
+  const { data: readmeBlobData } = useQuery(BLOB_QUERY, {
+    variables: { repo, ref: currentRef, path: readmePath },
+    skip: !inTreeMode || !readmePath,
+  })
+  const readme: string | null = readmeBlobData?.repository?.blob?.text ?? null
+
+  const repoName = refsData?.repository?.name ?? repo ?? 'default-repo'
 
   function navigate(path: string, type: ViewMode = 'tree') {
-    setSearchParams((prev) => {
-      prev.set('path', path)
-      prev.set('type', type)
-      return prev
-    })
+    setSearchParams((prev) => { prev.set('path', path); prev.set('type', type); return prev })
   }
 
-  function handleEntryClick(entry: GitTreeEntry) {
+  function handleEntryClick(entry: TreeEntryWithCommit) {
     const newPath = currentPath ? `${currentPath}/${entry.name}` : entry.name
-    navigate(newPath, entry.type === 'blob' ? 'blob' : 'tree')
+    navigate(newPath, entry.type === 'BLOB' ? 'blob' : 'tree')
   }
 
   function handleNavigateUp() {
@@ -116,42 +163,22 @@ export function CodePage() {
 
   function handleRefSelect(ref: GitRef) {
     setSearchParams((prev) => {
-      prev.set('ref', ref.shortName)
-      prev.set('path', '')
-      prev.set('type', 'tree')
-      return prev
+      prev.set('ref', ref.shortName); prev.set('path', ''); prev.set('type', 'tree'); return prev
     })
   }
 
-  const { data: repoData } = useQuery(REPO_NAME_QUERY, { variables: { ref: repo } })
-  const repoName = repoData?.repository?.name ?? repo ?? 'default-repo'
-
-  const cloneUrl = `${window.location.origin}/api/repos/_/_`
-  const cloneCmd = `git clone ${cloneUrl} ${repoName}`
-  const [copied, setCopied] = useState(false)
-  function handleCopy() {
-    navigator.clipboard.writeText(cloneCmd).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    })
-  }
-
-  if (error) {
+  if (refsError) {
     return (
       <div className="flex flex-col items-center gap-3 py-16 text-center">
         <AlertCircle className="size-8 text-muted-foreground" />
         <p className="text-sm font-medium">Code browser unavailable</p>
-        <p className="max-w-sm text-xs text-muted-foreground">{error}</p>
-        <p className="max-w-sm text-xs text-muted-foreground">
-          Make sure the git-bug server is running and the repository supports code browsing.
-        </p>
+        <p className="max-w-sm text-xs text-muted-foreground">{refsError.message}</p>
       </div>
     )
   }
 
   return (
     <div className="space-y-4">
-      {/* Top bar: breadcrumb + ref selector */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         {refsLoading ? (
           <Skeleton className="h-5 w-48" />
@@ -168,12 +195,7 @@ export function CodePage() {
             <Button
               variant={viewMode === 'commits' ? 'secondary' : 'outline'}
               size="sm"
-              onClick={() =>
-                navigate(
-                  currentPath,
-                  viewMode === 'commits' ? 'tree' : 'commits',
-                )
-              }
+              onClick={() => navigate(currentPath, viewMode === 'commits' ? 'tree' : 'commits')}
             >
               <GitCommit className="size-3.5" />
               History
@@ -187,24 +209,14 @@ export function CodePage() {
         </div>
       </div>
 
-      {/* Clone command */}
-      <div className="flex items-center gap-2 rounded-md border bg-muted/40 px-3 py-1.5">
-        <span className="text-xs text-muted-foreground shrink-0">clone</span>
-        <code className="flex-1 truncate text-xs">{cloneCmd}</code>
-        <Button variant="ghost" size="icon" className="size-6 shrink-0" onClick={handleCopy}>
-          {copied ? <Check className="size-3 text-green-600" /> : <Copy className="size-3" />}
-        </Button>
-      </div>
-
-      {/* Content */}
       {viewMode === 'commits' ? (
         <CommitList ref_={currentRef} path={currentPath || undefined} />
       ) : viewMode === 'tree' || !blob ? (
         <>
           <FileTree
-            entries={entries}
+            entries={entriesWithCommits}
             path={currentPath}
-            loading={contentLoading}
+            loading={treeLoading}
             onNavigate={handleEntryClick}
             onNavigateUp={handleNavigateUp}
           />
@@ -220,7 +232,7 @@ export function CodePage() {
           )}
         </>
       ) : (
-        <FileViewer blob={blob} ref={currentRef} loading={contentLoading} />
+        <FileViewer blob={blob} loading={blobLoading} />
       )}
     </div>
   )

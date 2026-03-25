@@ -21,9 +21,14 @@ func (c *RepoCache) Name() string {
 	return c.name
 }
 
-// GetPath returns the root directory path of the underlying git repository.
-func (c *RepoCache) GetPath() string {
-	return c.repo.GetPath()
+// IsDefaultRepo reports whether this is an unnamed (single-repo) repository.
+func (c *RepoCache) IsDefaultRepo() bool {
+	return c.name == defaultRepoName
+}
+
+// BrowseRepo returns the underlying RepoBrowse implementation.
+func (c *RepoCache) BrowseRepo() repository.RepoBrowse {
+	return c.repo
 }
 
 // LocalConfig give access to the repository scoped configuration
@@ -76,12 +81,6 @@ func (c *RepoCache) ReadData(hash repository.Hash) ([]byte, error) {
 	return c.repo.ReadData(hash)
 }
 
-// GetRepo returns the underlying repository for operations not covered by
-// RepoCache (e.g. git object browsing). Callers may type-assert to
-// repository.RepoBrowse for extended read-only access.
-func (c *RepoCache) GetRepo() repository.ClockedRepo {
-	return c.repo
-}
 
 // StoreData will store arbitrary data and return the corresponding hash
 func (c *RepoCache) StoreData(data []byte) (repository.Hash, error) {

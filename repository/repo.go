@@ -29,6 +29,7 @@ type Repo interface {
 	RepoStorage
 	RepoIndex
 	RepoData
+	RepoBrowse
 
 	Close() error
 }
@@ -76,10 +77,6 @@ type RepoCommon interface {
 	// GetRemotes returns the configured remotes repositories.
 	GetRemotes() (map[string]string, error)
 
-	// GetPath returns the root directory path of the repository (the directory
-	// that contains the .git folder for bare repos, or the .git folder itself
-	// for bare clones). Returns an empty string for in-memory/mock repos.
-	GetPath() string
 }
 
 type LocalStorage interface {
@@ -188,7 +185,7 @@ type RepoData interface {
 	// ListRefs will return a list of Git ref matching the given refspec
 	ListRefs(refPrefix string) ([]string, error)
 
-	// RefExist will check if a reference exist in Git
+	// RefExist will check if a reference exists in Git
 	RefExist(ref string) (bool, error)
 
 	// CopyRef will create a new reference with the same value as another one
@@ -197,90 +194,6 @@ type RepoData interface {
 
 	// ListCommits will return the list of tree hashes of a ref, in chronological order
 	ListCommits(ref string) ([]Hash, error)
-}
-
-// CommitMeta holds the display-relevant metadata of a git commit.
-type CommitMeta struct {
-	Hash        Hash
-	ShortHash   string
-	Message     string // first line only
-	AuthorName  string
-	AuthorEmail string
-	Date        time.Time
-	Parents     []Hash
-}
-
-// RepoBrowse extends a repo with read-only methods needed for code browsing.
-// Implemented by GoGitRepo; not part of the core Repo interface because not
-// all repository implementations (e.g. in-memory test repos) need it.
-type RepoBrowse interface {
-	// GetDefaultBranch returns the short name of the branch HEAD points to.
-	GetDefaultBranch() (string, error)
-
-	// ReadCommitMeta reads full commit metadata including author and message.
-	ReadCommitMeta(hash Hash) (CommitMeta, error)
-
-	// CommitLog returns up to limit commits reachable from ref (short name or
-	// full ref), optionally filtered to commits that touch path.
-	// If after is non-empty, results start after that commit hash (pagination).
-	CommitLog(ref string, path string, limit int, after Hash) ([]CommitMeta, error)
-
-	// LastCommitForEntries walks the commit history once and returns the most
-	// recent commit that touched each named entry inside dirPath.
-	// dirPath is the directory being browsed (empty = repo root).
-	// names are the immediate child names (files/dirs) inside that directory.
-	// The returned map is keyed by entry name; missing entries were not found.
-	LastCommitForEntries(ref string, dirPath string, names []string) (map[string]CommitMeta, error)
-
-	// CommitDetail returns the full metadata for a single commit plus the list
-	// of files it changed relative to its first parent.
-	CommitDetail(hash Hash) (CommitDetail, error)
-
-	// CommitFileDiff returns the structured diff for a single file in a commit
-	// relative to its first parent. path is the current file path (or old path
-	// for deletions).
-	CommitFileDiff(hash Hash, path string) (FileDiff, error)
-}
-
-// DiffLine is a single line in a diff hunk.
-type DiffLine struct {
-	Type    string // "context" | "added" | "deleted"
-	Content string
-	OldLine int // 0 for added lines
-	NewLine int // 0 for deleted lines
-}
-
-// DiffHunk is a contiguous block of changes with surrounding context.
-type DiffHunk struct {
-	OldStart int
-	OldLines int
-	NewStart int
-	NewLines int
-	Lines    []DiffLine
-}
-
-// FileDiff holds the diff for a single file in a commit.
-type FileDiff struct {
-	Path     string
-	OldPath  string // non-empty for renames
-	IsBinary bool
-	IsNew    bool
-	IsDelete bool
-	Hunks    []DiffHunk
-}
-
-// ChangedFile describes a single file changed by a commit.
-type ChangedFile struct {
-	Path    string // current path (or old path for deletions)
-	OldPath string // only set for renames
-	Status  string // "added" | "modified" | "deleted" | "renamed"
-}
-
-// CommitDetail extends CommitMeta with the full message body and changed files.
-type CommitDetail struct {
-	CommitMeta
-	FullMessage string
-	Files       []ChangedFile
 }
 
 // RepoClock give access to Lamport clocks
@@ -299,11 +212,63 @@ type RepoClock interface {
 	Witness(name string, time lamport.Time) error
 }
 
+// RepoBrowse is implemented by all Repo implementations and provides
+// code-browsing endpoints (file tree, history, diffs).
+//
+// All methods accepting a ref parameter resolve it in order:
+// refs/heads/<ref>, refs/tags/<ref>, full ref name, raw commit hash.
+type RepoBrowse interface {
+	// Branches returns all local branches (refs/heads/*).
+	// IsDefault marks the branch HEAD points to.
+	// All other ref namespaces — including git-bug's internal refs
+	// (refs/bugs/, refs/identities/, …) — are excluded.
+	Branches() ([]BranchInfo, error)
+
+	// Tags returns all tags (refs/tags/*).
+	// All other ref namespaces are excluded.
+	Tags() ([]TagInfo, error)
+
+	// TreeAtPath returns the entries of the directory at path under ref.
+	// An empty path returns the root tree.
+	// Returns ErrNotFound if ref or path does not exist, or if path
+	// resolves to a blob rather than a tree.
+	// Symlinks appear as entries with ObjectType Symlink; they are not followed.
+	TreeAtPath(ref, path string) ([]TreeEntry, error)
+
+	// BlobAtPath returns the raw content, byte size, and git object hash of
+	// the file at path under ref. Returns ErrNotFound if ref or path does
+	// not exist, or if path resolves to a tree. Symlinks are not followed.
+	// The caller must close the reader.
+	BlobAtPath(ref, path string) (io.ReadCloser, int64, Hash, error)
+
+	// CommitLog returns at most limit commits reachable from ref, filtered
+	// to those touching path (empty = unrestricted). after is an exclusive
+	// cursor; pass Hash("") for no cursor. since and until bound the author
+	// date (inclusive); pass nil for no bound. Merge commits appear once,
+	// compared against the first parent only.
+	CommitLog(ref, path string, limit int, after Hash, since, until *time.Time) ([]CommitMeta, error)
+
+	// LastCommitForEntries returns the most recent commit that touched each
+	// name in the directory at path under ref. Entries not resolved within
+	// the implementation's depth limit are silently absent from the result.
+	LastCommitForEntries(ref, path string, names []string) (map[string]CommitMeta, error)
+
+	// CommitDetail returns the full metadata and changed-file list for a
+	// single commit identified by its hash. Diffs against the first parent
+	// only; the initial commit is diffed against the empty tree.
+	CommitDetail(hash Hash) (CommitDetail, error)
+
+	// CommitFileDiff returns the unified diff for a single file in a commit
+	// identified by its hash. Diffs against the first parent only; the
+	// initial commit is diffed against the empty tree.
+	CommitFileDiff(hash Hash, filePath string) (FileDiff, error)
+}
+
 // ClockLoader hold which logical clock need to exist for an entity and
 // how to create them if they don't.
 type ClockLoader struct {
-	// Clocks hold the name of all the clocks this loader deal with.
-	// Those clocks will be checked when the repo load. If not present or broken,
+	// Clocks hold the name of all the clocks this loader deals with.
+	// Those clocks will be checked when the repo loads. If not present or broken,
 	// Witnesser will be used to create them.
 	Clocks []string
 	// Witnesser is a function that will initialize the clocks of a repo
@@ -311,13 +276,13 @@ type ClockLoader struct {
 	Witnesser func(repo ClockedRepo) error
 }
 
-// TestedRepo is an extended ClockedRepo with function for testing only
+// TestedRepo is an extended ClockedRepo with functions for testing only
 type TestedRepo interface {
 	ClockedRepo
 	repoTest
 }
 
-// repoTest give access to test only functions
+// repoTest give access to test-only functions
 type repoTest interface {
 	// AddRemote add a new remote to the repository
 	AddRemote(name string, url string) error

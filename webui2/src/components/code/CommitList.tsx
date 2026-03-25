@@ -1,55 +1,78 @@
-import { useState, useEffect } from 'react'
+// Paginated commit history grouped by calendar date. Each row links to the
+// commit detail page. Used in CodePage's "History" view.
+
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import { GitCommit } from 'lucide-react'
+import { gql, useQuery } from '@apollo/client'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getCommits } from '@/lib/gitApi'
-import type { GitCommit as GitCommitType } from '@/lib/gitApi'
 import { useRepo } from '@/lib/repo'
+
+const COMMITS_QUERY = gql`
+  query CommitList($repo: String, $ref: String!, $path: String, $after: String, $first: Int) {
+    repository(ref: $repo) {
+      commits(ref: $ref, path: $path, after: $after, first: $first) {
+        nodes {
+          hash
+          shortHash
+          message
+          authorName
+          date
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+`
+
+const PAGE_SIZE = 30
 
 interface CommitListProps {
   ref_: string
   path?: string
 }
 
-const PAGE_SIZE = 30
+type CommitNode = {
+  hash: string
+  shortHash: string
+  message: string
+  authorName: string
+  date: string
+}
 
-// Paginated commit history grouped by calendar date. Each row links to the
-// commit detail page. Used in CodePage's "History" view.
 export function CommitList({ ref_, path }: CommitListProps) {
   const repo = useRepo()
-  const [commits, setCommits] = useState<GitCommitType[]>([])
-  const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [hasMore, setHasMore] = useState(true)
+  const [cursor, setCursor] = useState<string | null>(null)
+  const [allCommits, setAllCommits] = useState<CommitNode[]>([])
 
-  useEffect(() => {
-    setCommits([])
-    setHasMore(true)
-    setError(null)
-    setLoading(true)
-    getCommits(ref_, { path, limit: PAGE_SIZE })
-      .then((data) => {
-        setCommits(data)
-        setHasMore(data.length === PAGE_SIZE)
-      })
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false))
-  }, [ref_, path])
+  const { loading, error, fetchMore } = useQuery(COMMITS_QUERY, {
+    variables: { repo, ref: ref_, path: path ?? null, after: null, first: PAGE_SIZE },
+    skip: !ref_,
+    onCompleted(data) {
+      const nodes = data?.repository?.commits?.nodes ?? []
+      setAllCommits(nodes)
+      setCursor(data?.repository?.commits?.pageInfo?.endCursor ?? null)
+    },
+  })
+
+  const hasMore = !!cursor && allCommits.length > 0 && allCommits.length % PAGE_SIZE === 0
+  const [loadingMore, setLoadingMore] = useState(false)
 
   function loadMore() {
-    const last = commits[commits.length - 1]
-    if (!last) return
+    if (!cursor) return
     setLoadingMore(true)
-    getCommits(ref_, { path, limit: PAGE_SIZE, after: last.hash })
-      .then((data) => {
-        setCommits((prev) => [...prev, ...data])
-        setHasMore(data.length === PAGE_SIZE)
-      })
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoadingMore(false))
+    fetchMore({
+      variables: { after: cursor },
+    }).then((result) => {
+      const newNodes = result.data?.repository?.commits?.nodes ?? []
+      setAllCommits((prev) => [...prev, ...newNodes])
+      setCursor(result.data?.repository?.commits?.pageInfo?.endCursor ?? null)
+    }).finally(() => setLoadingMore(false))
   }
 
   if (loading) return <CommitListSkeleton />
@@ -57,13 +80,12 @@ export function CommitList({ ref_, path }: CommitListProps) {
   if (error) {
     return (
       <div className="rounded-md border border-border px-4 py-8 text-center text-sm text-destructive">
-        {error}
+        {error.message}
       </div>
     )
   }
 
-  // Group commits by date (YYYY-MM-DD)
-  const groups = groupByDate(commits)
+  const groups = groupByDate(allCommits)
 
   return (
     <div className="space-y-6">
@@ -91,12 +113,11 @@ export function CommitList({ ref_, path }: CommitListProps) {
   )
 }
 
-function CommitRow({ commit, repo }: { commit: GitCommitType; repo: string | null }) {
+function CommitRow({ commit, repo }: { commit: CommitNode; repo: string | null }) {
   const commitPath = repo ? `/${repo}/commit/${commit.hash}` : `/commit/${commit.hash}`
   return (
     <div className="flex items-center gap-3 bg-background px-4 py-3 hover:bg-muted/30">
       <GitCommit className="size-4 shrink-0 text-muted-foreground" />
-
       <div className="min-w-0 flex-1">
         <Link
           to={commitPath}
@@ -109,7 +130,6 @@ function CommitRow({ commit, repo }: { commit: GitCommitType; repo: string | nul
           {formatDistanceToNow(new Date(commit.date), { addSuffix: true })}
         </p>
       </div>
-
       <Link
         to={commitPath}
         className="shrink-0 font-mono text-xs text-muted-foreground hover:text-foreground hover:underline"
@@ -121,8 +141,8 @@ function CommitRow({ commit, repo }: { commit: GitCommitType; repo: string | nul
   )
 }
 
-function groupByDate(commits: GitCommitType[]): [string, GitCommitType[]][] {
-  const map = new Map<string, GitCommitType[]>()
+function groupByDate(commits: CommitNode[]): [string, CommitNode[]][] {
+  const map = new Map<string, CommitNode[]>()
   for (const c of commits) {
     const date = new Date(c.date).toLocaleDateString('en-US', {
       year: 'numeric',

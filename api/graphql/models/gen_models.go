@@ -269,6 +269,67 @@ type EntityEvent struct {
 	Entity Entity                `json:"entity,omitempty"`
 }
 
+// The content of a git blob (file).
+type GitBlob struct {
+	// Path of the file relative to the repository root.
+	Path string `json:"path"`
+	// Git object hash. Can be used as a stable cache key or to construct a
+	//     raw download URL.
+	Hash string `json:"hash"`
+	// UTF-8 text content of the file. Null when isBinary is true or when
+	//     the file is too large to be returned inline (see isTruncated).
+	Text *string `json:"text,omitempty"`
+	// Size in bytes.
+	Size int `json:"size"`
+	// True when the file contains null bytes and is treated as binary.
+	//     text will be null.
+	IsBinary bool `json:"isBinary"`
+	// True when the file exceeds the maximum inline size and text has been
+	//     omitted. Use the raw download endpoint to retrieve the full content.
+	IsTruncated bool `json:"isTruncated"`
+}
+
+type GitChangedFileConnection struct {
+	Nodes      []*repository.ChangedFile `json:"nodes"`
+	PageInfo   *PageInfo                 `json:"pageInfo"`
+	TotalCount int                       `json:"totalCount"`
+}
+
+// Paginated list of commits.
+type GitCommitConnection struct {
+	Nodes      []*GitCommitMeta `json:"nodes"`
+	PageInfo   *PageInfo        `json:"pageInfo"`
+	TotalCount int              `json:"totalCount"`
+}
+
+// The last commit that touched each requested entry in a directory.
+type GitLastCommit struct {
+	// Entry name within the directory.
+	Name string `json:"name"`
+	// Most recent commit that modified this entry.
+	Commit *GitCommitMeta `json:"commit"`
+}
+
+// A git branch or tag reference.
+type GitRef struct {
+	// Full reference name, e.g. refs/heads/main or refs/tags/v1.0.
+	Name string `json:"name"`
+	// Short name, e.g. main or v1.0.
+	ShortName string `json:"shortName"`
+	// Whether this reference is a branch or a tag.
+	Type GitRefType `json:"type"`
+	// Commit hash the reference points to.
+	Hash string `json:"hash"`
+	// True for the branch HEAD currently points to.
+	IsDefault bool `json:"isDefault"`
+}
+
+type GitRefConnection struct {
+	Nodes      []*GitRef `json:"nodes"`
+	PageInfo   *PageInfo `json:"pageInfo"`
+	TotalCount int       `json:"totalCount"`
+}
+
 type IdentityConnection struct {
 	Edges      []*IdentityEdge   `json:"edges"`
 	Nodes      []IdentityWrapper `json:"nodes"`

@@ -42,12 +42,11 @@ func (r rootQueryResolver) Repository(_ context.Context, ref *string) (*models.R
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, nil
 	}
 
 	return &models.Repository{
-		Cache: r.cache,
-		Repo:  repo,
+		Repo: repo,
 	}, nil
 }
 
@@ -65,7 +64,7 @@ func (r rootQueryResolver) Repositories(_ context.Context, after *string, before
 
 	edger := func(repo *cache.RepoCache, offset int) connections.Edge {
 		return models.RepositoryEdge{
-			Node:   &models.Repository{Cache: r.cache, Repo: repo},
+			Node:   &models.Repository{Repo: repo},
 			Cursor: connections.OffsetToCursor(offset),
 		}
 	}

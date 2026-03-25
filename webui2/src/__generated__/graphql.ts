@@ -541,6 +541,233 @@ export enum EntityEventType {
   Updated = 'UPDATED'
 }
 
+/** The content of a git blob (file). */
+export type GitBlob = {
+  __typename?: 'GitBlob';
+  /**
+   * Git object hash. Can be used as a stable cache key or to construct a
+   * raw download URL.
+   */
+  hash: Scalars['String']['output'];
+  /**
+   * True when the file contains null bytes and is treated as binary.
+   * text will be null.
+   */
+  isBinary: Scalars['Boolean']['output'];
+  /**
+   * True when the file exceeds the maximum inline size and text has been
+   * omitted. Use the raw download endpoint to retrieve the full content.
+   */
+  isTruncated: Scalars['Boolean']['output'];
+  /** Path of the file relative to the repository root. */
+  path: Scalars['String']['output'];
+  /** Size in bytes. */
+  size: Scalars['Int']['output'];
+  /**
+   * UTF-8 text content of the file. Null when isBinary is true or when
+   * the file is too large to be returned inline (see isTruncated).
+   */
+  text?: Maybe<Scalars['String']['output']>;
+};
+
+/** How a file was affected by a commit. */
+export enum GitChangeStatus {
+  /** File was created in this commit. */
+  Added = 'ADDED',
+  /** File was removed in this commit. */
+  Deleted = 'DELETED',
+  /** File content changed in this commit. */
+  Modified = 'MODIFIED',
+  /** File was moved or renamed in this commit. */
+  Renamed = 'RENAMED'
+}
+
+/** A file that was changed in a commit. */
+export type GitChangedFile = {
+  __typename?: 'GitChangedFile';
+  /** Previous path, non-null only for renames. */
+  oldPath?: Maybe<Scalars['String']['output']>;
+  /** Path of the file in the new version of the commit. */
+  path: Scalars['String']['output'];
+  /** How the file was affected by the commit. */
+  status: GitChangeStatus;
+};
+
+export type GitChangedFileConnection = {
+  __typename?: 'GitChangedFileConnection';
+  nodes: Array<GitChangedFile>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** Metadata for a single git commit. */
+export type GitCommit = {
+  __typename?: 'GitCommit';
+  /** Email address of the commit author. */
+  authorEmail: Scalars['String']['output'];
+  /** Name of the commit author. */
+  authorName: Scalars['String']['output'];
+  /** Timestamp from the author field (when the change was originally made). */
+  date: Scalars['Time']['output'];
+  /** Unified diff for a single file in this commit. */
+  diff?: Maybe<GitFileDiff>;
+  /**
+   * Files changed relative to the first parent (or the empty tree for the
+   * initial commit).
+   */
+  files: GitChangedFileConnection;
+  /** Full commit message. */
+  fullMessage: Scalars['String']['output'];
+  /** Full SHA-1 commit hash. */
+  hash: Scalars['String']['output'];
+  /** First line of the commit message. */
+  message: Scalars['String']['output'];
+  /** Hashes of parent commits. Empty for the initial commit. */
+  parents: Array<Scalars['String']['output']>;
+  /** Abbreviated commit hash, typically 8 characters. */
+  shortHash: Scalars['String']['output'];
+};
+
+
+/** Metadata for a single git commit. */
+export type GitCommitDiffArgs = {
+  path: Scalars['String']['input'];
+};
+
+
+/** Metadata for a single git commit. */
+export type GitCommitFilesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Paginated list of commits. */
+export type GitCommitConnection = {
+  __typename?: 'GitCommitConnection';
+  nodes: Array<GitCommit>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** A contiguous block of changes in a unified diff. */
+export type GitDiffHunk = {
+  __typename?: 'GitDiffHunk';
+  /** Lines in this hunk, including context, additions, and deletions. */
+  lines: Array<GitDiffLine>;
+  /** Number of lines from the new file included in this hunk. */
+  newLines: Scalars['Int']['output'];
+  /** Starting line number in the new file. */
+  newStart: Scalars['Int']['output'];
+  /** Number of lines from the old file included in this hunk. */
+  oldLines: Scalars['Int']['output'];
+  /** Starting line number in the old file. */
+  oldStart: Scalars['Int']['output'];
+};
+
+/** A single line in a unified diff hunk. */
+export type GitDiffLine = {
+  __typename?: 'GitDiffLine';
+  /** Raw line content, without the leading +/- prefix. */
+  content: Scalars['String']['output'];
+  /** Line number in the new file. 0 for deleted lines. */
+  newLine: Scalars['Int']['output'];
+  /** Line number in the old file. 0 for added lines. */
+  oldLine: Scalars['Int']['output'];
+  /** Whether this line is context, an addition, or a deletion. */
+  type: GitDiffLineType;
+};
+
+/** The role of a line within a unified diff hunk. */
+export enum GitDiffLineType {
+  /** A line added in the new version. */
+  Added = 'ADDED',
+  /** An unchanged line present in both old and new versions. */
+  Context = 'CONTEXT',
+  /** A line removed from the old version. */
+  Deleted = 'DELETED'
+}
+
+/** The diff for a single file in a commit. */
+export type GitFileDiff = {
+  __typename?: 'GitFileDiff';
+  /** Contiguous blocks of changes. Empty for binary files. */
+  hunks: Array<GitDiffHunk>;
+  /** True when the file is binary and no textual diff is available. */
+  isBinary: Scalars['Boolean']['output'];
+  /** True when the file was deleted in this commit. */
+  isDelete: Scalars['Boolean']['output'];
+  /** True when the file was created in this commit. */
+  isNew: Scalars['Boolean']['output'];
+  /** Previous path, non-null only for renames. */
+  oldPath?: Maybe<Scalars['String']['output']>;
+  /** Path of the file in the new version. */
+  path: Scalars['String']['output'];
+};
+
+/** The last commit that touched each requested entry in a directory. */
+export type GitLastCommit = {
+  __typename?: 'GitLastCommit';
+  /** Most recent commit that modified this entry. */
+  commit: GitCommit;
+  /** Entry name within the directory. */
+  name: Scalars['String']['output'];
+};
+
+/** The type of object a git tree entry points to. */
+export enum GitObjectType {
+  /** A regular or executable file. */
+  Blob = 'BLOB',
+  /** A git submodule. */
+  Submodule = 'SUBMODULE',
+  /** A symbolic link. */
+  Symlink = 'SYMLINK',
+  /** A directory. */
+  Tree = 'TREE'
+}
+
+/** A git branch or tag reference. */
+export type GitRef = {
+  __typename?: 'GitRef';
+  /** Commit hash the reference points to. */
+  hash: Scalars['String']['output'];
+  /** True for the branch HEAD currently points to. */
+  isDefault: Scalars['Boolean']['output'];
+  /** Full reference name, e.g. refs/heads/main or refs/tags/v1.0. */
+  name: Scalars['String']['output'];
+  /** Short name, e.g. main or v1.0. */
+  shortName: Scalars['String']['output'];
+  /** Whether this reference is a branch or a tag. */
+  type: GitRefType;
+};
+
+export type GitRefConnection = {
+  __typename?: 'GitRefConnection';
+  nodes: Array<GitRef>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+/** The kind of git reference: a branch or a tag. */
+export enum GitRefType {
+  /** A local branch (refs/heads/*). */
+  Branch = 'BRANCH',
+  /** An annotated or lightweight tag (refs/tags/*). */
+  Tag = 'TAG'
+}
+
+/** An entry in a git tree (directory listing). */
+export type GitTreeEntry = {
+  __typename?: 'GitTreeEntry';
+  /** Git object hash. */
+  hash: Scalars['String']['output'];
+  /** File or directory name within the parent tree. */
+  name: Scalars['String']['output'];
+  /** Whether this entry is a file, directory, symlink, or submodule. */
+  type: GitObjectType;
+};
+
 /** Represents an identity */
 export type Identity = Entity & {
   __typename?: 'Identity';
@@ -734,7 +961,10 @@ export type Query = {
   __typename?: 'Query';
   /** List all registered repositories. */
   repositories: RepositoryConnection;
-  /** Access a repository by reference/name. If no ref is given, the default repository is returned if any. */
+  /**
+   * Access a repository by reference/name. If no ref is given, the default repository is returned if any.
+   * Returns null if the referenced repository does not exist.
+   */
   repository?: Maybe<Repository>;
   /** Server configuration and authentication mode. */
   serverConfig: ServerConfig;
@@ -759,10 +989,34 @@ export type Repository = {
   allBugs: BugConnection;
   /** All the identities */
   allIdentities: IdentityConnection;
+  /**
+   * Content of the file at path under ref. Null if the path does not exist
+   * or resolves to a tree rather than a blob.
+   */
+  blob?: Maybe<GitBlob>;
+  /** Look up a bug by id prefix. Returns null if no bug matches the prefix. */
   bug?: Maybe<Bug>;
+  /** A single commit by hash. Returns null if the hash does not exist in the repository. */
+  commit?: Maybe<GitCommit>;
+  /**
+   * Paginated commit log reachable from ref, optionally filtered to commits
+   * touching path.
+   */
+  commits: GitCommitConnection;
+  /** Look up an identity by id prefix. Returns null if no identity matches the prefix. */
   identity?: Maybe<Identity>;
-  /** The name of the repository. Null for the default (unnamed) repository. */
+  /**
+   * The most recent commit that touched each of the named entries in the
+   * directory at path under ref. Use this to populate last-commit info on a
+   * tree listing without blocking the initial tree fetch.
+   */
+  lastCommits: Array<GitLastCommit>;
+  /** The name of the repository. Null for the default (unnamed) repository in a single-repo setup. */
   name?: Maybe<Scalars['String']['output']>;
+  /** All branches and tags, optionally filtered by type. */
+  refs: GitRefConnection;
+  /** Directory listing at path under ref. An empty path returns the root tree. */
+  tree: Array<GitTreeEntry>;
   /** The identity created or selected by the user as its own */
   userIdentity?: Maybe<Identity>;
   /** List of valid labels. */
@@ -787,13 +1041,56 @@ export type RepositoryAllIdentitiesArgs = {
 };
 
 
+export type RepositoryBlobArgs = {
+  path: Scalars['String']['input'];
+  ref: Scalars['String']['input'];
+};
+
+
 export type RepositoryBugArgs = {
   prefix: Scalars['String']['input'];
 };
 
 
+export type RepositoryCommitArgs = {
+  hash: Scalars['String']['input'];
+};
+
+
+export type RepositoryCommitsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  path?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
+  since?: InputMaybe<Scalars['Time']['input']>;
+  until?: InputMaybe<Scalars['Time']['input']>;
+};
+
+
 export type RepositoryIdentityArgs = {
   prefix: Scalars['String']['input'];
+};
+
+
+export type RepositoryLastCommitsArgs = {
+  names: Array<Scalars['String']['input']>;
+  path?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
+};
+
+
+export type RepositoryRefsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  type?: InputMaybe<GitRefType>;
+};
+
+
+export type RepositoryTreeArgs = {
+  path?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
 };
 
 

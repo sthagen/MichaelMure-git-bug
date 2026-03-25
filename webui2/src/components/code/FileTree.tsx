@@ -3,13 +3,22 @@ import { Link } from 'react-router-dom'
 import { formatDistanceToNow } from 'date-fns'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useRepo } from '@/lib/repo'
-import type { GitTreeEntry } from '@/lib/gitApi'
+import type { GitTreeEntry } from '@/__generated__/graphql'
+
+export interface TreeEntryWithCommit extends GitTreeEntry {
+  lastCommit?: {
+    hash: string
+    shortHash: string
+    message: string
+    date: string
+  }
+}
 
 interface FileTreeProps {
-  entries: GitTreeEntry[]
+  entries: TreeEntryWithCommit[]
   path: string
   loading?: boolean
-  onNavigate: (entry: GitTreeEntry) => void
+  onNavigate: (entry: TreeEntryWithCommit) => void
   onNavigateUp: () => void
 }
 
@@ -18,7 +27,7 @@ interface FileTreeProps {
 export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: FileTreeProps) {
   // Directories first, then files — each group alphabetical
   const sorted = [...entries].sort((a, b) => {
-    if (a.type !== b.type) return a.type === 'tree' ? -1 : 1
+    if (a.type !== b.type) return a.type === 'TREE' ? -1 : 1
     return a.name.localeCompare(b.name)
   })
 
@@ -54,10 +63,10 @@ function FileTreeRow({
   entry,
   onNavigate,
 }: {
-  entry: GitTreeEntry
-  onNavigate: (entry: GitTreeEntry) => void
+  entry: TreeEntryWithCommit
+  onNavigate: (entry: TreeEntryWithCommit) => void
 }) {
-  const isDir = entry.type === 'tree'
+  const isDir = entry.type === 'TREE'
   const repo = useRepo()
 
   return (

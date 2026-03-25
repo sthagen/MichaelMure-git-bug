@@ -1,45 +1,63 @@
-import { useState, useEffect } from 'react'
+// Commit detail page (/:repo/commit/:hash). Shows commit metadata, full
+// message, parent links, and changed files with lazy diffs.
+
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { ArrowLeft, GitCommit } from 'lucide-react'
+import { gql, useQuery } from '@apollo/client'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getCommit } from '@/lib/gitApi'
-import type { GitCommitDetail } from '@/lib/gitApi'
 import { useRepo } from '@/lib/repo'
 import { FileDiffView } from '@/components/code/FileDiffView'
 
-// Commit detail page (/:repo/commit/:hash). Shows commit metadata, full message,
-// parent links, and the list of files changed with add/modify/delete/rename status.
+const COMMIT_QUERY = gql`
+  query CommitPageDetail($repo: String, $hash: String!) {
+    repository(ref: $repo) {
+      commit(hash: $hash) {
+        hash
+        shortHash
+        message
+        fullMessage
+        authorName
+        authorEmail
+        date
+        parents
+        files {
+          nodes {
+            path
+            oldPath
+            status
+          }
+        }
+      }
+    }
+  }
+`
+
 export function CommitPage() {
   const { hash } = useParams<{ hash: string }>()
   const navigate = useNavigate()
   const repo = useRepo()
-  const [commit, setCommit] = useState<GitCommitDetail | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    setLoading(true)
-    setError(null)
-    getCommit(hash!)
-      .then(setCommit)
-      .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false))
-  }, [hash])
+  const { data, loading, error } = useQuery(COMMIT_QUERY, {
+    variables: { repo, hash },
+    skip: !hash,
+  })
 
   if (loading) return <CommitPageSkeleton />
 
   if (error) {
     return (
       <div className="py-16 text-center text-sm text-destructive">
-        Failed to load commit: {error}
+        Failed to load commit: {error.message}
       </div>
     )
   }
 
+  const commit = data?.repository?.commit
   if (!commit) return null
 
   const date = new Date(commit.date)
+  const files = commit.files?.nodes ?? []
 
   return (
     <div>
@@ -51,14 +69,12 @@ export function CommitPage() {
         Back
       </button>
 
-      {/* Header */}
       <div className="mb-6 rounded-md border border-border p-5">
         <div className="mb-1 flex items-start gap-3">
           <GitCommit className="mt-1 size-5 shrink-0 text-muted-foreground" />
           <h1 className="text-lg font-semibold leading-snug">{commit.message}</h1>
         </div>
 
-        {/* Full message body (if multi-line) */}
         {commit.fullMessage.includes('\n') && (
           <pre className="mb-4 ml-8 mt-3 whitespace-pre-wrap font-sans text-sm text-muted-foreground">
             {commit.fullMessage.split('\n').slice(1).join('\n').trim()}
@@ -68,19 +84,16 @@ export function CommitPage() {
         <div className="ml-8 mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span>
             <span className="font-medium text-foreground">{commit.authorName}</span>
-            {commit.authorEmail && (
-              <span> &lt;{commit.authorEmail}&gt;</span>
-            )}
+            {commit.authorEmail && <span> &lt;{commit.authorEmail}&gt;</span>}
           </span>
           <span title={date.toISOString()}>{format(date, 'PPP')}</span>
         </div>
 
         <div className="ml-8 mt-3 flex flex-wrap gap-3 text-xs">
           <span className="text-muted-foreground">
-            commit{' '}
-            <code className="font-mono text-foreground">{commit.hash}</code>
+            commit <code className="font-mono text-foreground">{commit.hash}</code>
           </span>
-          {commit.parents.map((p) => (
+          {commit.parents.map((p: string) => (
             <span key={p} className="text-muted-foreground">
               parent{' '}
               <Link
@@ -94,21 +107,20 @@ export function CommitPage() {
         </div>
       </div>
 
-      {/* Changed files — each row is collapsible and loads its diff lazily */}
       <div>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
-          {commit.files.length} file{commit.files.length !== 1 ? 's' : ''} changed
+          {files.length} file{files.length !== 1 ? 's' : ''} changed
         </h2>
         <div className="overflow-hidden rounded-md border border-border divide-y divide-border">
-          {commit.files.length === 0 && (
+          {files.length === 0 && (
             <p className="px-4 py-4 text-sm text-muted-foreground">No file changes.</p>
           )}
-          {commit.files.map((file) => (
+          {files.map((file: { path: string; oldPath?: string | null; status: string }) => (
             <FileDiffView
               key={file.path}
-              sha={commit.hash}
+              hash={commit.hash}
               path={file.path}
-              oldPath={file.oldPath}
+              oldPath={file.oldPath ?? undefined}
               status={file.status}
             />
           ))}

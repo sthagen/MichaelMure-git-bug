@@ -31,8 +31,7 @@ export default defineConfig({
       '/graphql': { target: API_URL, changeOrigin: true },
       '/gitfile': { target: API_URL, changeOrigin: true },
       '/upload': { target: API_URL, changeOrigin: true },
-      '/api': { target: API_URL, changeOrigin: true },
-      '/auth': { target: API_URL, changeOrigin: true },
+'/auth': { target: API_URL, changeOrigin: true },
     },
   },
 })

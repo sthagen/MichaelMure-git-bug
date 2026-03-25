@@ -5,14 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
-	"os"
-	"os/signal"
 	"strconv"
-	"syscall"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -35,7 +31,7 @@ import (
 const webUIOpenConfigKey = "git-bug.webui.open"
 
 type webUIOptions struct {
-	host      string
+	bind      string
 	port      int
 	open      bool
 	noOpen    bool
@@ -70,10 +66,10 @@ Available git config:
 	flags := cmd.Flags()
 	flags.SortFlags = false
 
-	flags.StringVar(&options.host, "host", "127.0.0.1", "Network address or hostname to listen to (default to 127.0.0.1)")
+	flags.StringVar(&options.bind, "bind", "127.0.0.1", "Network address to bind to (default to 127.0.0.1)")
+	flags.IntVarP(&options.port, "port", "p", 0, "Port to listen on (default to random available port)")
 	flags.BoolVar(&options.open, "open", false, "Automatically open the web UI in the default browser")
 	flags.BoolVar(&options.noOpen, "no-open", false, "Prevent the automatic opening of the web UI in the default browser")
-	flags.IntVarP(&options.port, "port", "p", 0, "Port to listen to (default to random available port)")
 	flags.BoolVar(&options.readOnly, "read-only", false, "Whether to run the web UI in read-only mode")
 	flags.BoolVar(&options.logErrors, "log-errors", false, "Whether to log errors")
 	flags.StringVarP(&options.query, "query", "q", "", "The query to open in the web UI bug list")
@@ -86,25 +82,8 @@ Available git config:
 	return cmd
 }
 
-func runWebUI(env *execenv.Env, opts webUIOptions) error {
-	if opts.port == 0 {
-		var err error
-		opts.port, err = freeport.GetFreePort()
-		if err != nil {
-			return err
-		}
-	}
-
-	addr := net.JoinHostPort(opts.host, strconv.Itoa(opts.port))
-	baseURL := fmt.Sprintf("http://%s", addr)
-	webUiAddr := baseURL
-	toOpen := webUiAddr
-
-	if len(opts.query) > 0 {
-		// Explicitly set the query parameter instead of going with a default one.
-		toOpen = fmt.Sprintf("%s/?q=%s", webUiAddr, url.QueryEscape(opts.query))
-	}
-
+// setupRoutes builds the router and registers all API and UI routes.
+func setupRoutes(env *execenv.Env, opts webUIOptions, baseURL string) (*mux.Router, func() error, error) {
 	// Collect enabled login providers.
 	var providers []provider.Provider
 	if opts.githubClientId != "" {
@@ -131,18 +110,15 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 		// Single-user mode: inject the identity from git config for every request.
 		author, err := identity.GetUserIdentity(env.Repo)
 		if err != nil {
-			return err
+			return nil, nil, err
 		}
 		router.Use(auth.Middleware(author.Id()))
 	}
 
 	mrc := cache.NewMultiRepoCache()
-
 	_, events := mrc.RegisterDefaultRepository(env.Repo)
-
-	err := execenv.CacheBuildProgressBar(env, events)
-	if err != nil {
-		return err
+	if err := execenv.CacheBuildProgressBar(env, events); err != nil {
+		return nil, nil, err
 	}
 
 	var errOut io.Writer
@@ -172,80 +148,55 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 		router.Path("/auth/adopt").Methods("POST").HandlerFunc(ah.HandleAdopt)
 	}
 
-	// Top-level API routes
 	router.Path("/playground").Handler(playground.Handler("git-bug", "/graphql"))
 	router.Path("/graphql").Handler(graphqlHandler)
 
-	// /api/repos/{owner}/{repo}/ subrouter.
-	// owner is reserved for future use; "_" means "local".
-	// repo "_" resolves to the default repository.
-	//
-	// In oauth mode all API endpoints require a valid session, making the
-	// server safe to deploy publicly. In local and readonly modes the
-	// middleware only injects identity without blocking.
-	apiRepos := router.PathPrefix("/api/repos/{owner}/{repo}").Subrouter()
-	if authMode == "external" {
-		apiRepos.Use(auth.RequireAuth)
-	}
-	apiRepos.Path("/git/refs").Methods("GET").Handler(httpapi.NewGitRefsHandler(mrc))
-	apiRepos.Path("/git/trees/{ref}").Methods("GET").Handler(httpapi.NewGitTreeHandler(mrc))
-	apiRepos.Path("/git/blobs/{ref}").Methods("GET").Handler(httpapi.NewGitBlobHandler(mrc))
-	apiRepos.Path("/git/raw/{ref}/{path:.*}").Methods("GET").Handler(httpapi.NewGitRawHandler(mrc))
-	apiRepos.Path("/git/commits").Methods("GET").Handler(httpapi.NewGitCommitsHandler(mrc))
-	apiRepos.Path("/git/commits/{sha}").Methods("GET").Handler(httpapi.NewGitCommitHandler(mrc))
-	apiRepos.Path("/git/commits/{sha}/diff").Methods("GET").Handler(httpapi.NewGitCommitDiffHandler(mrc))
-	apiRepos.Path("/file/{hash}").Methods("GET").Handler(httpapi.NewGitFileHandler(mrc))
-	apiRepos.Path("/upload").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
-
-	// Git smart HTTP — clone, fetch, push.
-	gitSrv := httpapi.NewGitServeHandler(mrc, opts.readOnly)
-	apiRepos.Path("/info/refs").Methods("GET").HandlerFunc(gitSrv.ServeInfoRefs)
-	apiRepos.Path("/git-upload-pack").Methods("POST").HandlerFunc(gitSrv.ServeUploadPack)
-	apiRepos.Path("/git-receive-pack").Methods("POST").HandlerFunc(gitSrv.ServeReceivePack)
+	// File and upload routes for bug attachments.
+	router.Path("/gitfile/{repo}/{hash}").Handler(httpapi.NewGitFileHandler(mrc))
+	router.Path("/upload/{repo}").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
 
 	router.PathPrefix("/").Handler(webui2.NewHandler())
 
-	srv := &http.Server{
-		Addr:    addr,
-		Handler: router,
+	return router, mrc.Close, nil
+}
+
+func runWebUI(env *execenv.Env, opts webUIOptions) error {
+	if opts.port == 0 {
+		var err error
+		opts.port, err = freeport.GetFreePort()
+		if err != nil {
+			return err
+		}
 	}
 
-	done := make(chan bool)
-	quit := make(chan os.Signal, 1)
+	addr := net.JoinHostPort(opts.bind, strconv.Itoa(opts.port))
+	baseURL := "http://" + addr
 
-	// register as handler of the interrupt signal to trigger the teardown
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-
-	go func() {
-		<-quit
-		env.Out.Println("WebUI is shutting down...")
-
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-
-		srv.SetKeepAlivesEnabled(false)
-		if err := srv.Shutdown(ctx); err != nil {
-			log.Fatalf("Could not gracefully shutdown the WebUI: %v\n", err)
+	router, closeRoutes, err := setupRoutes(env, opts, baseURL)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := closeRoutes(); err != nil {
+			env.Err.Println(err)
 		}
-
-		// Teardown
-		err = mrc.Close()
-		if err != nil {
-			env.Out.Println(err)
-		}
-
-		close(done)
 	}()
 
-	env.Out.Printf("Web UI: %s\n", webUiAddr)
-	env.Out.Printf("Graphql API: http://%s/graphql\n", addr)
-	env.Out.Printf("Graphql Playground: http://%s/playground\n", addr)
-	if authMode == "external" {
+	server := &http.Server{Addr: addr, Handler: router}
+
+	env.Out.Printf("Web UI: %s\n", baseURL)
+	env.Out.Printf("Graphql API: %s/graphql\n", baseURL)
+	env.Out.Printf("Graphql Playground: %s/playground\n", baseURL)
+	if opts.githubClientId != "" {
 		env.Out.Printf("Login callback URL: %s/auth/callback\n", baseURL)
 		env.Out.Println("  ↳ Register this URL in your OAuth/OIDC application settings")
 	}
-	env.Out.Println("Press Ctrl+c to quit")
+	env.Out.Printf("\n[ Press Ctrl+c to quit ]\n\n")
 
+	toOpen := baseURL
+	if len(opts.query) > 0 {
+		toOpen = fmt.Sprintf("%s/?q=%s", baseURL, url.QueryEscape(opts.query))
+	}
 	configOpen, err := env.Repo.AnyConfig().ReadBool(webUIOpenConfigKey)
 	if errors.Is(err, repository.ErrNoConfigEntry) {
 		// default to true
@@ -253,23 +204,65 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 	} else if err != nil {
 		return err
 	}
+	if (configOpen && !opts.noOpen) || opts.open {
+		go openWhenUp(env, toOpen)
+	}
 
-	shouldOpen := (configOpen && !opts.noOpen) || opts.open
+	go func() {
+		<-env.Ctx.Done()
+		env.Out.Println("shutting down...")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		server.SetKeepAlivesEnabled(false)
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			env.Err.Printf("Could not gracefully shutdown the HTTP server: %v\n", err)
+		}
+	}()
 
-	if shouldOpen {
-		err = open.Run(toOpen)
-		if err != nil {
-			env.Out.Println(err)
+	if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+	return nil
+}
+
+func openWhenUp(env *execenv.Env, toOpen string) {
+	const maxAttempts = 3
+	if isUp(toOpen, maxAttempts, 3*time.Second) {
+		if err := open.Run(toOpen); err != nil {
+			env.Err.Println(err)
+			return
+		}
+		env.Out.Printf("opened your default browser to url: %s\n", toOpen)
+		return
+	}
+	env.Err.Printf(
+		"uh oh! it appears that the http server hasn't started.\n"+
+			"we failed to reach %s after %d attempts.\n",
+		toOpen, maxAttempts,
+	)
+}
+
+func isUp(url string, maxRetries int, initialDelay time.Duration) bool {
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
+
+	delay := initialDelay
+
+	for attempt := 1; attempt <= maxRetries; attempt++ {
+		resp, err := client.Head(url)
+		if err == nil {
+			_ = resp.Body.Close()
+			if resp.StatusCode >= 200 && resp.StatusCode < 400 {
+				return true
+			}
+		}
+
+		if attempt < maxRetries {
+			time.Sleep(delay)
+			delay *= 2
 		}
 	}
 
-	err = srv.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
-		return err
-	}
-
-	<-done
-
-	env.Out.Println("WebUI stopped")
-	return nil
+	return false
 }

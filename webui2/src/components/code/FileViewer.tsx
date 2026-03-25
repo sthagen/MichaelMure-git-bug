@@ -1,23 +1,22 @@
+// Syntax-highlighted file viewer with line numbers and copy button.
+// highlight.js is loaded lazily so it doesn't bloat the initial bundle.
+
 import { useState, useEffect } from 'react'
-import { Copy, Download } from 'lucide-react'
+import { Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { getRawUrl } from '@/lib/gitApi'
-import type { GitBlob } from '@/lib/gitApi'
+import type { GitBlob } from '@/__generated__/graphql'
 
 interface FileViewerProps {
   blob: GitBlob
-  ref: string
   loading?: boolean
 }
 
-// Syntax-highlighted file viewer with line numbers, copy, and download buttons.
-// highlight.js is loaded lazily (dynamic import) so it doesn't bloat the initial bundle.
-export function FileViewer({ blob, ref, loading }: FileViewerProps) {
+export function FileViewer({ blob, loading }: FileViewerProps) {
   const [highlighted, setHighlighted] = useState<{ html: string; lineCount: number } | null>(null)
 
   useEffect(() => {
-    if (blob.isBinary || !blob.content) {
+    if (blob.isBinary || !blob.text) {
       setHighlighted({ html: '', lineCount: 0 })
       return
     }
@@ -27,11 +26,11 @@ export function FileViewer({ blob, ref, loading }: FileViewerProps) {
       if (cancelled) return
       const ext = blob.path.split('.').pop() ?? ''
       const result = hljs.getLanguage(ext)
-        ? hljs.highlight(blob.content, { language: ext })
-        : hljs.highlightAuto(blob.content)
+        ? hljs.highlight(blob.text!, { language: ext })
+        : hljs.highlightAuto(blob.text!)
       setHighlighted({
         html: result.value,
-        lineCount: blob.content.split('\n').length,
+        lineCount: blob.text!.split('\n').length,
       })
     })
     return () => { cancelled = true }
@@ -41,32 +40,19 @@ export function FileViewer({ blob, ref, loading }: FileViewerProps) {
   const { html, lineCount } = highlighted
 
   function copyToClipboard() {
-    navigator.clipboard.writeText(blob.content)
+    if (blob.text) navigator.clipboard.writeText(blob.text)
   }
 
   return (
     <div className="overflow-hidden rounded-md border border-border">
-      {/* Metadata bar */}
       <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
         <span>
           {lineCount.toLocaleString()} lines · {formatBytes(blob.size)}
+          {blob.isTruncated && ' · truncated'}
         </span>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7"
-            onClick={copyToClipboard}
-            title="Copy"
-          >
-            <Copy className="size-3.5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="size-7" asChild title="Download">
-            <a href={getRawUrl(ref, blob.path)} download>
-              <Download className="size-3.5" />
-            </a>
-          </Button>
-        </div>
+        <Button variant="ghost" size="icon" className="size-7" onClick={copyToClipboard} title="Copy">
+          <Copy className="size-3.5" />
+        </Button>
       </div>
 
       {blob.isBinary ? (
@@ -74,8 +60,6 @@ export function FileViewer({ blob, ref, loading }: FileViewerProps) {
           Binary file — {formatBytes(blob.size)}
         </div>
       ) : (
-        // Line numbers are a fixed column; code scrolls horizontally independently.
-        // Keeping them in separate divs avoids having to split highlighted HTML by line.
         <div className="flex overflow-x-auto font-mono text-xs leading-5">
           <div
             className="select-none border-r border-border bg-muted/20 px-4 py-4 text-right text-muted-foreground/50"
@@ -86,10 +70,7 @@ export function FileViewer({ blob, ref, loading }: FileViewerProps) {
             ))}
           </div>
           <pre className="flex-1 overflow-visible px-4 py-4">
-            <code
-              className="hljs"
-              dangerouslySetInnerHTML={{ __html: html }}
-            />
+            <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
           </pre>
         </div>
       )}

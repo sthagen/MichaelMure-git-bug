@@ -13,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/git-bug/git-bug/entity"
+	"github.com/git-bug/git-bug/repository"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -2536,6 +2537,16 @@ func (ec *executionContext) unmarshalNString2githubᚗcomᚋgitᚑbugᚋgitᚑbu
 }
 
 func (ec *executionContext) marshalNString2githubᚗcomᚋgitᚑbugᚋgitᚑbugᚋentityᚐId(ctx context.Context, sel ast.SelectionSet, v entity.Id) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNString2githubᚗcomᚋgitᚑbugᚋgitᚑbugᚋrepositoryᚐHash(ctx context.Context, v any) (repository.Hash, error) {
+	var res repository.Hash
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNString2githubᚗcomᚋgitᚑbugᚋgitᚑbugᚋrepositoryᚐHash(ctx context.Context, sel ast.SelectionSet, v repository.Hash) graphql.Marshaler {
 	return v
 }
 

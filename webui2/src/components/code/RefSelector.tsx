@@ -3,7 +3,7 @@ import { GitBranch, Tag, Check, ChevronsUpDown } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { GitRef } from '@/lib/gitApi'
+import type { GitRef } from '@/__generated__/graphql'
 import { cn } from '@/lib/utils'
 
 interface RefSelectorProps {
@@ -21,8 +21,8 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
   const filtered = refs.filter((r) =>
     r.shortName.toLowerCase().includes(filter.toLowerCase()),
   )
-  const branches = filtered.filter((r) => r.type === 'branch')
-  const tags = filtered.filter((r) => r.type === 'tag')
+  const branches = filtered.filter((r) => r.type === 'BRANCH')
+  const tags = filtered.filter((r) => r.type === 'TAG')
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -95,7 +95,7 @@ function RefItem({
         active && 'font-medium',
       )}
     >
-      {ref_.type === 'branch' ? (
+      {ref_.type === 'BRANCH' ? (
         <GitBranch className="size-3 shrink-0 text-muted-foreground" />
       ) : (
         <Tag className="size-3 shrink-0 text-muted-foreground" />

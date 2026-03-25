@@ -1,48 +1,71 @@
 // Collapsible diff view for a single file in a commit.
-// Diff is fetched lazily on first expand to avoid loading large diffs upfront.
+// Diff is fetched lazily on first expand via GraphQL.
 
 import { useState } from 'react'
 import { ChevronRight, FilePlus, FileMinus, FileEdit } from 'lucide-react'
+import { gql, useLazyQuery } from '@apollo/client'
 import { cn } from '@/lib/utils'
-import { getCommitDiff } from '@/lib/gitApi'
-import type { FileDiff, DiffHunk } from '@/lib/gitApi'
+import { useRepo } from '@/lib/repo'
+
+const DIFF_QUERY = gql`
+  query FileDiff($repo: String, $hash: String!, $path: String!) {
+    repository(ref: $repo) {
+      commit(hash: $hash) {
+        diff(path: $path) {
+          path
+          oldPath
+          isBinary
+          isNew
+          isDelete
+          hunks {
+            oldStart
+            oldLines
+            newStart
+            newLines
+            lines {
+              type
+              content
+              oldLine
+              newLine
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 interface FileDiffViewProps {
-  sha: string
+  hash: string
   path: string
   oldPath?: string
-  status: 'added' | 'modified' | 'deleted' | 'renamed'
+  status: string
 }
 
-const statusIcon = {
-  added:    <FilePlus  className="size-3.5 text-green-600 dark:text-green-400" />,
-  deleted:  <FileMinus className="size-3.5 text-red-500  dark:text-red-400" />,
-  modified: <FileEdit  className="size-3.5 text-yellow-500 dark:text-yellow-400" />,
-  renamed:  <FileEdit  className="size-3.5 text-blue-500  dark:text-blue-400" />,
+const statusIcon: Record<string, React.ReactNode> = {
+  ADDED:    <FilePlus  className="size-3.5 text-green-600 dark:text-green-400" />,
+  DELETED:  <FileMinus className="size-3.5 text-red-500  dark:text-red-400" />,
+  MODIFIED: <FileEdit  className="size-3.5 text-yellow-500 dark:text-yellow-400" />,
+  RENAMED:  <FileEdit  className="size-3.5 text-blue-500  dark:text-blue-400" />,
 }
+const statusBadge: Record<string, string> = { ADDED: 'A', DELETED: 'D', MODIFIED: 'M', RENAMED: 'R' }
 
-const statusBadge = { added: 'A', deleted: 'D', modified: 'M', renamed: 'R' }
-
-export function FileDiffView({ sha, path, oldPath, status }: FileDiffViewProps) {
+export function FileDiffView({ hash, path, oldPath, status }: FileDiffViewProps) {
+  const repo = useRepo()
   const [open, setOpen] = useState(false)
-  const [diff, setDiff] = useState<FileDiff | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [fetchDiff, { data, loading, error }] = useLazyQuery(DIFF_QUERY)
 
   function toggle() {
-    if (!open && diff === null && !loading) {
-      setLoading(true)
-      getCommitDiff(sha, path)
-        .then(setDiff)
-        .catch((e: Error) => setError(e.message))
-        .finally(() => setLoading(false))
+    if (!open && !data && !loading) {
+      fetchDiff({ variables: { repo, hash, path } })
     }
     setOpen((v) => !v)
   }
 
+  const diff = data?.repository?.commit?.diff
+
   return (
     <div className="divide-y divide-border">
-      {/* File header row — always visible, click to toggle */}
       <button
         onClick={toggle}
         className="flex w-full items-center gap-3 px-4 py-2.5 text-left hover:bg-muted/50 transition-colors"
@@ -53,9 +76,9 @@ export function FileDiffView({ sha, path, oldPath, status }: FileDiffViewProps) 
             open && 'rotate-90',
           )}
         />
-        {statusIcon[status]}
+        {statusIcon[status] ?? <FileEdit className="size-3.5 text-muted-foreground" />}
         <span className="min-w-0 flex-1 font-mono text-sm">
-          {status === 'renamed' ? (
+          {status === 'RENAMED' ? (
             <>
               <span className="text-muted-foreground line-through">{oldPath}</span>
               {' → '}
@@ -64,18 +87,17 @@ export function FileDiffView({ sha, path, oldPath, status }: FileDiffViewProps) 
           ) : path}
         </span>
         <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
-          {statusBadge[status]}
+          {statusBadge[status] ?? '?'}
         </span>
       </button>
 
-      {/* Diff body */}
       {open && (
         <div className="overflow-x-auto">
           {loading && (
             <div className="px-4 py-3 text-xs text-muted-foreground">Loading diff…</div>
           )}
           {error && (
-            <div className="px-4 py-3 text-xs text-destructive">Failed to load diff: {error}</div>
+            <div className="px-4 py-3 text-xs text-destructive">Failed to load diff: {error.message}</div>
           )}
           {diff && (
             diff.isBinary ? (
@@ -83,7 +105,7 @@ export function FileDiffView({ sha, path, oldPath, status }: FileDiffViewProps) 
             ) : diff.hunks.length === 0 ? (
               <div className="px-4 py-3 text-xs text-muted-foreground">No changes</div>
             ) : (
-              diff.hunks.map((hunk, i) => <Hunk key={i} hunk={hunk} />)
+              diff.hunks.map((hunk: HunkType, i: number) => <Hunk key={i} hunk={hunk} />)
             )
           )}
         </div>
@@ -92,10 +114,12 @@ export function FileDiffView({ sha, path, oldPath, status }: FileDiffViewProps) 
   )
 }
 
-function Hunk({ hunk }: { hunk: DiffHunk }) {
+type LineType = { type: string; content: string; oldLine: number; newLine: number }
+type HunkType = { oldStart: number; oldLines: number; newStart: number; newLines: number; lines: LineType[] }
+
+function Hunk({ hunk }: { hunk: HunkType }) {
   return (
     <div className="font-mono text-xs leading-5">
-      {/* Hunk header */}
       <div className="bg-blue-50 px-4 py-0.5 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 select-none">
         @@ -{hunk.oldStart},{hunk.oldLines} +{hunk.newStart},{hunk.newLines} @@
       </div>
@@ -104,32 +128,28 @@ function Hunk({ hunk }: { hunk: DiffHunk }) {
           key={i}
           className={cn(
             'flex',
-            line.type === 'added'   && 'bg-green-50  dark:bg-green-950/30',
-            line.type === 'deleted' && 'bg-red-50    dark:bg-red-950/30',
+            line.type === 'ADDED'   && 'bg-green-50  dark:bg-green-950/30',
+            line.type === 'DELETED' && 'bg-red-50    dark:bg-red-950/30',
           )}
         >
-          {/* Old line number */}
           <span className="w-10 shrink-0 select-none border-r border-border/50 px-2 text-right text-muted-foreground/50">
             {line.oldLine || ''}
           </span>
-          {/* New line number */}
           <span className="w-10 shrink-0 select-none border-r border-border/50 px-2 text-right text-muted-foreground/50">
             {line.newLine || ''}
           </span>
-          {/* Sign */}
           <span className={cn(
             'w-5 shrink-0 select-none text-center',
-            line.type === 'added'   && 'text-green-600 dark:text-green-400',
-            line.type === 'deleted' && 'text-red-500   dark:text-red-400',
-            line.type === 'context' && 'text-muted-foreground/40',
+            line.type === 'ADDED'   && 'text-green-600 dark:text-green-400',
+            line.type === 'DELETED' && 'text-red-500   dark:text-red-400',
+            line.type === 'CONTEXT' && 'text-muted-foreground/40',
           )}>
-            {line.type === 'added' ? '+' : line.type === 'deleted' ? '-' : ' '}
+            {line.type === 'ADDED' ? '+' : line.type === 'DELETED' ? '-' : ' '}
           </span>
-          {/* Content */}
           <pre className={cn(
             'flex-1 overflow-visible whitespace-pre px-2',
-            line.type === 'added'   && 'text-green-900 dark:text-green-200',
-            line.type === 'deleted' && 'text-red-900   dark:text-red-200',
+            line.type === 'ADDED'   && 'text-green-900 dark:text-green-200',
+            line.type === 'DELETED' && 'text-red-900   dark:text-red-200',
           )}>
             {line.content}
           </pre>
