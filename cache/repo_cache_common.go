@@ -15,6 +15,16 @@ func (c *RepoCache) Name() string {
 	return c.name
 }
 
+// IsDefaultRepo reports whether this is an unnamed (single-repo) repository.
+func (c *RepoCache) IsDefaultRepo() bool {
+	return c.name == defaultRepoName
+}
+
+// BrowseRepo returns the underlying RepoBrowse implementation.
+func (c *RepoCache) BrowseRepo() repository.RepoBrowse {
+	return c.repo
+}
+
 // LocalConfig give access to the repository scoped configuration
 func (c *RepoCache) LocalConfig() repository.Config {
 	return c.repo.LocalConfig()
