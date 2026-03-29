@@ -17,7 +17,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# generated
-/src/routeTree.gen.ts
-/.tanstack
