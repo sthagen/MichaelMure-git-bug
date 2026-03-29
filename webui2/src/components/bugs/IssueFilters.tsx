@@ -1,17 +1,19 @@
-import { useState } from 'react'
-import { ArrowUpDown, ChevronDown, Tag, User, X, Search, Check } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { LabelBadge } from './LabelBadge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useValidLabelsQuery, useAllIdentitiesQuery } from '@/__generated__/graphql'
-import { useAuth } from '@/lib/auth'
-import { cn } from '@/lib/utils'
-import { useRepo } from '@/lib/repo'
+import { ArrowUpDown, ChevronDown, Tag, User, X, Search, Check } from "lucide-react";
+import { useState } from "react";
+
+import { useValidLabelsQuery, useAllIdentitiesQuery } from "@/__generated__/graphql";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useAuth } from "@/lib/auth";
+import { useRepo } from "@/lib/repo";
+import { cn } from "@/lib/utils";
+
+import { LabelBadge } from "./LabelBadge";
 
 // Max authors shown in the non-searching state. We intentionally cap this to
 // avoid a giant list — the current-user + recently-seen pattern covers the
 // common case; typing to search handles the rest.
-const INITIAL_AUTHOR_LIMIT = 8
+const INITIAL_AUTHOR_LIMIT = 8;
 
 // Returns the value passed to author:... in the query string.
 // Preference order: login (never has spaces, safest) > name > humanId.
@@ -22,28 +24,32 @@ const INITIAL_AUTHOR_LIMIT = 8
 // option. git-bug identities can have login="" (empty, not null) when the
 // login field was never set; ?? would return "" and the filter would silently
 // produce author:"" which buildQueryString then drops, making the filter a no-op.
-function authorQueryValue(i: { login?: string | null; name?: string | null; humanId: string }): string {
-  return i.login || i.name || i.humanId
+function authorQueryValue(i: {
+  login?: string | null;
+  name?: string | null;
+  humanId: string;
+}): string {
+  return i.login || i.name || i.humanId;
 }
 
-export type SortValue = 'creation-desc' | 'creation-asc' | 'edit-desc' | 'edit-asc'
+export type SortValue = "creation-desc" | "creation-asc" | "edit-desc" | "edit-asc";
 
 const SORT_OPTIONS: { value: SortValue; label: string }[] = [
-  { value: 'creation-desc', label: 'Newest' },
-  { value: 'creation-asc',  label: 'Oldest' },
-  { value: 'edit-desc',     label: 'Recently updated' },
-  { value: 'edit-asc',      label: 'Least recently updated' },
-]
+  { value: "creation-desc", label: "Newest" },
+  { value: "creation-asc", label: "Oldest" },
+  { value: "edit-desc", label: "Recently updated" },
+  { value: "edit-asc", label: "Least recently updated" },
+];
 
 interface IssueFiltersProps {
-  selectedLabels: string[]
-  onLabelsChange: (labels: string[]) => void
-  selectedAuthorId: string | null
-  onAuthorChange: (humanId: string | null, queryValue: string | null) => void
+  selectedLabels: string[];
+  onLabelsChange: (labels: string[]) => void;
+  selectedAuthorId: string | null;
+  onAuthorChange: (humanId: string | null, queryValue: string | null) => void;
   /** humanIds of authors appearing in the current bug list, used to rank the initial suggestions */
-  recentAuthorIds?: string[]
-  sort: SortValue
-  onSortChange: (sort: SortValue) => void
+  recentAuthorIds?: string[];
+  sort: SortValue;
+  onSortChange: (sort: SortValue) => void;
 }
 
 // Label and author filter dropdowns shown in the issue list header bar.
@@ -66,98 +72,111 @@ export function IssueFilters({
   sort,
   onSortChange,
 }: IssueFiltersProps) {
-  const { user } = useAuth()
-  const repo = useRepo()
-  const { data: labelsData } = useValidLabelsQuery({ variables: { ref: repo } })
-  const { data: authorsData } = useAllIdentitiesQuery({ variables: { ref: repo } })
-  const [labelSearch, setLabelSearch] = useState('')
-  const [authorSearch, setAuthorSearch] = useState('')
+  const { user } = useAuth();
+  const repo = useRepo();
+  const { data: labelsData } = useValidLabelsQuery({ variables: { ref: repo } });
+  const { data: authorsData } = useAllIdentitiesQuery({ variables: { ref: repo } });
+  const [labelSearch, setLabelSearch] = useState("");
+  const [authorSearch, setAuthorSearch] = useState("");
 
   const validLabels = [...(labelsData?.repository?.validLabels.nodes ?? [])].sort((a, b) =>
     a.name.localeCompare(b.name),
-  )
+  );
 
   const allIdentities = [...(authorsData?.repository?.allIdentities.nodes ?? [])].sort((a, b) =>
     a.displayName.localeCompare(b.displayName),
-  )
+  );
 
   const filteredLabels = labelSearch.trim()
     ? validLabels.filter((l) => l.name.toLowerCase().includes(labelSearch.toLowerCase()))
-    : validLabels
+    : validLabels;
 
   // Selected labels float to top, then alphabetical
   const sortedLabels = [
     ...filteredLabels.filter((l) => selectedLabels.includes(l.name)),
     ...filteredLabels.filter((l) => !selectedLabels.includes(l.name)),
-  ]
+  ];
 
   // Build the displayed identity list:
   // - When searching: filter full list reactively as-you-type
   // - When not searching: show current user first, then recently-seen authors,
   //   then others up to INITIAL_AUTHOR_LIMIT
-  const isSearching = authorSearch.trim() !== ''
+  const isSearching = authorSearch.trim() !== "";
 
   const matchesSearch = (i: (typeof allIdentities)[number]) => {
-    const q = authorSearch.toLowerCase()
+    const q = authorSearch.toLowerCase();
     return (
       i.displayName.toLowerCase().includes(q) ||
-      (i.name ?? '').toLowerCase().includes(q) ||
-      (i.login ?? '').toLowerCase().includes(q) ||
-      (i.email ?? '').toLowerCase().includes(q)
-    )
-  }
+      (i.name ?? "").toLowerCase().includes(q) ||
+      (i.login ?? "").toLowerCase().includes(q) ||
+      (i.email ?? "").toLowerCase().includes(q)
+    );
+  };
 
-  let visibleIdentities: typeof allIdentities
+  let visibleIdentities: typeof allIdentities;
   if (isSearching) {
-    visibleIdentities = allIdentities.filter(matchesSearch)
+    visibleIdentities = allIdentities.filter(matchesSearch);
   } else {
-    const pinned = new Set<string>()
-    const result: typeof allIdentities = []
+    const pinned = new Set<string>();
+    const result: typeof allIdentities = [];
 
     // 1. Current user
     if (user) {
-      const me = allIdentities.find((i) => i.id === user.id)
-      if (me) { result.push(me); pinned.add(me.id) }
+      const me = allIdentities.find((i) => i.id === user.id);
+      if (me) {
+        result.push(me);
+        pinned.add(me.id);
+      }
     }
     // 2. Selected author (if not already added)
     if (selectedAuthorId) {
-      const sel = allIdentities.find((i) => i.humanId === selectedAuthorId)
-      if (sel && !pinned.has(sel.id)) { result.push(sel); pinned.add(sel.id) }
+      const sel = allIdentities.find((i) => i.humanId === selectedAuthorId);
+      if (sel && !pinned.has(sel.id)) {
+        result.push(sel);
+        pinned.add(sel.id);
+      }
     }
     // 3. Recently seen authors (recentAuthorIds are humanIds from bug rows)
     for (const humanId of recentAuthorIds) {
-      const match = allIdentities.find((i) => i.humanId === humanId)
-      if (match && !pinned.has(match.id)) { result.push(match); pinned.add(match.id) }
+      const match = allIdentities.find((i) => i.humanId === humanId);
+      if (match && !pinned.has(match.id)) {
+        result.push(match);
+        pinned.add(match.id);
+      }
     }
     // 4. Fill up to limit with remaining alphabetical
     for (const i of allIdentities) {
-      if (result.length >= INITIAL_AUTHOR_LIMIT) break
-      if (!pinned.has(i.id)) result.push(i)
+      if (result.length >= INITIAL_AUTHOR_LIMIT) break;
+      if (!pinned.has(i.id)) result.push(i);
     }
-    visibleIdentities = result
+    visibleIdentities = result;
   }
 
   function toggleLabel(name: string) {
     if (selectedLabels.includes(name)) {
-      onLabelsChange(selectedLabels.filter((l) => l !== name))
+      onLabelsChange(selectedLabels.filter((l) => l !== name));
     } else {
-      onLabelsChange([...selectedLabels, name])
+      onLabelsChange([...selectedLabels, name]);
     }
   }
 
-  const selectedAuthorIdentity = allIdentities.find((i) => i.humanId === selectedAuthorId)
+  const selectedAuthorIdentity = allIdentities.find((i) => i.humanId === selectedAuthorId);
 
   return (
     <div className="flex shrink-0 items-center gap-1">
       {/* Label filter */}
-      <Popover onOpenChange={(open) => { if (!open) setLabelSearch('') }}>
+      <Popover
+        onOpenChange={(open) => {
+          if (!open) setLabelSearch("");
+        }}
+      >
         <PopoverTrigger asChild>
           <button
             className={cn(
-              'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
               selectedLabels.length > 0
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
             )}
           >
             <Tag className="size-3.5" />
@@ -170,7 +189,7 @@ export function IssueFilters({
             <ChevronDown className="size-3" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-56 p-0 bg-popover shadow-lg">
+        <PopoverContent align="end" className="w-56 bg-popover p-0 shadow-lg">
           {/* Search */}
           <div className="flex items-center gap-2 border-b border-border px-3 py-2">
             <Search className="size-3.5 shrink-0 text-muted-foreground" />
@@ -187,7 +206,7 @@ export function IssueFilters({
               <p className="px-2 py-3 text-center text-xs text-muted-foreground">No labels found</p>
             )}
             {sortedLabels.map((label) => {
-              const active = selectedLabels.includes(label.name)
+              const active = selectedLabels.includes(label.name);
               return (
                 <button
                   key={label.name}
@@ -204,7 +223,7 @@ export function IssueFilters({
                   <LabelBadge name={label.name} color={label.color} />
                   {active && <Check className="ml-auto size-3.5 shrink-0 text-foreground" />}
                 </button>
-              )
+              );
             })}
           </div>
           {selectedLabels.length > 0 && (
@@ -222,12 +241,18 @@ export function IssueFilters({
       </Popover>
 
       {/* Author filter */}
-      <Popover onOpenChange={(open) => { if (!open) setAuthorSearch('') }}>
+      <Popover
+        onOpenChange={(open) => {
+          if (!open) setAuthorSearch("");
+        }}
+      >
         <PopoverTrigger asChild>
           <button
             className={cn(
-              'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-              selectedAuthorId ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+              selectedAuthorId
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
             )}
           >
             {selectedAuthorIdentity ? (
@@ -252,7 +277,7 @@ export function IssueFilters({
             <ChevronDown className="size-3" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-56 p-0 bg-popover shadow-lg">
+        <PopoverContent align="end" className="w-56 bg-popover p-0 shadow-lg">
           {/* Search */}
           <div className="flex items-center gap-2 border-b border-border px-3 py-2">
             <Search className="size-3.5 shrink-0 text-muted-foreground" />
@@ -266,14 +291,21 @@ export function IssueFilters({
           </div>
           <div className="max-h-64 overflow-y-auto p-1">
             {visibleIdentities.length === 0 && (
-              <p className="px-2 py-3 text-center text-xs text-muted-foreground">No authors found</p>
+              <p className="px-2 py-3 text-center text-xs text-muted-foreground">
+                No authors found
+              </p>
             )}
             {visibleIdentities.map((identity) => {
-              const active = selectedAuthorId === identity.humanId
+              const active = selectedAuthorId === identity.humanId;
               return (
                 <button
                   key={identity.id}
-                  onClick={() => onAuthorChange(active ? null : identity.humanId, active ? null : authorQueryValue(identity))}
+                  onClick={() =>
+                    onAuthorChange(
+                      active ? null : identity.humanId,
+                      active ? null : authorQueryValue(identity),
+                    )
+                  }
                   className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted"
                 >
                   <Avatar className="size-5 shrink-0">
@@ -285,12 +317,14 @@ export function IssueFilters({
                   <div className="min-w-0 flex-1 text-left">
                     <div className="truncate">{identity.displayName}</div>
                     {identity.login && identity.login !== identity.displayName && (
-                      <div className="truncate text-xs text-muted-foreground">@{identity.login}</div>
+                      <div className="truncate text-xs text-muted-foreground">
+                        @{identity.login}
+                      </div>
                     )}
                   </div>
                   {active && <Check className="size-3.5 shrink-0 text-foreground" />}
                 </button>
-              )
+              );
             })}
             {!isSearching && allIdentities.length > INITIAL_AUTHOR_LIMIT && (
               <p className="px-2 py-1.5 text-center text-xs text-muted-foreground">
@@ -317,18 +351,18 @@ export function IssueFilters({
         <PopoverTrigger asChild>
           <button
             className={cn(
-              'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap',
-              sort !== 'creation-desc'
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap",
+              sort !== "creation-desc"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
             )}
           >
             <ArrowUpDown className="size-3.5" />
-            {SORT_OPTIONS.find((o) => o.value === sort)?.label ?? 'Sort'}
+            {SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "Sort"}
             <ChevronDown className="size-3" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-56 p-1 bg-popover shadow-lg">
+        <PopoverContent align="end" className="w-56 bg-popover p-1 shadow-lg">
           {SORT_OPTIONS.map((opt) => (
             <button
               key={opt.value}
@@ -336,11 +370,13 @@ export function IssueFilters({
               className="flex w-full items-center gap-2 whitespace-nowrap rounded px-2 py-1.5 text-sm hover:bg-muted"
             >
               {opt.label}
-              {sort === opt.value && <Check className="ml-auto size-3.5 shrink-0 text-foreground" />}
+              {sort === opt.value && (
+                <Check className="ml-auto size-3.5 shrink-0 text-foreground" />
+              )}
             </button>
           ))}
         </PopoverContent>
       </Popover>
     </div>
-  )
+  );
 }

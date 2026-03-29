@@ -1,46 +1,49 @@
 // Syntax-highlighted file viewer with line numbers and copy button.
 // highlight.js is loaded lazily so it doesn't bloat the initial bundle.
 
-import { useState, useEffect } from 'react'
-import { Copy } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { GitBlob } from '@/__generated__/graphql'
+import { Copy } from "lucide-react";
+import { useState, useEffect } from "react";
+
+import type { GitBlob } from "@/__generated__/graphql";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface FileViewerProps {
-  blob: GitBlob
-  loading?: boolean
+  blob: GitBlob;
+  loading?: boolean;
 }
 
 export function FileViewer({ blob, loading }: FileViewerProps) {
-  const [highlighted, setHighlighted] = useState<{ html: string; lineCount: number } | null>(null)
+  const [highlighted, setHighlighted] = useState<{ html: string; lineCount: number } | null>(null);
 
   useEffect(() => {
     if (blob.isBinary || !blob.text) {
-      setHighlighted({ html: '', lineCount: 0 })
-      return
+      setHighlighted({ html: "", lineCount: 0 });
+      return;
     }
-    setHighlighted(null)
-    let cancelled = false
-    import('highlight.js').then(({ default: hljs }) => {
-      if (cancelled) return
-      const ext = blob.path.split('.').pop() ?? ''
+    setHighlighted(null);
+    let cancelled = false;
+    import("highlight.js").then(({ default: hljs }) => {
+      if (cancelled) return;
+      const ext = blob.path.split(".").pop() ?? "";
       const result = hljs.getLanguage(ext)
         ? hljs.highlight(blob.text!, { language: ext })
-        : hljs.highlightAuto(blob.text!)
+        : hljs.highlightAuto(blob.text!);
       setHighlighted({
         html: result.value,
-        lineCount: blob.text!.split('\n').length,
-      })
-    })
-    return () => { cancelled = true }
-  }, [blob])
+        lineCount: blob.text!.split("\n").length,
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [blob]);
 
-  if (loading || highlighted === null) return <FileViewerSkeleton />
-  const { html, lineCount } = highlighted
+  if (loading || highlighted === null) return <FileViewerSkeleton />;
+  const { html, lineCount } = highlighted;
 
   function copyToClipboard() {
-    if (blob.text) navigator.clipboard.writeText(blob.text)
+    if (blob.text) navigator.clipboard.writeText(blob.text);
   }
 
   return (
@@ -48,9 +51,15 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
       <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
         <span>
           {lineCount.toLocaleString()} lines · {formatBytes(blob.size)}
-          {blob.isTruncated && ' · truncated'}
+          {blob.isTruncated && " · truncated"}
         </span>
-        <Button variant="ghost" size="icon" className="size-7" onClick={copyToClipboard} title="Copy">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7"
+          onClick={copyToClipboard}
+          title="Copy"
+        >
           <Copy className="size-3.5" />
         </Button>
       </div>
@@ -75,13 +84,13 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
 function FileViewerSkeleton() {
@@ -103,5 +112,5 @@ function FileViewerSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

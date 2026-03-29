@@ -1,47 +1,46 @@
-import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Separator } from '@/components/ui/separator'
-import { StatusBadge } from '@/components/bugs/StatusBadge'
-import { LabelEditor } from '@/components/bugs/LabelEditor'
-import { TitleEditor } from '@/components/bugs/TitleEditor'
-import { Timeline } from '@/components/bugs/Timeline'
-import { CommentBox } from '@/components/bugs/CommentBox'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useBugDetailQuery } from '@/__generated__/graphql'
-import { useRepo } from '@/lib/repo'
+import { formatDistanceToNow } from "date-fns";
+import { ArrowLeft } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
+
+import { useBugDetailQuery } from "@/__generated__/graphql";
+import { CommentBox } from "@/components/bugs/CommentBox";
+import { LabelEditor } from "@/components/bugs/LabelEditor";
+import { StatusBadge } from "@/components/bugs/StatusBadge";
+import { Timeline } from "@/components/bugs/Timeline";
+import { TitleEditor } from "@/components/bugs/TitleEditor";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRepo } from "@/lib/repo";
 
 // Issue detail page (/:repo/issues/:id). Shows title, status, timeline of
 // comments and events, and a sidebar with labels and participants.
 export function BugDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const repo = useRepo()
+  const { id } = useParams<{ id: string }>();
+  const repo = useRepo();
   const { data, loading, error } = useBugDetailQuery({
     variables: { ref: repo, prefix: id! },
-  })
+  });
 
   if (error) {
     return (
       <div className="py-16 text-center text-sm text-destructive">
         Failed to load issue: {error.message}
       </div>
-    )
+    );
   }
 
   if (loading && !data) {
-    return <BugDetailSkeleton />
+    return <BugDetailSkeleton />;
   }
 
-  const bug = data?.repository?.bug
+  const bug = data?.repository?.bug;
   if (!bug) {
-    return (
-      <div className="py-16 text-center text-sm text-muted-foreground">Issue not found.</div>
-    )
+    return <div className="py-16 text-center text-sm text-muted-foreground">Issue not found.</div>;
   }
 
-  const issuesHref = repo ? `/${repo}/issues` : '/issues'
-  const authorHref = repo ? `/${repo}/user/${bug.author.humanId}` : `/user/${bug.author.humanId}`
+  const issuesHref = repo ? `/${repo}/issues` : "/issues";
+  const authorHref = repo ? `/${repo}/user/${bug.author.humanId}` : `/user/${bug.author.humanId}`;
 
   return (
     <div>
@@ -63,7 +62,7 @@ export function BugDetailPage() {
         <span>
           <Link to={authorHref} className="font-medium text-foreground hover:underline">
             {bug.author.displayName}
-          </Link>{' '}
+          </Link>{" "}
           opened this issue {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
         </span>
       </div>
@@ -89,7 +88,7 @@ export function BugDetailPage() {
             </h3>
             <div className="flex flex-wrap gap-1.5">
               {bug.participants.nodes.map((p) => {
-                const participantHref = repo ? `/${repo}/user/${p.humanId}` : `/user/${p.humanId}`
+                const participantHref = repo ? `/${repo}/user/${p.humanId}` : `/user/${p.humanId}`;
                 return (
                   <Link key={p.id} to={participantHref} title={p.displayName}>
                     <Avatar className="size-6">
@@ -99,14 +98,14 @@ export function BugDetailPage() {
                       </AvatarFallback>
                     </Avatar>
                   </Link>
-                )
+                );
               })}
             </div>
           </div>
         </aside>
       </div>
     </div>
-  )
+  );
 }
 
 function BugDetailSkeleton() {
@@ -130,5 +129,5 @@ function BugDetailSkeleton() {
         </div>
       </div>
     </div>
-  )
+  );
 }

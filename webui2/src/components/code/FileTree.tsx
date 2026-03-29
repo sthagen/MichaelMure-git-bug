@@ -1,25 +1,26 @@
-import { Folder, File } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { formatDistanceToNow } from 'date-fns'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useRepo } from '@/lib/repo'
-import type { GitTreeEntry } from '@/__generated__/graphql'
+import { formatDistanceToNow } from "date-fns";
+import { Folder, File } from "lucide-react";
+import { Link } from "react-router-dom";
+
+import type { GitTreeEntry } from "@/__generated__/graphql";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRepo } from "@/lib/repo";
 
 export interface TreeEntryWithCommit extends GitTreeEntry {
   lastCommit?: {
-    hash: string
-    shortHash: string
-    message: string
-    date: string
-  }
+    hash: string;
+    shortHash: string;
+    message: string;
+    date: string;
+  };
 }
 
 interface FileTreeProps {
-  entries: TreeEntryWithCommit[]
-  path: string
-  loading?: boolean
-  onNavigate: (entry: TreeEntryWithCommit) => void
-  onNavigateUp: () => void
+  entries: TreeEntryWithCommit[];
+  path: string;
+  loading?: boolean;
+  onNavigate: (entry: TreeEntryWithCommit) => void;
+  onNavigateUp: () => void;
 }
 
 // Directory listing table for the code browser. Shows each entry's icon,
@@ -27,21 +28,18 @@ interface FileTreeProps {
 export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: FileTreeProps) {
   // Directories first, then files — each group alphabetical
   const sorted = [...entries].sort((a, b) => {
-    if (a.type !== b.type) return a.type === 'TREE' ? -1 : 1
-    return a.name.localeCompare(b.name)
-  })
+    if (a.type !== b.type) return a.type === "TREE" ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
 
-  if (loading) return <FileTreeSkeleton />
+  if (loading) return <FileTreeSkeleton />;
 
   return (
     <div className="overflow-hidden rounded-md border border-border">
       <table className="w-full text-sm">
         <tbody className="divide-y divide-border">
           {path && (
-            <tr
-              className="cursor-pointer hover:bg-muted/40"
-              onClick={onNavigateUp}
-            >
+            <tr className="cursor-pointer hover:bg-muted/40" onClick={onNavigateUp}>
               <td className="w-6 py-2 pl-4">
                 <Folder className="size-4 text-blue-500 dark:text-blue-400" />
               </td>
@@ -56,24 +54,21 @@ export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: F
         </tbody>
       </table>
     </div>
-  )
+  );
 }
 
 function FileTreeRow({
   entry,
   onNavigate,
 }: {
-  entry: TreeEntryWithCommit
-  onNavigate: (entry: TreeEntryWithCommit) => void
+  entry: TreeEntryWithCommit;
+  onNavigate: (entry: TreeEntryWithCommit) => void;
 }) {
-  const isDir = entry.type === 'TREE'
-  const repo = useRepo()
+  const isDir = entry.type === "TREE";
+  const repo = useRepo();
 
   return (
-    <tr
-      className="cursor-pointer hover:bg-muted/40"
-      onClick={() => onNavigate(entry)}
-    >
+    <tr className="cursor-pointer hover:bg-muted/40" onClick={() => onNavigate(entry)}>
       <td className="w-6 py-2 pl-4">
         {isDir ? (
           <Folder className="size-4 text-blue-500 dark:text-blue-400" />
@@ -82,14 +77,16 @@ function FileTreeRow({
         )}
       </td>
       <td className="px-3 py-2">
-        <span className={`font-mono ${isDir ? 'font-medium text-foreground' : 'text-foreground'}`}>
+        <span className={`font-mono ${isDir ? "font-medium text-foreground" : "text-foreground"}`}>
           {entry.name}
         </span>
       </td>
       <td className="hidden max-w-xs truncate px-3 py-2 text-muted-foreground md:table-cell">
         {entry.lastCommit && (
           <Link
-            to={repo ? `/${repo}/commit/${entry.lastCommit.hash}` : `/commit/${entry.lastCommit.hash}`}
+            to={
+              repo ? `/${repo}/commit/${entry.lastCommit.hash}` : `/commit/${entry.lastCommit.hash}`
+            }
             className="hover:text-foreground hover:underline"
             onClick={(e) => e.stopPropagation()}
           >
@@ -102,7 +99,7 @@ function FileTreeRow({
           formatDistanceToNow(new Date(entry.lastCommit.date), { addSuffix: true })}
       </td>
     </tr>
-  )
+  );
 }
 
 function FileTreeSkeleton() {
@@ -119,5 +116,5 @@ function FileTreeSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }

@@ -22,7 +22,7 @@ Node 22 is required. If you use asdf, `.tool-versions` pins the right version au
 ## Routes
 
 | Path                    | Page                                                     |
-|-------------------------|----------------------------------------------------------|
+| ----------------------- | -------------------------------------------------------- |
 | `/`                     | Repo picker — auto-redirects when there is only one repo |
 | `/_`                    | Default repo (issues + code browser)                     |
 | `/_/issues`             | Issue list with search and label filtering               |
@@ -62,7 +62,7 @@ pnpm codegen
 **Code browser** uses REST endpoints at `/api/repos/{owner}/{repo}/git/*` implemented in `api/http/git_browse_handler.go`. `_` is used for both owner and repo (local single-user setup). The TypeScript client is `src/lib/gitApi.ts`.
 
 | Endpoint                              | Description                             |
-|---------------------------------------|-----------------------------------------|
+| ------------------------------------- | --------------------------------------- |
 | `GET /git/refs`                       | List branches and tags                  |
 | `GET /git/trees/{ref}?path=`          | Directory listing with last-commit info |
 | `GET /git/blobs/{ref}?path=`          | File content                            |

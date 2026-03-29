@@ -1,10 +1,10 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 
 const httpLink = createHttpLink({
-  uri: '/graphql',
+  uri: "/graphql",
   // include credentials so future httpOnly auth cookies are sent automatically
-  credentials: 'include',
-})
+  credentials: "include",
+});
 
 export const client = new ApolloClient({
   link: httpLink,
@@ -16,4 +16,4 @@ export const client = new ApolloClient({
       },
     },
   }),
-})
+});

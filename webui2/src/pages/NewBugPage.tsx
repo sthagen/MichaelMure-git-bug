@@ -1,36 +1,37 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Markdown } from '@/components/content/Markdown'
-import { useBugCreateMutation } from '@/__generated__/graphql'
-import { useRepo } from '@/lib/repo'
+import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+
+import { useBugCreateMutation } from "@/__generated__/graphql";
+import { Markdown } from "@/components/content/Markdown";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useRepo } from "@/lib/repo";
 
 // New issue form (/:repo/issues/new). Title + body with write/preview tabs.
 export function NewBugPage() {
-  const navigate = useNavigate()
-  const repo = useRepo()
-  const [title, setTitle] = useState('')
-  const [message, setMessage] = useState('')
-  const [preview, setPreview] = useState(false)
+  const navigate = useNavigate();
+  const repo = useRepo();
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
+  const [preview, setPreview] = useState(false);
 
-  const [createBug, { loading, error }] = useBugCreateMutation()
+  const [createBug, { loading, error }] = useBugCreateMutation();
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!title.trim()) return
+    e.preventDefault();
+    if (!title.trim()) return;
     const result = await createBug({
       variables: { input: { title: title.trim(), message: message.trim() } },
-    })
-    const humanId = result.data?.bugCreate.bug.humanId
+    });
+    const humanId = result.data?.bugCreate.bug.humanId;
     if (humanId) {
-      navigate(repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}`)
+      navigate(repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}`);
     }
   }
 
-  const issuesHref = repo ? `/${repo}/issues` : '/issues'
+  const issuesHref = repo ? `/${repo}/issues` : "/issues";
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -67,7 +68,7 @@ export function NewBugPage() {
                 type="button"
                 onClick={() => setPreview(false)}
                 className={`rounded px-2 py-0.5 transition-colors ${
-                  !preview ? 'bg-muted font-medium' : 'text-muted-foreground hover:text-foreground'
+                  !preview ? "bg-muted font-medium" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Write
@@ -77,7 +78,7 @@ export function NewBugPage() {
                 onClick={() => setPreview(true)}
                 disabled={!message.trim()}
                 className={`rounded px-2 py-0.5 transition-colors disabled:opacity-40 ${
-                  preview ? 'bg-muted font-medium' : 'text-muted-foreground hover:text-foreground'
+                  preview ? "bg-muted font-medium" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Preview
@@ -105,14 +106,19 @@ export function NewBugPage() {
         )}
 
         <div className="flex justify-end gap-2">
-          <Button type="button" variant="ghost" onClick={() => navigate(issuesHref)} disabled={loading}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => navigate(issuesHref)}
+            disabled={loading}
+          >
             Cancel
           </Button>
           <Button type="submit" disabled={!title.trim() || loading}>
-            {loading ? 'Creating…' : 'Submit new issue'}
+            {loading ? "Creating…" : "Submit new issue"}
           </Button>
         </div>
       </form>
     </div>
-  )
+  );
 }

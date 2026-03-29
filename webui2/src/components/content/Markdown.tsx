@@ -1,12 +1,13 @@
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import remarkEmoji from 'remark-emoji'
-import rehypeRaw from 'rehype-raw'
-import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
-import rehypeSlug from 'rehype-slug'
-import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import rehypeExternalLinks from 'rehype-external-links'
-import { cn } from '@/lib/utils'
+import ReactMarkdown from "react-markdown";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeExternalLinks from "rehype-external-links";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+import rehypeSlug from "rehype-slug";
+import remarkEmoji from "remark-emoji";
+import remarkGfm from "remark-gfm";
+
+import { cn } from "@/lib/utils";
 
 // Sanitization schema: start from the safe default and allow a small set of
 // presentational/structural HTML tags commonly found in READMEs.
@@ -16,20 +17,17 @@ import { cn } from '@/lib/utils'
 // allow those attributes on anchors.
 const sanitizeSchema = {
   ...defaultSchema,
-  tagNames: [
-    ...(defaultSchema.tagNames ?? []),
-    'details', 'summary', 'picture', 'source',
-  ],
+  tagNames: [...(defaultSchema.tagNames ?? []), "details", "summary", "picture", "source"],
   attributes: {
     ...defaultSchema.attributes,
-    a: [...(defaultSchema.attributes?.a ?? []), 'aria-hidden', 'class'],
-    '*': [...(defaultSchema.attributes?.['*'] ?? []), 'id'],
+    a: [...(defaultSchema.attributes?.a ?? []), "aria-hidden", "class"],
+    "*": [...(defaultSchema.attributes?.["*"] ?? []), "id"],
   },
-}
+};
 
 interface MarkdownProps {
-  content: string
-  className?: string
+  content: string;
+  className?: string;
 }
 
 // Renders a Markdown string with GitHub-flavoured extensions (tables, task
@@ -42,18 +40,18 @@ export function Markdown({ content, className }: MarkdownProps) {
         rehypeRaw,
         [rehypeSanitize, sanitizeSchema],
         rehypeSlug,
-        [rehypeAutolinkHeadings, { behavior: 'append' }],
-        [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }],
+        [rehypeAutolinkHeadings, { behavior: "append" }],
+        [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
       ]}
       className={cn(
-        'prose prose-sm dark:prose-invert max-w-none',
-        'prose-pre:bg-muted prose-pre:text-foreground',
-        'prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none',
-        'prose-img:inline prose-img:my-0',
+        "prose prose-sm dark:prose-invert max-w-none",
+        "prose-pre:bg-muted prose-pre:text-foreground",
+        "prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
+        "prose-img:inline prose-img:my-0",
         className,
       )}
     >
       {content}
     </ReactMarkdown>
-  )
+  );
 }

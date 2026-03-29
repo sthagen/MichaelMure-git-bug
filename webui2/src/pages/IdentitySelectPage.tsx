@@ -6,50 +6,51 @@
 // OAuth account for future logins — or create a fresh one from their OAuth
 // profile.
 
-import { useEffect, useState } from 'react'
-import { UserCircle, Plus, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
+import { UserCircle, Plus, AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface IdentityItem {
-  repoSlug: string
-  id: string
-  humanId: string
-  displayName: string
-  login?: string
-  avatarUrl?: string
+  repoSlug: string;
+  id: string;
+  humanId: string;
+  displayName: string;
+  login?: string;
+  avatarUrl?: string;
 }
 
 export function IdentitySelectPage() {
-  const [identities, setIdentities] = useState<IdentityItem[] | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [working, setWorking] = useState(false)
+  const [identities, setIdentities] = useState<IdentityItem[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [working, setWorking] = useState(false);
 
   useEffect(() => {
-    fetch('/auth/identities', { credentials: 'include' })
+    fetch("/auth/identities", { credentials: "include" })
       .then((res) => {
-        if (!res.ok) throw new Error(`unexpected status ${res.status}`)
-        return res.json() as Promise<IdentityItem[]>
+        if (!res.ok) throw new Error(`unexpected status ${res.status}`);
+        return res.json() as Promise<IdentityItem[]>;
       })
       .then(setIdentities)
-      .catch((e) => setError(String(e)))
-  }, [])
+      .catch((e) => setError(String(e)));
+  }, []);
 
   async function adopt(identityId: string | null) {
-    setWorking(true)
+    setWorking(true);
     try {
-      const res = await fetch('/auth/adopt', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/auth/adopt", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(identityId ? { identityId } : {}),
-      })
-      if (!res.ok) throw new Error(`adopt failed: ${res.status}`)
+      });
+      if (!res.ok) throw new Error(`adopt failed: ${res.status}`);
       // Full page reload to reset Apollo cache and auth state cleanly.
-      window.location.assign('/')
+      window.location.assign("/");
     } catch (e) {
-      setError(String(e))
-      setWorking(false)
+      setError(String(e));
+      setWorking(false);
     }
   }
 
@@ -60,8 +61,8 @@ export function IdentitySelectPage() {
         <h1 className="text-xl font-semibold">Choose your identity</h1>
       </div>
       <p className="mb-8 text-sm text-muted-foreground">
-        No git-bug identity was found linked to your account. Select an
-        existing identity to link it, or create a new one from your profile.
+        No git-bug identity was found linked to your account. Select an existing identity to link
+        it, or create a new one from your profile.
       </p>
 
       {error && (
@@ -85,14 +86,11 @@ export function IdentitySelectPage() {
             <div className="min-w-0 flex-1">
               <p className="font-medium">{id.displayName}</p>
               <p className="text-xs text-muted-foreground">
-                {id.login ? `@${id.login} · ` : ''}{id.repoSlug} · {id.humanId}
+                {id.login ? `@${id.login} · ` : ""}
+                {id.repoSlug} · {id.humanId}
               </p>
             </div>
-            <Button
-              size="sm"
-              disabled={working}
-              onClick={() => adopt(id.id)}
-            >
+            <Button size="sm" disabled={working} onClick={() => adopt(id.id)}>
               Adopt
             </Button>
           </div>
@@ -106,16 +104,12 @@ export function IdentitySelectPage() {
               A fresh git-bug identity will be created from your OAuth profile.
             </p>
           </div>
-          <Button
-            size="sm"
-            disabled={working}
-            onClick={() => adopt(null)}
-          >
+          <Button size="sm" disabled={working} onClick={() => adopt(null)}>
             <Plus className="size-4" />
             Create
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }

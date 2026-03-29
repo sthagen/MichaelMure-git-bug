@@ -1,52 +1,53 @@
-import { useState, useRef, useEffect } from 'react'
-import { Pencil } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useAuth } from '@/lib/auth'
-import { useBugSetTitleMutation, BugDetailDocument } from '@/__generated__/graphql'
+import { Pencil } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+
+import { useBugSetTitleMutation, BugDetailDocument } from "@/__generated__/graphql";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/lib/auth";
 
 interface TitleEditorProps {
-  bugPrefix: string
-  title: string
-  humanId: string
+  bugPrefix: string;
+  title: string;
+  humanId: string;
   /** Current repo slug, passed as `ref` in refetch query variables. */
-  ref_?: string | null
+  ref_?: string | null;
 }
 
 // Inline title editor in BugDetailPage. Shows the title as plain text with a
 // pencil icon on hover (auth-gated). Enter saves, Escape cancels.
 export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProps) {
-  const { user } = useAuth()
-  const [editing, setEditing] = useState(false)
-  const [value, setValue] = useState(title)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const { user } = useAuth();
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(title);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [setTitle, { loading }] = useBugSetTitleMutation({
     refetchQueries: [{ query: BugDetailDocument, variables: { ref: ref_, prefix: bugPrefix } }],
-  })
+  });
 
   useEffect(() => {
-    if (editing) inputRef.current?.focus()
-  }, [editing])
+    if (editing) inputRef.current?.focus();
+  }, [editing]);
 
   // Keep local value in sync if title prop changes (e.g. after refetch)
   useEffect(() => {
-    if (!editing) setValue(title)
-  }, [title, editing])
+    if (!editing) setValue(title);
+  }, [title, editing]);
 
   async function handleSave() {
-    const trimmed = value.trim()
+    const trimmed = value.trim();
     if (trimmed && trimmed !== title) {
-      await setTitle({ variables: { input: { prefix: bugPrefix, title: trimmed } } })
+      await setTitle({ variables: { input: { prefix: bugPrefix, title: trimmed } } });
     }
-    setEditing(false)
+    setEditing(false);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') handleSave()
-    if (e.key === 'Escape') {
-      setValue(title)
-      setEditing(false)
+    if (e.key === "Enter") handleSave();
+    if (e.key === "Escape") {
+      setValue(title);
+      setEditing(false);
     }
   }
 
@@ -68,14 +69,14 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
           size="sm"
           variant="ghost"
           onClick={() => {
-            setValue(title)
-            setEditing(false)
+            setValue(title);
+            setEditing(false);
           }}
         >
           Cancel
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -94,5 +95,5 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
         </button>
       )}
     </div>
-  )
+  );
 }

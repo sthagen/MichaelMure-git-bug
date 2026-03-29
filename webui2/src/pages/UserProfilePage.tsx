@@ -6,32 +6,38 @@
 // The :id param is treated as a humanId prefix and passed directly to the
 // identity(prefix) and allBugs(query:"author:...") GraphQL arguments.
 
-import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from "date-fns";
 import {
-  ArrowLeft, MessageSquare, CircleDot, CircleCheck, ShieldCheck,
-  ChevronLeft, ChevronRight,
-} from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { LabelBadge } from '@/components/bugs/LabelBadge'
-import { cn } from '@/lib/utils'
-import { Status, useUserProfileQuery } from '@/__generated__/graphql'
-import { useRepo } from '@/lib/repo'
+  ArrowLeft,
+  MessageSquare,
+  CircleDot,
+  CircleCheck,
+  ShieldCheck,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
 
-const PAGE_SIZE = 25
+import { Status, useUserProfileQuery } from "@/__generated__/graphql";
+import { LabelBadge } from "@/components/bugs/LabelBadge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRepo } from "@/lib/repo";
+import { cn } from "@/lib/utils";
+
+const PAGE_SIZE = 25;
 
 export function UserProfilePage() {
-  const { id } = useParams<{ id: string }>()
-  const repo = useRepo()
-  const [statusFilter, setStatusFilter] = useState<'open' | 'closed'>('open')
+  const { id } = useParams<{ id: string }>();
+  const repo = useRepo();
+  const [statusFilter, setStatusFilter] = useState<"open" | "closed">("open");
 
   // Cursor-stack pagination: cursors[i] is the `after` value to fetch page i.
   // Resetting to [undefined] returns to page 1. Shared pattern with BugListPage.
-  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined])
-  const page = cursors.length - 1
+  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
+  const page = cursors.length - 1;
 
   // Three allBugs aliases in one round-trip:
   //   openCount / closedCount — always fetched so both badge numbers are visible
@@ -45,12 +51,12 @@ export function UserProfilePage() {
       listQuery: `author:${id} status:${statusFilter}`,
       after: cursors[page],
     },
-  })
+  });
 
-  function switchStatus(next: 'open' | 'closed') {
-    if (next === statusFilter) return
-    setStatusFilter(next)
-    setCursors([undefined]) // reset to page 1 on tab change
+  function switchStatus(next: "open" | "closed") {
+    if (next === statusFilter) return;
+    setStatusFilter(next);
+    setCursors([undefined]); // reset to page 1 on tab change
   }
 
   if (error) {
@@ -58,36 +64,34 @@ export function UserProfilePage() {
       <div className="py-16 text-center text-sm text-destructive">
         Failed to load profile: {error.message}
       </div>
-    )
+    );
   }
 
-  if (loading && !data) return <ProfileSkeleton />
+  if (loading && !data) return <ProfileSkeleton />;
 
-  const identity = data?.repository?.identity
+  const identity = data?.repository?.identity;
   if (!identity) {
-    return (
-      <div className="py-16 text-center text-sm text-muted-foreground">User not found.</div>
-    )
+    return <div className="py-16 text-center text-sm text-muted-foreground">User not found.</div>;
   }
 
-  const openCount = data?.repository?.openCount.totalCount ?? 0
-  const closedCount = data?.repository?.closedCount.totalCount ?? 0
+  const openCount = data?.repository?.openCount.totalCount ?? 0;
+  const closedCount = data?.repository?.closedCount.totalCount ?? 0;
 
-  const bugs = data?.repository?.bugs
-  const totalPages = Math.max(1, Math.ceil((bugs?.totalCount ?? 0) / PAGE_SIZE))
-  const hasNext = bugs?.pageInfo.hasNextPage ?? false
-  const hasPrev = page > 0
+  const bugs = data?.repository?.bugs;
+  const totalPages = Math.max(1, Math.ceil((bugs?.totalCount ?? 0) / PAGE_SIZE));
+  const hasNext = bugs?.pageInfo.hasNextPage ?? false;
+  const hasPrev = page > 0;
 
   function goNext() {
-    const cursor = bugs?.pageInfo.endCursor
-    if (cursor) setCursors((prev) => [...prev, cursor])
+    const cursor = bugs?.pageInfo.endCursor;
+    if (cursor) setCursors((prev) => [...prev, cursor]);
   }
 
   function goPrev() {
-    setCursors((prev) => prev.slice(0, -1))
+    setCursors((prev) => prev.slice(0, -1));
   }
 
-  const issuesHref = repo ? `/${repo}/issues` : '/issues'
+  const issuesHref = repo ? `/${repo}/issues` : "/issues";
 
   return (
     <div>
@@ -143,15 +147,20 @@ export function UserProfilePage() {
         {/* Open / Closed toggle — mirrors BugListPage style */}
         <div className="flex items-center gap-1 border-b border-border px-4 py-2">
           <button
-            onClick={() => switchStatus('open')}
+            onClick={() => switchStatus("open")}
             className={cn(
-              'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-              statusFilter === 'open'
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+              statusFilter === "open"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
             )}
           >
-            <CircleDot className={cn('size-4', statusFilter === 'open' && 'text-green-600 dark:text-green-400')} />
+            <CircleDot
+              className={cn(
+                "size-4",
+                statusFilter === "open" && "text-green-600 dark:text-green-400",
+              )}
+            />
             Open
             <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none">
               {openCount}
@@ -159,15 +168,20 @@ export function UserProfilePage() {
           </button>
 
           <button
-            onClick={() => switchStatus('closed')}
+            onClick={() => switchStatus("closed")}
             className={cn(
-              'flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-              statusFilter === 'closed'
-                ? 'bg-accent text-accent-foreground'
-                : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground',
+              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+              statusFilter === "closed"
+                ? "bg-accent text-accent-foreground"
+                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
             )}
           >
-            <CircleCheck className={cn('size-4', statusFilter === 'closed' && 'text-purple-600 dark:text-purple-400')} />
+            <CircleCheck
+              className={cn(
+                "size-4",
+                statusFilter === "closed" && "text-purple-600 dark:text-purple-400",
+              )}
+            />
             Closed
             <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none">
               {closedCount}
@@ -182,8 +196,8 @@ export function UserProfilePage() {
         )}
 
         {bugs?.nodes.map((bug) => {
-          const isOpen = bug.status === Status.Open
-          const StatusIcon = isOpen ? CircleDot : CircleCheck
+          const isOpen = bug.status === Status.Open;
+          const StatusIcon = isOpen ? CircleDot : CircleCheck;
           return (
             <div
               key={bug.id}
@@ -191,10 +205,10 @@ export function UserProfilePage() {
             >
               <StatusIcon
                 className={cn(
-                  'mt-0.5 size-4 shrink-0',
+                  "mt-0.5 size-4 shrink-0",
                   isOpen
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-purple-600 dark:text-purple-400',
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-purple-600 dark:text-purple-400",
                 )}
               />
               <div className="min-w-0 flex-1">
@@ -210,7 +224,7 @@ export function UserProfilePage() {
                   ))}
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  #{bug.humanId} opened{' '}
+                  #{bug.humanId} opened{" "}
                   {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
                 </p>
               </div>
@@ -221,7 +235,7 @@ export function UserProfilePage() {
                 </div>
               )}
             </div>
-          )
+          );
         })}
 
         {/* Pagination footer — only shown when there is more than one page */}
@@ -254,7 +268,7 @@ export function UserProfilePage() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 function ProfileSkeleton() {
@@ -274,5 +288,5 @@ function ProfileSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }

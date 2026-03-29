@@ -1,28 +1,27 @@
-import { useState } from 'react'
-import { GitBranch, Tag, Check, ChevronsUpDown } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import type { GitRef } from '@/__generated__/graphql'
-import { cn } from '@/lib/utils'
+import { GitBranch, Tag, Check, ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
+
+import type { GitRef } from "@/__generated__/graphql";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface RefSelectorProps {
-  refs: GitRef[]
-  currentRef: string
-  onSelect: (ref: GitRef) => void
+  refs: GitRef[];
+  currentRef: string;
+  onSelect: (ref: GitRef) => void;
 }
 
 // Branch / tag selector dropdown for the code browser. Shown in two groups
 // (branches, tags) with an inline search filter.
 export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
-  const [open, setOpen] = useState(false)
-  const [filter, setFilter] = useState('')
+  const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState("");
 
-  const filtered = refs.filter((r) =>
-    r.shortName.toLowerCase().includes(filter.toLowerCase()),
-  )
-  const branches = filtered.filter((r) => r.type === 'BRANCH')
-  const tags = filtered.filter((r) => r.type === 'TAG')
+  const filtered = refs.filter((r) => r.shortName.toLowerCase().includes(filter.toLowerCase()));
+  const branches = filtered.filter((r) => r.type === "BRANCH");
+  const tags = filtered.filter((r) => r.type === "TAG");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -51,7 +50,11 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
                   key={ref.name}
                   ref_={ref}
                   active={ref.shortName === currentRef}
-                  onSelect={() => { onSelect(ref); setOpen(false); setFilter('') }}
+                  onSelect={() => {
+                    onSelect(ref);
+                    setOpen(false);
+                    setFilter("");
+                  }}
                 />
               ))}
             </div>
@@ -64,7 +67,11 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
                   key={ref.name}
                   ref_={ref}
                   active={ref.shortName === currentRef}
-                  onSelect={() => { onSelect(ref); setOpen(false); setFilter('') }}
+                  onSelect={() => {
+                    onSelect(ref);
+                    setOpen(false);
+                    setFilter("");
+                  }}
                 />
               ))}
             </div>
@@ -75,7 +82,7 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
         </div>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
 
 function RefItem({
@@ -83,19 +90,19 @@ function RefItem({
   active,
   onSelect,
 }: {
-  ref_: GitRef
-  active: boolean
-  onSelect: () => void
+  ref_: GitRef;
+  active: boolean;
+  onSelect: () => void;
 }) {
   return (
     <button
       onClick={onSelect}
       className={cn(
-        'flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-muted',
-        active && 'font-medium',
+        "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-muted",
+        active && "font-medium",
       )}
     >
-      {ref_.type === 'BRANCH' ? (
+      {ref_.type === "BRANCH" ? (
         <GitBranch className="size-3 shrink-0 text-muted-foreground" />
       ) : (
         <Tag className="size-3 shrink-0 text-muted-foreground" />
@@ -103,5 +110,5 @@ function RefItem({
       <span className="flex-1 truncate font-mono">{ref_.shortName}</span>
       {active && <Check className="size-3 text-muted-foreground" />}
     </button>
-  )
+  );
 }

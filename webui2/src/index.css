@@ -1,5 +1,5 @@
 /* highlight.js theme must be imported before any @layer rules (PostCSS requirement) */
-@import 'highlight.js/styles/github.css';
+@import "highlight.js/styles/github.css";
 
 @tailwind base;
 @tailwind components;
@@ -71,12 +71,24 @@
 }
 .dark .hljs-keyword,
 .dark .hljs-selector-tag,
-.dark .hljs-built_in { color: #ff7b72; }
+.dark .hljs-built_in {
+  color: #ff7b72;
+}
 .dark .hljs-string,
-.dark .hljs-attr { color: #a5d6ff; }
-.dark .hljs-comment { color: hsl(220, 8%, 50%); }
+.dark .hljs-attr {
+  color: #a5d6ff;
+}
+.dark .hljs-comment {
+  color: hsl(220, 8%, 50%);
+}
 .dark .hljs-number,
-.dark .hljs-literal { color: #79c0ff; }
+.dark .hljs-literal {
+  color: #79c0ff;
+}
 .dark .hljs-title,
-.dark .hljs-name { color: #d2a8ff; }
-.dark .hljs-type { color: #ffa657; }
+.dark .hljs-name {
+  color: #d2a8ff;
+}
+.dark .hljs-type {
+  color: #ffa657;
+}

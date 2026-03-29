@@ -1,35 +1,37 @@
-import { Settings2 } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { LabelBadge } from './LabelBadge'
-import { useAuth } from '@/lib/auth'
+import { Settings2 } from "lucide-react";
+
 import {
   useValidLabelsQuery,
   useBugChangeLabelsMutation,
   BugDetailDocument,
-} from '@/__generated__/graphql'
+} from "@/__generated__/graphql";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useAuth } from "@/lib/auth";
+
+import { LabelBadge } from "./LabelBadge";
 
 interface LabelEditorProps {
-  bugPrefix: string
-  currentLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>
+  bugPrefix: string;
+  currentLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>;
   /** Current repo slug, passed as `ref` in refetch query variables. */
-  ref_?: string | null
+  ref_?: string | null;
 }
 
 // Gear-icon popover in the BugDetailPage sidebar for adding/removing labels.
 // Loads all valid labels from the repo and toggles them via bugChangeLabels.
 // Hidden in read-only mode.
 export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps) {
-  const { user } = useAuth()
-  const { data } = useValidLabelsQuery({ skip: !user, variables: { ref: ref_ } })
+  const { user } = useAuth();
+  const { data } = useValidLabelsQuery({ skip: !user, variables: { ref: ref_ } });
   const [changeLabels] = useBugChangeLabelsMutation({
     refetchQueries: [{ query: BugDetailDocument, variables: { ref: ref_, prefix: bugPrefix } }],
-  })
+  });
 
-  const validLabels = data?.repository?.validLabels.nodes ?? []
-  const currentNames = new Set(currentLabels.map((l) => l.name))
+  const validLabels = data?.repository?.validLabels.nodes ?? [];
+  const currentNames = new Set(currentLabels.map((l) => l.name));
 
   async function toggleLabel(name: string) {
-    const isSet = currentNames.has(name)
+    const isSet = currentNames.has(name);
     await changeLabels({
       variables: {
         input: {
@@ -38,7 +40,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
           Removed: isSet ? [name] : [],
         },
       },
-    })
+    });
   }
 
   return (
@@ -55,12 +57,10 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
               </button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-56 p-2">
-              <p className="mb-2 px-2 text-xs font-medium text-muted-foreground">
-                Apply labels
-              </p>
+              <p className="mb-2 px-2 text-xs font-medium text-muted-foreground">Apply labels</p>
               <div className="space-y-1">
                 {validLabels.map((label) => {
-                  const active = currentNames.has(label.name)
+                  const active = currentNames.has(label.name);
                   return (
                     <button
                       key={label.name}
@@ -69,13 +69,21 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
                     >
                       <span
                         className={`size-2 rounded-full border-2 transition-colors ${
-                          active ? 'border-transparent' : 'border-muted-foreground/40 bg-transparent'
+                          active
+                            ? "border-transparent"
+                            : "border-muted-foreground/40 bg-transparent"
                         }`}
-                        style={active ? { backgroundColor: `rgb(${label.color.R},${label.color.G},${label.color.B})` } : {}}
+                        style={
+                          active
+                            ? {
+                                backgroundColor: `rgb(${label.color.R},${label.color.G},${label.color.B})`,
+                              }
+                            : {}
+                        }
                       />
                       <LabelBadge name={label.name} color={label.color} />
                     </button>
-                  )
+                  );
                 })}
               </div>
             </PopoverContent>
@@ -93,5 +101,5 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
         </div>
       )}
     </div>
-  )
+  );
 }

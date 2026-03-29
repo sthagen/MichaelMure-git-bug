@@ -1,10 +1,6 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Markdown } from '@/components/content/Markdown'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { useAuth } from '@/lib/auth'
-import { Status } from '@/__generated__/graphql'
+import { useState } from "react";
+
+import { Status } from "@/__generated__/graphql";
 import {
   useBugAddCommentMutation,
   useBugAddCommentAndCloseMutation,
@@ -12,60 +8,68 @@ import {
   useBugStatusCloseMutation,
   useBugStatusOpenMutation,
   BugDetailDocument,
-} from '@/__generated__/graphql'
+} from "@/__generated__/graphql";
+import { Markdown } from "@/components/content/Markdown";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/lib/auth";
 
 interface CommentBoxProps {
-  bugPrefix: string
-  bugStatus: Status
+  bugPrefix: string;
+  bugStatus: Status;
   /** Current repo slug, passed as `ref` in refetch query variables. */
-  ref_?: string | null
+  ref_?: string | null;
 }
 
 // Write/preview comment form at the bottom of BugDetailPage. Also contains the
 // Close / Reopen button. Hidden entirely in read-only mode (no logged-in user).
 export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
-  const { user } = useAuth()
-  const [message, setMessage] = useState('')
-  const [preview, setPreview] = useState(false)
+  const { user } = useAuth();
+  const [message, setMessage] = useState("");
+  const [preview, setPreview] = useState(false);
 
-  const refetchVars = { variables: { ref: ref_, prefix: bugPrefix } }
-  const refetch = { refetchQueries: [{ query: BugDetailDocument, ...refetchVars }] }
+  const refetchVars = { variables: { ref: ref_, prefix: bugPrefix } };
+  const refetch = { refetchQueries: [{ query: BugDetailDocument, ...refetchVars }] };
 
-  const [addComment, { loading: addingComment }] = useBugAddCommentMutation(refetch)
-  const [addAndClose, { loading: addingAndClosing }] = useBugAddCommentAndCloseMutation(refetch)
-  const [addAndReopen, { loading: addingAndReopening }] = useBugAddCommentAndReopenMutation(refetch)
-  const [statusClose, { loading: closing }] = useBugStatusCloseMutation(refetch)
-  const [statusOpen, { loading: reopening }] = useBugStatusOpenMutation(refetch)
+  const [addComment, { loading: addingComment }] = useBugAddCommentMutation(refetch);
+  const [addAndClose, { loading: addingAndClosing }] = useBugAddCommentAndCloseMutation(refetch);
+  const [addAndReopen, { loading: addingAndReopening }] =
+    useBugAddCommentAndReopenMutation(refetch);
+  const [statusClose, { loading: closing }] = useBugStatusCloseMutation(refetch);
+  const [statusOpen, { loading: reopening }] = useBugStatusOpenMutation(refetch);
 
-  const isOpen = bugStatus === Status.Open
-  const busy = addingComment || addingAndClosing || addingAndReopening || closing || reopening
-  const hasMessage = message.trim().length > 0
+  const isOpen = bugStatus === Status.Open;
+  const busy = addingComment || addingAndClosing || addingAndReopening || closing || reopening;
+  const hasMessage = message.trim().length > 0;
 
   async function handleComment() {
-    await addComment({ variables: { input: { prefix: bugPrefix, message: message.trim() } } })
-    setMessage('')
-    setPreview(false)
+    await addComment({ variables: { input: { prefix: bugPrefix, message: message.trim() } } });
+    setMessage("");
+    setPreview(false);
   }
 
   async function handleToggleStatus() {
     if (isOpen) {
       if (hasMessage) {
-        await addAndClose({ variables: { input: { prefix: bugPrefix, message: message.trim() } } })
+        await addAndClose({ variables: { input: { prefix: bugPrefix, message: message.trim() } } });
       } else {
-        await statusClose({ variables: { input: { prefix: bugPrefix } } })
+        await statusClose({ variables: { input: { prefix: bugPrefix } } });
       }
     } else {
       if (hasMessage) {
-        await addAndReopen({ variables: { input: { prefix: bugPrefix, message: message.trim() } } })
+        await addAndReopen({
+          variables: { input: { prefix: bugPrefix, message: message.trim() } },
+        });
       } else {
-        await statusOpen({ variables: { input: { prefix: bugPrefix } } })
+        await statusOpen({ variables: { input: { prefix: bugPrefix } } });
       }
     }
-    setMessage('')
-    setPreview(false)
+    setMessage("");
+    setPreview(false);
   }
 
-  if (!user) return null
+  if (!user) return null;
 
   return (
     <div className="flex gap-3">
@@ -83,8 +87,8 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
             onClick={() => setPreview(false)}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               !preview
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? "border-b-2 border-primary text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Write
@@ -94,8 +98,8 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
             disabled={!hasMessage}
             className={`px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40 ${
               preview
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? "border-b-2 border-primary text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Preview
@@ -124,17 +128,13 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
             disabled={busy}
             className="min-w-[7.5rem]"
           >
-            {isOpen ? 'Close issue' : 'Reopen issue'}
+            {isOpen ? "Close issue" : "Reopen issue"}
           </Button>
-          <Button
-            size="sm"
-            onClick={handleComment}
-            disabled={!hasMessage || busy}
-          >
+          <Button size="sm" onClick={handleComment} disabled={!hasMessage || busy}>
             Comment
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }

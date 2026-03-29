@@ -1,28 +1,30 @@
-import { useState } from 'react'
-import { formatDistanceToNow } from 'date-fns'
-import { Link } from 'react-router-dom'
-import { Tag, GitPullRequestClosed, Pencil, CircleDot } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Markdown } from '@/components/content/Markdown'
-import { LabelBadge } from './LabelBadge'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import { formatDistanceToNow } from "date-fns";
+import { Tag, GitPullRequestClosed, Pencil, CircleDot } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
 import {
   Status,
   type BugDetailQuery,
   useBugEditCommentMutation,
   BugDetailDocument,
-} from '@/__generated__/graphql'
-import { useAuth } from '@/lib/auth'
-import { useRepo } from '@/lib/repo'
+} from "@/__generated__/graphql";
+import { Markdown } from "@/components/content/Markdown";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/lib/auth";
+import { useRepo } from "@/lib/repo";
+
+import { LabelBadge } from "./LabelBadge";
 
 type TimelineNode = NonNullable<
-  NonNullable<NonNullable<BugDetailQuery['repository']>['bug']>['timeline']['nodes'][number]
->
+  NonNullable<NonNullable<BugDetailQuery["repository"]>["bug"]>["timeline"]["nodes"][number]
+>;
 
 interface TimelineProps {
-  bugPrefix: string
-  items: TimelineNode[]
+  bugPrefix: string;
+  items: TimelineNode[];
 }
 
 // Ordered sequence of events on a bug: comments (create and add-comment) and
@@ -33,56 +35,56 @@ export function Timeline({ bugPrefix, items }: TimelineProps) {
     <div className="space-y-4">
       {items.map((item) => {
         switch (item.__typename) {
-          case 'BugCreateTimelineItem':
-          case 'BugAddCommentTimelineItem':
-            return <CommentItem key={item.id} item={item} bugPrefix={bugPrefix} />
-          case 'BugLabelChangeTimelineItem':
-            return <LabelChangeItem key={item.id} item={item} />
-          case 'BugSetStatusTimelineItem':
-            return <StatusChangeItem key={item.id} item={item} />
-          case 'BugSetTitleTimelineItem':
-            return <TitleChangeItem key={item.id} item={item} />
+          case "BugCreateTimelineItem":
+          case "BugAddCommentTimelineItem":
+            return <CommentItem key={item.id} item={item} bugPrefix={bugPrefix} />;
+          case "BugLabelChangeTimelineItem":
+            return <LabelChangeItem key={item.id} item={item} />;
+          case "BugSetStatusTimelineItem":
+            return <StatusChangeItem key={item.id} item={item} />;
+          case "BugSetTitleTimelineItem":
+            return <TitleChangeItem key={item.id} item={item} />;
           default:
-            return null
+            return null;
         }
       })}
     </div>
-  )
+  );
 }
 
 // ── Comment (create or add-comment) ──────────────────────────────────────────
 
 type CommentItem = Extract<
   TimelineNode,
-  { __typename: 'BugCreateTimelineItem' | 'BugAddCommentTimelineItem' }
->
+  { __typename: "BugCreateTimelineItem" | "BugAddCommentTimelineItem" }
+>;
 
 function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string }) {
-  const { user } = useAuth()
-  const repo = useRepo()
-  const [editing, setEditing] = useState(false)
-  const [editValue, setEditValue] = useState(item.message ?? '')
+  const { user } = useAuth();
+  const repo = useRepo();
+  const [editing, setEditing] = useState(false);
+  const [editValue, setEditValue] = useState(item.message ?? "");
 
   const [editComment, { loading }] = useBugEditCommentMutation({
     refetchQueries: [{ query: BugDetailDocument, variables: { prefix: bugPrefix } }],
-  })
+  });
 
   function handleSave() {
-    if (editValue.trim() === (item.message ?? '').trim()) {
-      setEditing(false)
-      return
+    if (editValue.trim() === (item.message ?? "").trim()) {
+      setEditing(false);
+      return;
     }
     editComment({
       variables: { input: { targetPrefix: item.id, message: editValue } },
-    }).then(() => setEditing(false))
+    }).then(() => setEditing(false));
   }
 
   function handleCancel() {
-    setEditValue(item.message ?? '')
-    setEditing(false)
+    setEditValue(item.message ?? "");
+    setEditing(false);
   }
 
-  const canEdit = user !== null && user.id === item.author.id
+  const canEdit = user !== null && user.id === item.author.id;
 
   return (
     <div className="flex gap-3">
@@ -95,15 +97,16 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
 
       <div className="min-w-0 flex-1 rounded-md border border-border">
         <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-2 text-sm">
-          <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">
+          <Link
+            to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+            className="font-medium text-foreground hover:underline"
+          >
             {item.author.displayName}
           </Link>
           <span className="text-muted-foreground">
             {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
           </span>
-          {item.edited && !editing && (
-            <span className="text-xs text-muted-foreground">edited</span>
-          )}
+          {item.edited && !editing && <span className="text-xs text-muted-foreground">edited</span>}
           {canEdit && !editing && (
             <button
               onClick={() => setEditing(true)}
@@ -123,13 +126,16 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
               className="min-h-24 font-mono text-sm"
               autoFocus
               onKeyDown={(e) => {
-                if (e.key === 'Escape') handleCancel()
-                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleSave() }
+                if (e.key === "Escape") handleCancel();
+                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                  e.preventDefault();
+                  handleSave();
+                }
               }}
             />
             <div className="flex gap-2">
               <Button size="sm" onClick={handleSave} disabled={loading}>
-                {loading ? 'Saving…' : 'Save'}
+                {loading ? "Saving…" : "Save"}
               </Button>
               <Button size="sm" variant="ghost" onClick={handleCancel} disabled={loading}>
                 Cancel
@@ -147,14 +153,14 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
         )}
       </div>
     </div>
-  )
+  );
 }
 
 // ── Inline events ─────────────────────────────────────────────────────────────
 
-type LabelChangeItem = Extract<TimelineNode, { __typename: 'BugLabelChangeTimelineItem' }>
-type StatusChangeItem = Extract<TimelineNode, { __typename: 'BugSetStatusTimelineItem' }>
-type TitleChangeItem = Extract<TimelineNode, { __typename: 'BugSetTitleTimelineItem' }>
+type LabelChangeItem = Extract<TimelineNode, { __typename: "BugLabelChangeTimelineItem" }>;
+type StatusChangeItem = Extract<TimelineNode, { __typename: "BugSetStatusTimelineItem" }>;
+type TitleChangeItem = Extract<TimelineNode, { __typename: "BugSetTitleTimelineItem" }>;
 
 function EventRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -162,40 +168,45 @@ function EventRow({ icon, children }: { icon: React.ReactNode; children: React.R
       <span className="flex size-8 shrink-0 items-center justify-center">{icon}</span>
       {children}
     </div>
-  )
+  );
 }
 
 function LabelChangeItem({ item }: { item: LabelChangeItem }) {
-  const repo = useRepo()
+  const repo = useRepo();
   return (
     <EventRow icon={<Tag className="size-4" />}>
       <span>
-        <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link>{' '}
+        <Link
+          to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+          className="font-medium text-foreground hover:underline"
+        >
+          {item.author.displayName}
+        </Link>{" "}
         {item.added.length > 0 && (
           <>
-            added{' '}
+            added{" "}
             {item.added.map((l) => (
               <LabelBadge key={l.name} name={l.name} color={l.color} />
-            ))}{' '}
+            ))}{" "}
           </>
         )}
         {item.removed.length > 0 && (
           <>
-            removed{' '}
+            removed{" "}
             {item.removed.map((l) => (
               <LabelBadge key={l.name} name={l.name} color={l.color} />
-            ))}{' '}
+            ))}{" "}
           </>
         )}
         {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
       </span>
     </EventRow>
-  )
+  );
 }
 
 function StatusChangeItem({ item }: { item: StatusChangeItem }) {
-  const repo = useRepo()
-  const isOpen = item.status === Status.Open
+  const repo = useRepo();
+  const isOpen = item.status === Status.Open;
   return (
     <EventRow
       icon={
@@ -207,24 +218,34 @@ function StatusChangeItem({ item }: { item: StatusChangeItem }) {
       }
     >
       <span>
-        <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link>{' '}
-        {isOpen ? 'reopened' : 'closed'} this{' '}
+        <Link
+          to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+          className="font-medium text-foreground hover:underline"
+        >
+          {item.author.displayName}
+        </Link>{" "}
+        {isOpen ? "reopened" : "closed"} this{" "}
         {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
       </span>
     </EventRow>
-  )
+  );
 }
 
 function TitleChangeItem({ item }: { item: TitleChangeItem }) {
-  const repo = useRepo()
+  const repo = useRepo();
   return (
     <EventRow icon={<Pencil className="size-4" />}>
       <span>
-        <Link to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`} className="font-medium text-foreground hover:underline">{item.author.displayName}</Link> changed the
-        title from <span className="line-through">{item.was}</span> to{' '}
-        <span className="font-medium text-foreground">{item.title}</span>{' '}
+        <Link
+          to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+          className="font-medium text-foreground hover:underline"
+        >
+          {item.author.displayName}
+        </Link>{" "}
+        changed the title from <span className="line-through">{item.was}</span> to{" "}
+        <span className="font-medium text-foreground">{item.title}</span>{" "}
         {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
       </span>
     </EventRow>
-  )
+  );
 }

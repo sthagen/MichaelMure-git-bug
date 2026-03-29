@@ -1,30 +1,31 @@
 // Repository picker page (/). Auto-redirects when there is exactly one repo.
 // Shows a list when multiple repos are registered.
 
-import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { GitFork, FolderOpen, AlertCircle } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useRepositoriesQuery } from '@/__generated__/graphql'
+import { GitFork, FolderOpen, AlertCircle } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { useRepositoriesQuery } from "@/__generated__/graphql";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function repoSlug(name: string | null | undefined): string {
-  return name ?? '_'
+  return name ?? "_";
 }
 
 function repoLabel(name: string | null | undefined): string {
-  return name ?? 'default'
+  return name ?? "default";
 }
 
 export function RepoPickerPage() {
-  const { data, loading, error } = useRepositoriesQuery()
-  const navigate = useNavigate()
+  const { data, loading, error } = useRepositoriesQuery();
+  const navigate = useNavigate();
 
   // Auto-redirect when there is exactly one repo — no need to pick.
   useEffect(() => {
     if (data?.repositories.nodes.length === 1) {
-      navigate('/' + repoSlug(data.repositories.nodes[0].name), { replace: true })
+      navigate("/" + repoSlug(data.repositories.nodes[0].name), { replace: true });
     }
-  }, [data, navigate])
+  }, [data, navigate]);
 
   return (
     <div className="mx-auto max-w-lg py-12">
@@ -40,7 +41,7 @@ export function RepoPickerPage() {
         </div>
       )}
 
-      {(loading && !data) && (
+      {loading && !data && (
         <div className="space-y-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-16 w-full rounded-md" />
@@ -53,7 +54,7 @@ export function RepoPickerPage() {
           <Link
             key={repoSlug(repo.name)}
             to={`/${repoSlug(repo.name)}`}
-            className="flex items-center gap-3 px-4 py-4 hover:bg-muted/50 transition-colors"
+            className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/50"
           >
             <FolderOpen className="size-5 shrink-0 text-muted-foreground" />
             <p className="font-medium text-foreground">{repoLabel(repo.name)}</p>
@@ -67,5 +68,5 @@ export function RepoPickerPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,13 +1,14 @@
 // Commit detail page (/:repo/commit/:hash). Shows commit metadata, full
 // message, parent links, and changed files with lazy diffs.
 
-import { Link, useParams, useNavigate } from 'react-router-dom'
-import { format } from 'date-fns'
-import { ArrowLeft, GitCommit } from 'lucide-react'
-import { gql, useQuery } from '@apollo/client'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useRepo } from '@/lib/repo'
-import { FileDiffView } from '@/components/code/FileDiffView'
+import { gql, useQuery } from "@apollo/client";
+import { format } from "date-fns";
+import { ArrowLeft, GitCommit } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+
+import { FileDiffView } from "@/components/code/FileDiffView";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRepo } from "@/lib/repo";
 
 const COMMIT_QUERY = gql`
   query CommitPageDetail($repo: String, $hash: String!) {
@@ -31,33 +32,33 @@ const COMMIT_QUERY = gql`
       }
     }
   }
-`
+`;
 
 export function CommitPage() {
-  const { hash } = useParams<{ hash: string }>()
-  const navigate = useNavigate()
-  const repo = useRepo()
+  const { hash } = useParams<{ hash: string }>();
+  const navigate = useNavigate();
+  const repo = useRepo();
 
   const { data, loading, error } = useQuery(COMMIT_QUERY, {
     variables: { repo, hash },
     skip: !hash,
-  })
+  });
 
-  if (loading) return <CommitPageSkeleton />
+  if (loading) return <CommitPageSkeleton />;
 
   if (error) {
     return (
       <div className="py-16 text-center text-sm text-destructive">
         Failed to load commit: {error.message}
       </div>
-    )
+    );
   }
 
-  const commit = data?.repository?.commit
-  if (!commit) return null
+  const commit = data?.repository?.commit;
+  if (!commit) return null;
 
-  const date = new Date(commit.date)
-  const files = commit.files?.nodes ?? []
+  const date = new Date(commit.date);
+  const files = commit.files?.nodes ?? [];
 
   return (
     <div>
@@ -75,9 +76,9 @@ export function CommitPage() {
           <h1 className="text-lg font-semibold leading-snug">{commit.message}</h1>
         </div>
 
-        {commit.fullMessage.includes('\n') && (
+        {commit.fullMessage.includes("\n") && (
           <pre className="mb-4 ml-8 mt-3 whitespace-pre-wrap font-sans text-sm text-muted-foreground">
-            {commit.fullMessage.split('\n').slice(1).join('\n').trim()}
+            {commit.fullMessage.split("\n").slice(1).join("\n").trim()}
           </pre>
         )}
 
@@ -86,7 +87,7 @@ export function CommitPage() {
             <span className="font-medium text-foreground">{commit.authorName}</span>
             {commit.authorEmail && <span> &lt;{commit.authorEmail}&gt;</span>}
           </span>
-          <span title={date.toISOString()}>{format(date, 'PPP')}</span>
+          <span title={date.toISOString()}>{format(date, "PPP")}</span>
         </div>
 
         <div className="ml-8 mt-3 flex flex-wrap gap-3 text-xs">
@@ -95,7 +96,7 @@ export function CommitPage() {
           </span>
           {commit.parents.map((p: string) => (
             <span key={p} className="text-muted-foreground">
-              parent{' '}
+              parent{" "}
               <Link
                 to={repo ? `/${repo}/commit/${p}` : `/commit/${p}`}
                 className="font-mono text-foreground hover:underline"
@@ -109,9 +110,9 @@ export function CommitPage() {
 
       <div>
         <h2 className="mb-3 text-sm font-semibold text-muted-foreground">
-          {files.length} file{files.length !== 1 ? 's' : ''} changed
+          {files.length} file{files.length !== 1 ? "s" : ""} changed
         </h2>
-        <div className="overflow-hidden rounded-md border border-border divide-y divide-border">
+        <div className="divide-y divide-border overflow-hidden rounded-md border border-border">
           {files.length === 0 && (
             <p className="px-4 py-4 text-sm text-muted-foreground">No file changes.</p>
           )}
@@ -127,19 +128,19 @@ export function CommitPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function CommitPageSkeleton() {
   return (
     <div className="space-y-6">
       <Skeleton className="h-4 w-24" />
-      <div className="rounded-md border border-border p-5 space-y-3">
+      <div className="space-y-3 rounded-md border border-border p-5">
         <Skeleton className="h-6 w-3/4" />
         <Skeleton className="h-4 w-1/3" />
         <Skeleton className="h-3 w-1/2" />
       </div>
-      <div className="rounded-md border border-border divide-y divide-border">
+      <div className="divide-y divide-border rounded-md border border-border">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3 px-4 py-2.5">
             <Skeleton className="size-4" />
@@ -148,5 +149,5 @@ function CommitPageSkeleton() {
         ))}
       </div>
     </div>
-  )
+  );
 }
