@@ -64,7 +64,8 @@ export const Route = createFileRoute("/$repo/commit/$hash")({
 });
 
 function RouteComponent() {
-  const { ref: repo } = Route.useRouteContext();
+  const { ref } = Route.useRouteContext();
+  const { repo } = Route.useParams();
   const { commitRef } = Route.useLoaderData();
   const { data } = useReadQuery(commitRef);
 
@@ -115,7 +116,7 @@ function RouteComponent() {
               parent{" "}
               <Link
                 to="/$repo/commit/$hash"
-                params={{ repo: repo!, hash: p }}
+                params={{ repo, hash: p }}
                 className="text-foreground font-mono hover:underline"
               >
                 {p.slice(0, 7)}
@@ -136,7 +137,7 @@ function RouteComponent() {
           {files.map((file: { path: string; oldPath?: string | null; status: string }) => (
             <FileDiffView
               key={file.path}
-              repo={repo}
+              repo={ref}
               hash={commit.hash}
               path={file.path}
               oldPath={file.oldPath ?? undefined}

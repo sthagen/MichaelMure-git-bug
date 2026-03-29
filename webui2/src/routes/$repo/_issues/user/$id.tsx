@@ -6,7 +6,7 @@
 // The :id param is treated as a humanId prefix and passed directly to the
 // identity(prefix) and allBugs(query:"author:...") GraphQL arguments.
 
-import { createFileRoute, useParams, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowLeft,
@@ -33,8 +33,8 @@ export const Route = createFileRoute("/$repo/_issues/user/$id")({
 const PAGE_SIZE = 25;
 
 function RouteComponent() {
-  const { id } = useParams({ strict: false });
-  const { ref: repo } = Route.useRouteContext();
+  const { id, repo } = Route.useParams();
+  const { ref } = Route.useRouteContext();
   const [statusFilter, setStatusFilter] = useState<"open" | "closed">("open");
 
   // Cursor-stack pagination: cursors[i] is the `after` value to fetch page i.
@@ -47,8 +47,8 @@ function RouteComponent() {
   //   bugs — paginated list for the selected tab
   const { data, loading, error } = useUserProfileQuery({
     variables: {
-      ref: repo,
-      prefix: id!,
+      ref,
+      prefix: id,
       openQuery: `author:${id} status:open`,
       closedQuery: `author:${id} status:closed`,
       listQuery: `author:${id} status:${statusFilter}`,
@@ -98,7 +98,7 @@ function RouteComponent() {
     <div>
       <Link
         to="/$repo/issues"
-        params={{ repo: repo! }}
+        params={{ repo: repo }}
         search={{ q: "status:open", after: "" }}
         className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
       >
@@ -218,7 +218,7 @@ function RouteComponent() {
                 <div className="flex flex-wrap items-baseline gap-2">
                   <Link
                     to="/$repo/issues/$id"
-                    params={{ repo: repo!, id: bug.humanId }}
+                    params={{ repo: repo, id: bug.humanId }}
                     className="text-foreground hover:text-primary font-medium hover:underline"
                   >
                     {bug.title}

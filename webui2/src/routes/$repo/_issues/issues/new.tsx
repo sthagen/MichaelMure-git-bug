@@ -16,7 +16,7 @@ export const Route = createFileRoute("/$repo/_issues/issues/new")({
 // New issue form (/:repo/issues/new). Title + body with write/preview tabs.
 function RouteComponent() {
   const navigate = useNavigate();
-  const { ref: repo } = Route.useRouteContext();
+  const { repo } = Route.useParams();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [preview, setPreview] = useState(false);
@@ -31,7 +31,7 @@ function RouteComponent() {
     if (humanId) {
       void navigate({
         to: "/$repo/issues/$id",
-        params: { repo: repo!, id: humanId },
+        params: { repo: repo, id: humanId },
       });
     }
   }
@@ -40,7 +40,7 @@ function RouteComponent() {
     <div className="mx-auto max-w-3xl">
       <Link
         to="/$repo/issues"
-        params={{ repo: repo! }}
+        params={{ repo: repo }}
         search={{ q: "status:open", after: "" }}
         className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
       >
@@ -111,7 +111,7 @@ function RouteComponent() {
         <div className="flex justify-end gap-2">
           <ButtonLink
             to="/$repo/issues"
-            params={{ repo: repo! }}
+            params={{ repo: repo }}
             search={{ q: "status:open", after: "" }}
             variant="ghost"
           >

@@ -133,7 +133,8 @@ export const Route = createFileRoute("/$repo/")({
 });
 
 function RouteComponent() {
-  const { ref: repo } = Route.useRouteContext();
+  const { ref: repoRef } = Route.useRouteContext();
+  const { repo } = Route.useParams();
   const navigate = useNavigate({ from: "/$repo/" });
   const { ref: currentRef, path: currentPath, type: viewMode } = useSearch({ from: "/$repo/" });
 
@@ -157,14 +158,14 @@ function RouteComponent() {
   const inBlobMode = viewMode === "blob" && !!currentRef && !!currentPath;
 
   const { data: treeData, loading: treeLoading } = useQuery<TreeQueryData>(TREE_QUERY, {
-    variables: { repo, ref: currentRef, path: currentPath || null },
+    variables: { repo: repoRef, ref: currentRef, path: currentPath || null },
     skip: !inTreeMode,
   });
   const entries: GitTreeEntry[] = treeData?.repository?.tree ?? [];
 
   const entryNames = entries.map((e: GitTreeEntry) => e.name);
   const { data: lastCommitsData } = useQuery<LastCommitsQueryData>(LAST_COMMITS_QUERY, {
-    variables: { repo, ref: currentRef, path: currentPath || null, names: entryNames },
+    variables: { repo: repoRef, ref: currentRef, path: currentPath || null, names: entryNames },
     skip: !inTreeMode || entryNames.length === 0,
   });
   const lastCommitsByName = new Map<string, GitLastCommit>(
@@ -176,7 +177,7 @@ function RouteComponent() {
   }));
 
   const { data: blobData, loading: blobLoading } = useQuery<BlobQueryData>(BLOB_QUERY, {
-    variables: { repo, ref: currentRef, path: currentPath },
+    variables: { repo: repoRef, ref: currentRef, path: currentPath },
     skip: !inBlobMode,
   });
   const blob: GitBlob | null = blobData?.repository?.blob ?? null;
@@ -191,12 +192,12 @@ function RouteComponent() {
       : readmeEntry.name
     : null;
   const { data: readmeBlobData } = useQuery<BlobQueryData>(BLOB_QUERY, {
-    variables: { repo, ref: currentRef, path: readmePath },
+    variables: { repo: repoRef, ref: currentRef, path: readmePath },
     skip: !inTreeMode || !readmePath,
   });
   const readme: string | null = readmeBlobData?.repository?.blob?.text ?? null;
 
-  const repoName = refsData?.repository?.name ?? repo ?? "default-repo";
+  const repoName = refsData?.repository?.name ?? repoRef ?? "default-repo";
 
   function navigateTo(path: string, type: ViewMode = "tree") {
     void navigate({ search: (prev) => ({ ...prev, path, type }) });
@@ -239,7 +240,7 @@ function RouteComponent() {
         <div className="flex items-center gap-2">
           <ButtonLink
             to="/$repo"
-            params={{ repo: repo! }}
+            params={{ repo }}
             search={{
               ref: currentRef,
               path: currentPath,
@@ -256,7 +257,7 @@ function RouteComponent() {
       </div>
 
       {viewMode === "commits" ? (
-        <CommitList repo={repo} ref_={currentRef} path={currentPath || undefined} />
+        <CommitList repo={repoRef} ref_={currentRef} path={currentPath || undefined} />
       ) : viewMode === "tree" || !blob ? (
         <>
           <FileTree

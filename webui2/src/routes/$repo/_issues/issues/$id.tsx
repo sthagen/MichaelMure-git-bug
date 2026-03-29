@@ -27,7 +27,8 @@ export const Route = createFileRoute("/$repo/_issues/issues/$id")({
 // Issue detail page (/:repo/issues/:id). Shows title, status, timeline of
 // comments and events, and a sidebar with labels and participants.
 function RouteComponent() {
-  const { ref: repo } = Route.useRouteContext();
+  const { ref } = Route.useRouteContext();
+  const { repo } = Route.useParams();
   const { bugDetailRef } = Route.useLoaderData();
   const { labelsRef } = Route.useRouteContext();
   const { data } = useReadQuery(bugDetailRef);
@@ -43,7 +44,7 @@ function RouteComponent() {
     <div>
       <Link
         to="/$repo/issues"
-        params={{ repo: repo! }}
+        params={{ repo: repo }}
         search={{ q: "status:open", after: "" }}
         className="text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1.5 text-sm"
       >
@@ -53,7 +54,7 @@ function RouteComponent() {
 
       {/* Title row — hover reveals edit button when logged in */}
       <div className="mb-3">
-        <TitleEditor bugPrefix={bug.humanId} title={bug.title} humanId={bug.humanId} ref_={repo} />
+        <TitleEditor bugPrefix={bug.humanId} title={bug.title} humanId={bug.humanId} ref_={ref} />
       </div>
 
       <div className="text-muted-foreground mb-6 flex flex-wrap items-center gap-3 text-sm">
@@ -61,7 +62,7 @@ function RouteComponent() {
         <span>
           <Link
             to="/$repo/user/$id"
-            params={{ repo: repo!, id: bug.author.humanId }}
+            params={{ repo: repo, id: bug.author.humanId }}
             className="text-foreground font-medium hover:underline"
           >
             {bug.author.displayName}
@@ -76,7 +77,7 @@ function RouteComponent() {
         {/* Timeline + comment box */}
         <div className="min-w-0 flex-1 space-y-4">
           <Timeline repo={repo} bugPrefix={bug.humanId} items={bug.timeline.nodes} />
-          <CommentBox bugPrefix={bug.humanId} bugStatus={bug.status} ref_={repo} />
+          <CommentBox bugPrefix={bug.humanId} bugStatus={bug.status} ref_={ref} />
         </div>
 
         {/* Sidebar */}
@@ -84,7 +85,7 @@ function RouteComponent() {
           <LabelEditor
             bugPrefix={bug.humanId}
             currentLabels={bug.labels}
-            ref_={repo}
+            ref_={ref}
             validLabels={validLabels}
           />
 
@@ -100,7 +101,7 @@ function RouteComponent() {
                   <Link
                     key={p.id}
                     to="/$repo/user/$id"
-                    params={{ repo: repo!, id: p.humanId }}
+                    params={{ repo: repo, id: p.humanId }}
                     title={p.displayName}
                   >
                     <Avatar className="size-6">

@@ -46,7 +46,7 @@ const PAGE_SIZE = 25;
 type StatusFilter = "open" | "closed";
 
 function RouteComponent() {
-  const { ref: repo } = Route.useRouteContext();
+  const { repo } = Route.useParams();
   const navigate = useNavigate({ from: "/$repo/issues/" });
   const { q, after } = Route.useSearch();
 
@@ -130,7 +130,7 @@ function RouteComponent() {
           <div className="flex shrink-0 items-center gap-1">
             <Link
               to="/$repo/issues"
-              params={{ repo: repo! }}
+              params={{ repo: repo }}
               search={{ q: queryWithStatus("open"), after: "" }}
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
@@ -153,7 +153,7 @@ function RouteComponent() {
 
             <Link
               to="/$repo/issues"
-              params={{ repo: repo! }}
+              params={{ repo: repo }}
               search={{ q: queryWithStatus("closed"), after: "" }}
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
@@ -232,7 +232,7 @@ function RouteComponent() {
           <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
             <ButtonLink
               to="/$repo/issues"
-              params={{ repo: repo! }}
+              params={{ repo: repo }}
               search={{ q, after: "" }}
               variant="ghost"
               size="sm"
@@ -247,7 +247,7 @@ function RouteComponent() {
             </span>
             <ButtonLink
               to="/$repo/issues"
-              params={{ repo: repo! }}
+              params={{ repo: repo }}
               search={{ q, after: bugs?.pageInfo.endCursor ?? "" }}
               variant="ghost"
               size="sm"
