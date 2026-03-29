@@ -94,7 +94,20 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
   const components = useMemo(() => {
     if (!repoContext) return undefined;
     const { repo, ref, basePath } = repoContext;
+    const gitrawPrefix = `/gitraw/${repo}/${ref}/`;
     return {
+      img: ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
+        // Wrap repo-local images in a Link to the blob view
+        if (src?.startsWith(gitrawPrefix)) {
+          const path = src.slice(gitrawPrefix.length);
+          return (
+            <Link to="/$repo/blob/$ref/$" params={{ repo, ref, _splat: path }}>
+              <img src={src} alt={alt} {...props} />
+            </Link>
+          );
+        }
+        return <img src={src} alt={alt} {...props} />;
+      },
       a: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
         if (!href) return <a {...props}>{children}</a>;
 
