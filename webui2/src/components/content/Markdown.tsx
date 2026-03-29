@@ -22,20 +22,21 @@ const sanitizeSchema = {
   },
 };
 
+export interface RepoContext {
+  repo: string;
+  ref: string;
+  /** Directory containing the markdown file (e.g. "doc" for doc/README.md). */
+  basePath: string;
+}
+
 interface MarkdownProps {
   content: string;
   className?: string;
-  /** When set, relative links/images are resolved against the code browser. */
-  repoContext?: {
-    repo: string;
-    ref: string;
-    /** Directory containing the markdown file (e.g. "doc" for doc/README.md). */
-    basePath: string;
-  };
+  /** When set, relative links/images are resolved against the repo. */
+  repoContext?: RepoContext;
 }
 
 function isRelativeUrl(url: string): boolean {
-  // Absolute URLs, protocol-relative, anchors, and data URIs are not relative
   return !/^(?:[a-z][a-z0-9+.-]*:|\/\/|#|data:)/i.test(url);
 }
 
@@ -51,16 +52,38 @@ function resolveRelativePath(basePath: string, relativePath: string): string {
   return parts.join("/");
 }
 
+const IMAGE_EXTENSIONS = new Set([
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "svg",
+  "webp",
+  "avif",
+  "ico",
+  "bmp",
+]);
+
+function isImagePath(path: string): boolean {
+  const ext = path.split(".").pop()?.toLowerCase() ?? "";
+  return IMAGE_EXTENSIONS.has(ext);
+}
+
 // Renders a Markdown string with GitHub-flavoured extensions (tables, task
 // lists, strikethrough). Used in Timeline comments and code browser READMEs.
 export function Markdown({ content, className, repoContext }: MarkdownProps) {
-  // Build a urlTransform that rewrites relative URLs to the code browser
+  // Rewrite relative URLs:
+  //   - images → /gitraw/{repo}/{ref}/{path} (serves raw bytes)
+  //   - links  → /{repo}/blob/{ref}/{path}   (code browser view)
   const urlTransform = useMemo(() => {
     if (!repoContext) return undefined;
     const { repo, ref, basePath } = repoContext;
     return (url: string) => {
       if (!isRelativeUrl(url)) return url;
       const resolved = resolveRelativePath(basePath, url);
+      if (isImagePath(resolved)) {
+        return `/gitraw/${repo}/${ref}/${resolved}`;
+      }
       return `/${repo}/blob/${ref}/${resolved}`;
     };
   }, [repoContext]);

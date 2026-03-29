@@ -153,6 +153,7 @@ func setupRoutes(env *execenv.Env, opts webUIOptions, baseURL string) (*mux.Rout
 
 	// File and upload routes for bug attachments.
 	router.Path("/gitfile/{repo}/{hash}").Handler(httpapi.NewGitFileHandler(mrc))
+	router.PathPrefix("/gitraw/{repo}/{ref}/{path:.*}").Handler(httpapi.NewGitRawHandler(mrc))
 	router.Path("/upload/{repo}").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
 
 	router.PathPrefix("/").Handler(webui2.NewHandler())

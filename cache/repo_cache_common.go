@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"io"
 	"strings"
 	"sync"
 
@@ -79,6 +80,12 @@ func (c *RepoCache) LocalStorage() repository.LocalStorage {
 // ReadData will attempt to read arbitrary data from the given hash
 func (c *RepoCache) ReadData(hash repository.Hash) ([]byte, error) {
 	return c.repo.ReadData(hash)
+}
+
+// BlobAtPath returns the raw content, byte size, and git object hash of the
+// file at the given path within the tree of the given ref.
+func (c *RepoCache) BlobAtPath(ref, path string) (io.ReadCloser, int64, repository.Hash, error) {
+	return c.repo.BlobAtPath(ref, path)
 }
 
 
