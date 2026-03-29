@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
@@ -72,9 +73,8 @@ function isImagePath(path: string): boolean {
 // Renders a Markdown string with GitHub-flavoured extensions (tables, task
 // lists, strikethrough). Used in Timeline comments and code browser READMEs.
 export function Markdown({ content, className, repoContext }: MarkdownProps) {
-  // Rewrite relative URLs:
-  //   - images → /gitraw/{repo}/{ref}/{path} (serves raw bytes)
-  //   - links  → /{repo}/blob/{ref}/{path}   (code browser view)
+  // Rewrite image src to /gitraw for raw content serving.
+  // Links are handled by the custom `a` component below.
   const urlTransform = useMemo(() => {
     if (!repoContext) return undefined;
     const { repo, ref, basePath } = repoContext;
@@ -84,7 +84,58 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
       if (isImagePath(resolved)) {
         return `/gitraw/${repo}/${ref}/${resolved}`;
       }
+      // Non-image relative URLs are handled by the `a` component override,
+      // but urlTransform runs first, so we still need to return something.
+      // Return the resolved path prefixed so the `a` component can detect it.
       return `/${repo}/blob/${ref}/${resolved}`;
+    };
+  }, [repoContext]);
+
+  const components = useMemo(() => {
+    if (!repoContext) return undefined;
+    const { repo, ref, basePath } = repoContext;
+    return {
+      a: ({ href, children, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+        if (!href) return <a {...props}>{children}</a>;
+
+        // Anchor links stay as-is
+        if (href.startsWith("#"))
+          return (
+            <a href={href} {...props}>
+              {children}
+            </a>
+          );
+
+        // Check if this is a relative URL that we should route client-side.
+        // After urlTransform, repo-local links look like /{repo}/blob/{ref}/{path}
+        const prefix = `/${repo}/blob/${ref}/`;
+        if (href.startsWith(prefix)) {
+          const path = href.slice(prefix.length);
+          return (
+            <Link to="/$repo/blob/$ref/$" params={{ repo, ref, _splat: path }} {...props}>
+              {children}
+            </Link>
+          );
+        }
+
+        // Also handle raw relative URLs that urlTransform didn't process
+        // (shouldn't happen but defensive)
+        if (isRelativeUrl(href)) {
+          const resolved = resolveRelativePath(basePath, href);
+          return (
+            <Link to="/$repo/blob/$ref/$" params={{ repo, ref, _splat: resolved }} {...props}>
+              {children}
+            </Link>
+          );
+        }
+
+        // External links — render as normal anchor
+        return (
+          <a href={href} {...props}>
+            {children}
+          </a>
+        );
+      },
     };
   }, [repoContext]);
 
@@ -108,6 +159,7 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
           [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
         ]}
         urlTransform={urlTransform}
+        components={components}
       >
         {content}
       </ReactMarkdown>
