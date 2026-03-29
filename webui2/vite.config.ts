@@ -13,32 +13,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    // highlight.js is inherently large (~1MB) but lazy-loaded; silence the warning.
-    chunkSizeWarningLimit: 1100,
-    rolldownOptions: {
-      output: {
-        manualChunks(id) {
-          if (
-            id.includes("react-dom") ||
-            id.includes("react-router-dom") ||
-            id.includes("/react/")
-          ) {
-            return "vendor-react";
-          }
-          if (id.includes("@apollo/client") || id.includes("/graphql/")) {
-            return "vendor-apollo";
-          }
-          if (id.includes("react-markdown") || id.includes("remark-gfm")) {
-            return "vendor-markdown";
-          }
-          if (id.includes("highlight.js")) {
-            return "vendor-highlight";
-          }
-        },
-      },
-    },
-  },
   server: {
     proxy: {
       "/graphql": { target: API_URL, changeOrigin: true },
