@@ -1,7 +1,8 @@
 // Paginated commit history grouped by calendar date. Each row links to the
 // commit detail page. Used in CodePage's "History" view.
 
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { formatDistanceToNow } from "date-fns";
 import { GitCommit } from "lucide-react";
 import { useState } from "react";

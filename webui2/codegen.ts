@@ -10,6 +10,7 @@ const config: CodegenConfig = {
         withHooks: true,
         withComponent: false,
         withHOC: false,
+        apolloReactHooksImportFrom: "@apollo/client/react",
         scalars: {
           Time: "string",
           Hash: "string",

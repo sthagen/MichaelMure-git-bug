@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+import * as ApolloReactHooks from '@apollo/client/react';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -1321,20 +1322,20 @@ export const AllIdentitiesDocument = gql`
  *   },
  * });
  */
-export function useAllIdentitiesQuery(baseOptions?: Apollo.QueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
+export function useAllIdentitiesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
+        return ApolloReactHooks.useQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
       }
-export function useAllIdentitiesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
+export function useAllIdentitiesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
+          return ApolloReactHooks.useLazyQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
         }
 // @ts-ignore
-export function useAllIdentitiesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>): Apollo.UseSuspenseQueryResult<AllIdentitiesQuery, AllIdentitiesQueryVariables>;
-export function useAllIdentitiesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>): Apollo.UseSuspenseQueryResult<AllIdentitiesQuery | undefined, AllIdentitiesQueryVariables>;
-export function useAllIdentitiesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
+export function useAllIdentitiesSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<AllIdentitiesQuery, AllIdentitiesQueryVariables>;
+export function useAllIdentitiesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<AllIdentitiesQuery | undefined, AllIdentitiesQueryVariables>;
+export function useAllIdentitiesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
         }
 export type AllIdentitiesQueryHookResult = ReturnType<typeof useAllIdentitiesQuery>;
 export type AllIdentitiesLazyQueryHookResult = ReturnType<typeof useAllIdentitiesLazyQuery>;
@@ -1464,20 +1465,20 @@ export const BugDetailDocument = gql`
  *   },
  * });
  */
-export function useBugDetailQuery(baseOptions: Apollo.QueryHookOptions<BugDetailQuery, BugDetailQueryVariables> & ({ variables: BugDetailQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useBugDetailQuery(baseOptions: ApolloReactHooks.QueryHookOptions<BugDetailQuery, BugDetailQueryVariables> & ({ variables: BugDetailQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
+        return ApolloReactHooks.useQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
       }
-export function useBugDetailLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>) {
+export function useBugDetailLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
+          return ApolloReactHooks.useLazyQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
         }
 // @ts-ignore
-export function useBugDetailSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>): Apollo.UseSuspenseQueryResult<BugDetailQuery, BugDetailQueryVariables>;
-export function useBugDetailSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>): Apollo.UseSuspenseQueryResult<BugDetailQuery | undefined, BugDetailQueryVariables>;
-export function useBugDetailSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
+export function useBugDetailSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugDetailQuery, BugDetailQueryVariables>;
+export function useBugDetailSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugDetailQuery | undefined, BugDetailQueryVariables>;
+export function useBugDetailSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
         }
 export type BugDetailQueryHookResult = ReturnType<typeof useBugDetailQuery>;
 export type BugDetailLazyQueryHookResult = ReturnType<typeof useBugDetailLazyQuery>;
@@ -1548,20 +1549,20 @@ export const BugListDocument = gql`
  *   },
  * });
  */
-export function useBugListQuery(baseOptions: Apollo.QueryHookOptions<BugListQuery, BugListQueryVariables> & ({ variables: BugListQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useBugListQuery(baseOptions: ApolloReactHooks.QueryHookOptions<BugListQuery, BugListQueryVariables> & ({ variables: BugListQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
+        return ApolloReactHooks.useQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
       }
-export function useBugListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BugListQuery, BugListQueryVariables>) {
+export function useBugListLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<BugListQuery, BugListQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
+          return ApolloReactHooks.useLazyQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
         }
 // @ts-ignore
-export function useBugListSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>): Apollo.UseSuspenseQueryResult<BugListQuery, BugListQueryVariables>;
-export function useBugListSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>): Apollo.UseSuspenseQueryResult<BugListQuery | undefined, BugListQueryVariables>;
-export function useBugListSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
+export function useBugListSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugListQuery, BugListQueryVariables>;
+export function useBugListSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugListQuery | undefined, BugListQueryVariables>;
+export function useBugListSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
         }
 export type BugListQueryHookResult = ReturnType<typeof useBugListQuery>;
 export type BugListLazyQueryHookResult = ReturnType<typeof useBugListLazyQuery>;
@@ -1596,9 +1597,9 @@ export type BugCreateMutationFn = Apollo.MutationFunction<BugCreateMutation, Bug
  *   },
  * });
  */
-export function useBugCreateMutation(baseOptions?: Apollo.MutationHookOptions<BugCreateMutation, BugCreateMutationVariables>) {
+export function useBugCreateMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugCreateMutation, BugCreateMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugCreateMutation, BugCreateMutationVariables>(BugCreateDocument, options);
+        return ApolloReactHooks.useMutation<BugCreateMutation, BugCreateMutationVariables>(BugCreateDocument, options);
       }
 export type BugCreateMutationHookResult = ReturnType<typeof useBugCreateMutation>;
 export type BugCreateMutationResult = Apollo.MutationResult<BugCreateMutation>;
@@ -1631,9 +1632,9 @@ export type BugAddCommentMutationFn = Apollo.MutationFunction<BugAddCommentMutat
  *   },
  * });
  */
-export function useBugAddCommentMutation(baseOptions?: Apollo.MutationHookOptions<BugAddCommentMutation, BugAddCommentMutationVariables>) {
+export function useBugAddCommentMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugAddCommentMutation, BugAddCommentMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugAddCommentMutation, BugAddCommentMutationVariables>(BugAddCommentDocument, options);
+        return ApolloReactHooks.useMutation<BugAddCommentMutation, BugAddCommentMutationVariables>(BugAddCommentDocument, options);
       }
 export type BugAddCommentMutationHookResult = ReturnType<typeof useBugAddCommentMutation>;
 export type BugAddCommentMutationResult = Apollo.MutationResult<BugAddCommentMutation>;
@@ -1666,9 +1667,9 @@ export type BugAddCommentAndCloseMutationFn = Apollo.MutationFunction<BugAddComm
  *   },
  * });
  */
-export function useBugAddCommentAndCloseMutation(baseOptions?: Apollo.MutationHookOptions<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>) {
+export function useBugAddCommentAndCloseMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>(BugAddCommentAndCloseDocument, options);
+        return ApolloReactHooks.useMutation<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>(BugAddCommentAndCloseDocument, options);
       }
 export type BugAddCommentAndCloseMutationHookResult = ReturnType<typeof useBugAddCommentAndCloseMutation>;
 export type BugAddCommentAndCloseMutationResult = Apollo.MutationResult<BugAddCommentAndCloseMutation>;
@@ -1701,9 +1702,9 @@ export type BugAddCommentAndReopenMutationFn = Apollo.MutationFunction<BugAddCom
  *   },
  * });
  */
-export function useBugAddCommentAndReopenMutation(baseOptions?: Apollo.MutationHookOptions<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>) {
+export function useBugAddCommentAndReopenMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>(BugAddCommentAndReopenDocument, options);
+        return ApolloReactHooks.useMutation<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>(BugAddCommentAndReopenDocument, options);
       }
 export type BugAddCommentAndReopenMutationHookResult = ReturnType<typeof useBugAddCommentAndReopenMutation>;
 export type BugAddCommentAndReopenMutationResult = Apollo.MutationResult<BugAddCommentAndReopenMutation>;
@@ -1736,9 +1737,9 @@ export type BugEditCommentMutationFn = Apollo.MutationFunction<BugEditCommentMut
  *   },
  * });
  */
-export function useBugEditCommentMutation(baseOptions?: Apollo.MutationHookOptions<BugEditCommentMutation, BugEditCommentMutationVariables>) {
+export function useBugEditCommentMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugEditCommentMutation, BugEditCommentMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugEditCommentMutation, BugEditCommentMutationVariables>(BugEditCommentDocument, options);
+        return ApolloReactHooks.useMutation<BugEditCommentMutation, BugEditCommentMutationVariables>(BugEditCommentDocument, options);
       }
 export type BugEditCommentMutationHookResult = ReturnType<typeof useBugEditCommentMutation>;
 export type BugEditCommentMutationResult = Apollo.MutationResult<BugEditCommentMutation>;
@@ -1779,9 +1780,9 @@ export type BugChangeLabelsMutationFn = Apollo.MutationFunction<BugChangeLabelsM
  *   },
  * });
  */
-export function useBugChangeLabelsMutation(baseOptions?: Apollo.MutationHookOptions<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>) {
+export function useBugChangeLabelsMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>(BugChangeLabelsDocument, options);
+        return ApolloReactHooks.useMutation<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>(BugChangeLabelsDocument, options);
       }
 export type BugChangeLabelsMutationHookResult = ReturnType<typeof useBugChangeLabelsMutation>;
 export type BugChangeLabelsMutationResult = Apollo.MutationResult<BugChangeLabelsMutation>;
@@ -1815,9 +1816,9 @@ export type BugStatusOpenMutationFn = Apollo.MutationFunction<BugStatusOpenMutat
  *   },
  * });
  */
-export function useBugStatusOpenMutation(baseOptions?: Apollo.MutationHookOptions<BugStatusOpenMutation, BugStatusOpenMutationVariables>) {
+export function useBugStatusOpenMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugStatusOpenMutation, BugStatusOpenMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugStatusOpenMutation, BugStatusOpenMutationVariables>(BugStatusOpenDocument, options);
+        return ApolloReactHooks.useMutation<BugStatusOpenMutation, BugStatusOpenMutationVariables>(BugStatusOpenDocument, options);
       }
 export type BugStatusOpenMutationHookResult = ReturnType<typeof useBugStatusOpenMutation>;
 export type BugStatusOpenMutationResult = Apollo.MutationResult<BugStatusOpenMutation>;
@@ -1851,9 +1852,9 @@ export type BugStatusCloseMutationFn = Apollo.MutationFunction<BugStatusCloseMut
  *   },
  * });
  */
-export function useBugStatusCloseMutation(baseOptions?: Apollo.MutationHookOptions<BugStatusCloseMutation, BugStatusCloseMutationVariables>) {
+export function useBugStatusCloseMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugStatusCloseMutation, BugStatusCloseMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugStatusCloseMutation, BugStatusCloseMutationVariables>(BugStatusCloseDocument, options);
+        return ApolloReactHooks.useMutation<BugStatusCloseMutation, BugStatusCloseMutationVariables>(BugStatusCloseDocument, options);
       }
 export type BugStatusCloseMutationHookResult = ReturnType<typeof useBugStatusCloseMutation>;
 export type BugStatusCloseMutationResult = Apollo.MutationResult<BugStatusCloseMutation>;
@@ -1887,9 +1888,9 @@ export type BugSetTitleMutationFn = Apollo.MutationFunction<BugSetTitleMutation,
  *   },
  * });
  */
-export function useBugSetTitleMutation(baseOptions?: Apollo.MutationHookOptions<BugSetTitleMutation, BugSetTitleMutationVariables>) {
+export function useBugSetTitleMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugSetTitleMutation, BugSetTitleMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<BugSetTitleMutation, BugSetTitleMutationVariables>(BugSetTitleDocument, options);
+        return ApolloReactHooks.useMutation<BugSetTitleMutation, BugSetTitleMutationVariables>(BugSetTitleDocument, options);
       }
 export type BugSetTitleMutationHookResult = ReturnType<typeof useBugSetTitleMutation>;
 export type BugSetTitleMutationResult = Apollo.MutationResult<BugSetTitleMutation>;
@@ -1920,20 +1921,20 @@ export const RepositoriesDocument = gql`
  *   },
  * });
  */
-export function useRepositoriesQuery(baseOptions?: Apollo.QueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
+export function useRepositoriesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
+        return ApolloReactHooks.useQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
       }
-export function useRepositoriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
+export function useRepositoriesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
+          return ApolloReactHooks.useLazyQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
         }
 // @ts-ignore
-export function useRepositoriesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>): Apollo.UseSuspenseQueryResult<RepositoriesQuery, RepositoriesQueryVariables>;
-export function useRepositoriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>): Apollo.UseSuspenseQueryResult<RepositoriesQuery | undefined, RepositoriesQueryVariables>;
-export function useRepositoriesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
+export function useRepositoriesSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<RepositoriesQuery, RepositoriesQueryVariables>;
+export function useRepositoriesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<RepositoriesQuery | undefined, RepositoriesQueryVariables>;
+export function useRepositoriesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
         }
 export type RepositoriesQueryHookResult = ReturnType<typeof useRepositoriesQuery>;
 export type RepositoriesLazyQueryHookResult = ReturnType<typeof useRepositoriesLazyQuery>;
@@ -1963,20 +1964,20 @@ export const ServerConfigDocument = gql`
  *   },
  * });
  */
-export function useServerConfigQuery(baseOptions?: Apollo.QueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
+export function useServerConfigQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
+        return ApolloReactHooks.useQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
       }
-export function useServerConfigLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
+export function useServerConfigLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
+          return ApolloReactHooks.useLazyQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
         }
 // @ts-ignore
-export function useServerConfigSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>): Apollo.UseSuspenseQueryResult<ServerConfigQuery, ServerConfigQueryVariables>;
-export function useServerConfigSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>): Apollo.UseSuspenseQueryResult<ServerConfigQuery | undefined, ServerConfigQueryVariables>;
-export function useServerConfigSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
+export function useServerConfigSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ServerConfigQuery, ServerConfigQueryVariables>;
+export function useServerConfigSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ServerConfigQuery | undefined, ServerConfigQueryVariables>;
+export function useServerConfigSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
         }
 export type ServerConfigQueryHookResult = ReturnType<typeof useServerConfigQuery>;
 export type ServerConfigLazyQueryHookResult = ReturnType<typeof useServerConfigLazyQuery>;
@@ -2051,20 +2052,20 @@ export const UserProfileDocument = gql`
  *   },
  * });
  */
-export function useUserProfileQuery(baseOptions: Apollo.QueryHookOptions<UserProfileQuery, UserProfileQueryVariables> & ({ variables: UserProfileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+export function useUserProfileQuery(baseOptions: ApolloReactHooks.QueryHookOptions<UserProfileQuery, UserProfileQueryVariables> & ({ variables: UserProfileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
+        return ApolloReactHooks.useQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
       }
-export function useUserProfileLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>) {
+export function useUserProfileLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
+          return ApolloReactHooks.useLazyQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
         }
 // @ts-ignore
-export function useUserProfileSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>): Apollo.UseSuspenseQueryResult<UserProfileQuery, UserProfileQueryVariables>;
-export function useUserProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>): Apollo.UseSuspenseQueryResult<UserProfileQuery | undefined, UserProfileQueryVariables>;
-export function useUserProfileSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
+export function useUserProfileSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<UserProfileQuery, UserProfileQueryVariables>;
+export function useUserProfileSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<UserProfileQuery | undefined, UserProfileQueryVariables>;
+export function useUserProfileSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
         }
 export type UserProfileQueryHookResult = ReturnType<typeof useUserProfileQuery>;
 export type UserProfileLazyQueryHookResult = ReturnType<typeof useUserProfileLazyQuery>;
@@ -2103,20 +2104,20 @@ export const ValidLabelsDocument = gql`
  *   },
  * });
  */
-export function useValidLabelsQuery(baseOptions?: Apollo.QueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
+export function useValidLabelsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
+        return ApolloReactHooks.useQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
       }
-export function useValidLabelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
+export function useValidLabelsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
+          return ApolloReactHooks.useLazyQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
         }
 // @ts-ignore
-export function useValidLabelsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>): Apollo.UseSuspenseQueryResult<ValidLabelsQuery, ValidLabelsQueryVariables>;
-export function useValidLabelsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>): Apollo.UseSuspenseQueryResult<ValidLabelsQuery | undefined, ValidLabelsQueryVariables>;
-export function useValidLabelsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
+export function useValidLabelsSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ValidLabelsQuery, ValidLabelsQueryVariables>;
+export function useValidLabelsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ValidLabelsQuery | undefined, ValidLabelsQueryVariables>;
+export function useValidLabelsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
         }
 export type ValidLabelsQueryHookResult = ReturnType<typeof useValidLabelsQuery>;
 export type ValidLabelsLazyQueryHookResult = ReturnType<typeof useValidLabelsLazyQuery>;

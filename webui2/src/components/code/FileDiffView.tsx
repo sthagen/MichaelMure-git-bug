@@ -1,7 +1,8 @@
 // Collapsible diff view for a single file in a commit.
 // Diff is fetched lazily on first expand via GraphQL.
 
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client/react";
 import { ChevronRight, FilePlus, FileMinus, FileEdit } from "lucide-react";
 import { useState } from "react";
 

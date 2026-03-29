@@ -1,7 +1,8 @@
 // Code browser page. Switches between tree view, file viewer, and commit
 // history via ?type= search param. Ref is selected via ?ref=.
 
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { AlertCircle, GitCommit } from "lucide-react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router";

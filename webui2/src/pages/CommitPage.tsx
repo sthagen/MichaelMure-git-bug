@@ -1,7 +1,8 @@
 // Commit detail page (/:repo/commit/:hash). Shows commit metadata, full
 // message, parent links, and changed files with lazy diffs.
 
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { format } from "date-fns";
 import { ArrowLeft, GitCommit } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router";

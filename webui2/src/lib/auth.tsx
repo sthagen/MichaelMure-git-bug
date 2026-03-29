@@ -14,7 +14,8 @@
 // All three modes expose the same AuthContextValue shape, so the rest of the
 // component tree doesn't need to know which mode is active.
 
-import { gql, useQuery } from "@apollo/client";
+import { gql } from "@apollo/client";
+import { useQuery } from "@apollo/client/react";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 import { useServerConfigQuery } from "@/__generated__/graphql";
