@@ -130,8 +130,7 @@ export const Route = createFileRoute("/$repo/")({
     const refsRef = preloadQuery<RefsQueryData>(REFS_QUERY, {
       variables: { repo: repo === "_" ? null : repo },
     });
-    await preloadQuery.toPromise(refsRef);
-    return { refsRef };
+    return { refsRef: await preloadQuery.toPromise(refsRef) };
   },
 });
 

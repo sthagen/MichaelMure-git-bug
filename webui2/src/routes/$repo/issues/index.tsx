@@ -53,12 +53,11 @@ export const Route = createFileRoute("/$repo/issues/")({
     const identitiesRef = preloadQuery<AllIdentitiesQuery>(AllIdentitiesDocument, {
       variables: { ref },
     });
-    await Promise.all([
-      preloadQuery.toPromise(bugListRef),
-      preloadQuery.toPromise(labelsRef),
-      preloadQuery.toPromise(identitiesRef),
-    ]);
-    return { bugListRef, labelsRef, identitiesRef };
+    return {
+      bugListRef: await preloadQuery.toPromise(bugListRef),
+      labelsRef: await preloadQuery.toPromise(labelsRef),
+      identitiesRef: await preloadQuery.toPromise(identitiesRef),
+    };
   },
 });
 

@@ -13,8 +13,7 @@ export const Route = createFileRoute("/")({
   component: RouteComponent,
   loader: async () => {
     const repositoriesRef = preloadQuery<RepositoriesQuery>(RepositoriesDocument);
-    await preloadQuery.toPromise(repositoriesRef);
-    return { repositoriesRef };
+    return { repositoriesRef: await preloadQuery.toPromise(repositoriesRef) };
   },
 });
 

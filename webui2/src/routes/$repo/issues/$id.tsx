@@ -31,8 +31,10 @@ export const Route = createFileRoute("/$repo/issues/$id")({
     const labelsRef = preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
       variables: { ref },
     });
-    await Promise.all([preloadQuery.toPromise(bugDetailRef), preloadQuery.toPromise(labelsRef)]);
-    return { bugDetailRef, labelsRef };
+    return {
+      bugDetailRef: await preloadQuery.toPromise(bugDetailRef),
+      labelsRef: await preloadQuery.toPromise(labelsRef),
+    };
   },
 });
 

@@ -61,8 +61,7 @@ export const Route = createFileRoute("/$repo/commit/$hash")({
     const commitRef = preloadQuery<CommitQueryData>(COMMIT_QUERY, {
       variables: { repo: repo === "_" ? null : repo, hash },
     });
-    await preloadQuery.toPromise(commitRef);
-    return { commitRef };
+    return { commitRef: await preloadQuery.toPromise(commitRef) };
   },
 });
 
