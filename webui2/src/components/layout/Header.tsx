@@ -7,8 +7,9 @@
 // action when logged in.
 
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
-import { Bug, Plus, Sun, Moon, LogIn, LogOut } from "lucide-react";
+import { Plus, Sun, Moon, LogIn, LogOut } from "lucide-react";
 
+import Logo from "@/assets/logo.svg?react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -48,7 +49,7 @@ export function Header() {
       <div className="mx-auto flex h-14 max-w-screen-xl items-center gap-6 px-4">
         {/* Logo always goes to the repo picker root */}
         <Link to="/" className="text-foreground flex items-center gap-2 font-semibold">
-          <Bug className="size-4" />
+          <Logo className="size-5" />
           <span>git-bug</span>
         </Link>
 
