@@ -18,7 +18,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-import { Status, useUserProfileQuery } from "@/__generated__/graphql";
+import {
+  Status,
+  useUserProfileQuery,
+  type UserProfileQuery,
+  UserProfileDocument,
+} from "@/__generated__/graphql";
 import { LabelBadge } from "@/components/bugs/LabelBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
@@ -28,6 +33,23 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/$repo/_issues/user/$id")({
   component: RouteComponent,
+  pendingComponent: ProfileSkeleton,
+  loader: async ({ context: { preloadQuery, ref }, params: { id } }) => {
+    // Preload the initial page (open issues, no cursor) so the router
+    // waits before transitioning. Subsequent pagination/filter changes
+    // use useQuery which hits the Apollo cache or fetches fresh.
+    const profileRef = preloadQuery<UserProfileQuery>(UserProfileDocument, {
+      variables: {
+        ref,
+        prefix: id,
+        openQuery: `author:${id} status:open`,
+        closedQuery: `author:${id} status:closed`,
+        listQuery: `author:${id} status:open`,
+        after: undefined,
+      },
+    });
+    return { profileRef: await preloadQuery.toPromise(profileRef) };
+  },
 });
 
 const PAGE_SIZE = 25;
@@ -69,8 +91,6 @@ function RouteComponent() {
       </div>
     );
   }
-
-  if (loading && !data) return <ProfileSkeleton />;
 
   const identity = data?.repository?.identity;
   if (!identity) {
