@@ -7,11 +7,10 @@ import { GitFork, FolderOpen, AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 
 import { type RepositoriesQuery, RepositoriesDocument } from "@/__generated__/graphql";
-import { preloadQuery } from "@/lib/apollo";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  loader: async () => {
+  loader: async ({ context: { preloadQuery } }) => {
     const repositoriesRef = preloadQuery<RepositoriesQuery>(RepositoriesDocument);
     return { repositoriesRef: await preloadQuery.toPromise(repositoriesRef) };
   },

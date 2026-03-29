@@ -9,7 +9,6 @@ import { ArrowLeft, GitCommit } from "lucide-react";
 
 import { FileDiffView } from "@/components/code/FileDiffView";
 import { Skeleton } from "@/components/ui/skeleton";
-import { preloadQuery } from "@/lib/apollo";
 import { useRepo } from "@/lib/repo";
 
 const COMMIT_QUERY = gql`
@@ -57,9 +56,9 @@ interface CommitQueryData {
 export const Route = createFileRoute("/$repo/commit/$hash")({
   component: RouteComponent,
   pendingComponent: CommitPageSkeleton,
-  loader: async ({ params: { repo, hash } }) => {
+  loader: async ({ context: { preloadQuery, ref }, params: { hash } }) => {
     const commitRef = preloadQuery<CommitQueryData>(COMMIT_QUERY, {
-      variables: { repo: repo === "_" ? null : repo, hash },
+      variables: { repo: ref, hash },
     });
     return { commitRef: await preloadQuery.toPromise(commitRef) };
   },

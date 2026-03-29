@@ -4,14 +4,7 @@ import { CircleDot, CircleCheck, ChevronLeft, ChevronRight } from "lucide-react"
 import { useState } from "react";
 import * as v from "valibot";
 
-import {
-  type BugListQuery,
-  BugListDocument,
-  type ValidLabelsQuery,
-  ValidLabelsDocument,
-  type AllIdentitiesQuery,
-  AllIdentitiesDocument,
-} from "@/__generated__/graphql";
+import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
 import { BugRow } from "@/components/bugs/BugRow";
 import { IssueFilters } from "@/components/bugs/IssueFilters";
 import type { SortValue } from "@/components/bugs/IssueFilters";
@@ -19,7 +12,6 @@ import { QueryInput } from "@/components/bugs/QueryInput";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { preloadQuery } from "@/lib/apollo";
 import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
@@ -33,8 +25,7 @@ export const Route = createFileRoute("/$repo/issues/")({
   pendingComponent: BugListSkeleton,
   validateSearch: (search) => v.parse(issuesSearchSchema, search),
   loaderDeps: ({ search: { q, after } }) => ({ q, after }),
-  loader: async ({ params: { repo }, deps: { q, after } }) => {
-    const ref = repo === "_" ? null : repo;
+  loader: async ({ context: { preloadQuery, ref }, deps: { q, after } }) => {
     const parsed = parseQueryString(q);
     const baseQuery = buildBaseQuery(parsed.labels, parsed.author, parsed.freeText);
     const bugListRef = preloadQuery<BugListQuery>(BugListDocument, {
@@ -47,17 +38,7 @@ export const Route = createFileRoute("/$repo/issues/")({
         after: after || undefined,
       },
     });
-    const labelsRef = preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
-      variables: { ref },
-    });
-    const identitiesRef = preloadQuery<AllIdentitiesQuery>(AllIdentitiesDocument, {
-      variables: { ref },
-    });
-    return {
-      bugListRef: await preloadQuery.toPromise(bugListRef),
-      labelsRef: await preloadQuery.toPromise(labelsRef),
-      identitiesRef: await preloadQuery.toPromise(identitiesRef),
-    };
+    return { bugListRef: await preloadQuery.toPromise(bugListRef) };
   },
 });
 
@@ -84,7 +65,8 @@ function RouteComponent() {
   // Draft is the text input value — starts from URL, only committed on submit
   const [draft, setDraft] = useState(q);
 
-  const { bugListRef, labelsRef, identitiesRef } = Route.useLoaderData();
+  const { bugListRef } = Route.useLoaderData();
+  const { labelsRef, identitiesRef } = Route.useRouteContext();
   const { data } = useReadQuery(bugListRef);
   const { data: labelsData } = useReadQuery(labelsRef);
   const { data: identitiesData } = useReadQuery(identitiesRef);

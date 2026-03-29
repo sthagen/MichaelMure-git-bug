@@ -24,7 +24,6 @@ import { RefSelector } from "@/components/code/RefSelector";
 import { Markdown } from "@/components/content/Markdown";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { preloadQuery } from "@/lib/apollo";
 import { useRepo } from "@/lib/repo";
 
 const REFS_QUERY = gql`
@@ -126,9 +125,9 @@ export const Route = createFileRoute("/$repo/")({
   component: RouteComponent,
   pendingComponent: CodePageSkeleton,
   validateSearch: (search) => v.parse(codePageSearchSchema, search),
-  loader: async ({ params: { repo } }) => {
+  loader: async ({ context: { preloadQuery, ref } }) => {
     const refsRef = preloadQuery<RefsQueryData>(REFS_QUERY, {
-      variables: { repo: repo === "_" ? null : repo },
+      variables: { repo: ref },
     });
     return { refsRef: await preloadQuery.toPromise(refsRef) };
   },

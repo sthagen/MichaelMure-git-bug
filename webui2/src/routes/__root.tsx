@@ -1,11 +1,16 @@
-import { createRootRoute, useRouter } from "@tanstack/react-router";
+import { createRootRouteWithContext, useRouter } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 
 import { Shell } from "@/components/layout/Shell";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
+import type { preloadQuery } from "@/lib/apollo";
 
-export const Route = createRootRoute({
+export interface RouterContext {
+  preloadQuery: typeof preloadQuery;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: Shell,
   errorComponent: ErrorPage,
 });
