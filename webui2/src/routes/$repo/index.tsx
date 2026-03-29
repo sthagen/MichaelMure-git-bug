@@ -1,31 +1,15 @@
 // /$repo index — redirects to the tree view with the default ref.
+// The refs are already being preloaded by $repo.tsx beforeLoad, so we
+// use client.query() which will hit the Apollo cache.
 
-import { gql } from "@apollo/client";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-import type { GitRef } from "@/__generated__/graphql";
 import { client } from "@/lib/apollo";
-
-const REFS_QUERY = gql`
-  query RepoDefaultRef($repo: String) {
-    repository(ref: $repo) {
-      refs {
-        nodes {
-          shortName
-          isDefault
-        }
-      }
-    }
-  }
-`;
-
-interface DefaultRefQueryData {
-  repository: { refs: { nodes: Pick<GitRef, "shortName" | "isDefault">[] } | null } | null;
-}
+import { REFS_QUERY, type RefsQueryData } from "@/routes/$repo";
 
 export const Route = createFileRoute("/$repo/")({
   beforeLoad: async ({ context: { ref }, params: { repo } }) => {
-    const { data } = await client.query<DefaultRefQueryData>({
+    const { data } = await client.query<RefsQueryData>({
       query: REFS_QUERY,
       variables: { repo: ref },
     });

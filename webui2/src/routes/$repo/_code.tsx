@@ -1,10 +1,15 @@
-// Pathless layout for the code browser. Preloads refs (branches/tags)
-// and renders the shared header (breadcrumb + ref selector + history toggle).
-// Child routes (tree, blob, commits) render inside the Outlet.
+// Pathless layout for the code browser. Reads preloaded refs from the
+// $repo context and renders the shared header (breadcrumb + ref selector
+// + history toggle). Child routes (tree, blob, commits) render in Outlet.
 
-import { gql } from "@apollo/client";
 import { useReadQuery } from "@apollo/client/react";
-import { createFileRoute, Outlet, useMatchRoute, useParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  useMatchRoute,
+  useNavigate,
+  useParams,
+} from "@tanstack/react-router";
 import { GitCommit } from "lucide-react";
 
 import type { GitRef } from "@/__generated__/graphql";
@@ -13,45 +18,14 @@ import { RefSelector } from "@/components/code/RefSelector";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const REFS_QUERY = gql`
-  query CodePageRefs($repo: String) {
-    repository(ref: $repo) {
-      name
-      refs {
-        nodes {
-          name
-          shortName
-          type
-          hash
-          isDefault
-        }
-      }
-    }
-  }
-`;
-
-export interface RefsQueryData {
-  repository: {
-    name: string;
-    refs: { nodes: GitRef[] } | null;
-  } | null;
-}
-
 export const Route = createFileRoute("/$repo/_code")({
   component: CodeLayout,
   pendingComponent: CodeLayoutSkeleton,
-  beforeLoad: ({ context: { preloadQuery, ref } }) => {
-    const refsRef = preloadQuery<RefsQueryData>(REFS_QUERY, {
-      variables: { repo: ref },
-    });
-    return { refsRef };
-  },
 });
 
 function CodeLayout() {
   const { repo } = Route.useParams();
-  const { ref: repoRef } = Route.useRouteContext();
-  const { refsRef } = Route.useRouteContext();
+  const { ref: repoRef, refsRef } = Route.useRouteContext();
   const { data: refsData } = useReadQuery(refsRef);
   const refs: GitRef[] = refsData?.repository?.refs?.nodes ?? [];
   const repoName = refsData?.repository?.name ?? repoRef ?? "default-repo";
@@ -71,9 +45,13 @@ function CodeLayout() {
     fuzzy: true,
   });
 
+  const navigate = useNavigate();
+
   function handleRefSelect(ref: GitRef) {
-    // When switching refs, always go to tree root
-    window.location.href = `/${repo}/tree/${ref.shortName}`;
+    void navigate({
+      to: "/$repo/tree/$ref/$",
+      params: { repo, ref: ref.shortName, _splat: "" },
+    });
   }
 
   return (
