@@ -4,7 +4,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { format } from "date-fns";
 import { ArrowLeft, GitCommit } from "lucide-react";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router";
 
 import { FileDiffView } from "@/components/code/FileDiffView";
 import { Skeleton } from "@/components/ui/skeleton";

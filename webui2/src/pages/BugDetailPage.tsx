@@ -1,6 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft } from "lucide-react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 
 import { useBugDetailQuery } from "@/__generated__/graphql";
 import { CommentBox } from "@/components/bugs/CommentBox";

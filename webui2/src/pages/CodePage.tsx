@@ -4,7 +4,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { AlertCircle, GitCommit } from "lucide-react";
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 import type { GitRef, GitTreeEntry, GitBlob, GitLastCommit } from "@/__generated__/graphql";
 import { CodeBreadcrumb } from "@/components/code/CodeBreadcrumb";

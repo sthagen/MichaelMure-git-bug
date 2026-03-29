@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router";
 
 import { useBugCreateMutation } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";

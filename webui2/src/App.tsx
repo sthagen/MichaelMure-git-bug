@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router";
 
 import { Shell } from "@/components/layout/Shell";
 import { RepoShell } from "@/lib/repo";

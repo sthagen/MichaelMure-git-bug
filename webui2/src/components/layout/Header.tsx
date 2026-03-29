@@ -7,7 +7,7 @@
 // action when logged in.
 
 import { Bug, Plus, Sun, Moon, LogIn, LogOut } from "lucide-react";
-import { Link, useMatch, NavLink } from "react-router-dom";
+import { Link, useMatch, NavLink } from "react-router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";

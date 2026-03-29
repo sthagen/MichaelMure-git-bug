@@ -7,7 +7,7 @@
 //   - Pass the slug as `ref` to all GraphQL repository queries.
 
 import { createContext, useContext } from "react";
-import { useParams, Outlet } from "react-router-dom";
+import { useParams, Outlet } from "react-router";
 
 const RepoContext = createContext<string | null>(null);
 

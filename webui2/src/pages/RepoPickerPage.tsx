@@ -3,7 +3,7 @@
 
 import { GitFork, FolderOpen, AlertCircle } from "lucide-react";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 
 import { useRepositoriesQuery } from "@/__generated__/graphql";
 import { Skeleton } from "@/components/ui/skeleton";

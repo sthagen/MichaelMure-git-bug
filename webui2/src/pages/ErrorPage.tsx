@@ -3,7 +3,7 @@
 // Application Error!" screen.
 
 import { AlertTriangle } from "lucide-react";
-import { useRouteError, isRouteErrorResponse, Link } from "react-router-dom";
+import { useRouteError, isRouteErrorResponse, Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
 

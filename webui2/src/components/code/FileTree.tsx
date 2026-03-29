@@ -1,6 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import { Folder, File } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import type { GitTreeEntry } from "@/__generated__/graphql";
 import { Skeleton } from "@/components/ui/skeleton";

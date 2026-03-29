@@ -5,7 +5,7 @@ import { gql, useQuery } from "@apollo/client";
 import { formatDistanceToNow } from "date-fns";
 import { GitCommit } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

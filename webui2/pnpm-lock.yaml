@@ -53,9 +53,9 @@ importers:
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@19.2.14)(react@19.2.4)
-      react-router-dom:
-        specifier: ^6.28.0
-        version: 6.30.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react-router:
+        specifier: ^7.13.2
+        version: 7.13.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       rehype-autolink-headings:
         specifier: ^7.1.0
         version: 7.1.0
@@ -1275,10 +1275,6 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
-  '@remix-run/router@1.23.2':
-    resolution: {integrity: sha512-Ic6m2U/rMjTkhERIa/0ZtXJP17QUi2CbWE7cqx4J58M8aA3QTfW+2UlQ4psvTX9IO1RfNVhK3pcpdjej7L+t2w==}
-    engines: {node: '>=14.0.0'}
-
   '@repeaterjs/repeater@3.0.6':
     resolution: {integrity: sha512-Javneu5lsuhwNCryN+pXH93VPQ8g0dBX7wItHFgYiwQmzE1sVdg5tWHiOgHywzL2W21XQopa7IwIEnNbmeUJYA==}
 
@@ -1664,6 +1660,10 @@ packages:
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
+
+  cookie@1.1.1:
+    resolution: {integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ==}
+    engines: {node: '>=18'}
 
   cosmiconfig@8.3.6:
     resolution: {integrity: sha512-kcZ6+W5QzcJ3P1Mt+83OUv/oHFqZHIx8DuxG6eZ5RGMERoLqp4BuGjhHLYGK+Kf5XVkQvqBSmAy/nGWN3qDgEA==}
@@ -2626,18 +2626,15 @@ packages:
       '@types/react':
         optional: true
 
-  react-router-dom@6.30.3:
-    resolution: {integrity: sha512-pxPcv1AczD4vso7G4Z3TKcvlxK7g7TNt3/FNGMhfqyntocvYKj+GCatfigGDjbLozC4baguJ0ReCigoDJXb0ag==}
-    engines: {node: '>=14.0.0'}
+  react-router@7.13.2:
+    resolution: {integrity: sha512-tX1Aee+ArlKQP+NIUd7SE6Li+CiGKwQtbS+FfRxPX6Pe4vHOo6nr9d++u5cwg+Z8K/x8tP+7qLmujDtfrAoUJA==}
+    engines: {node: '>=20.0.0'}
     peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
-
-  react-router@6.30.3:
-    resolution: {integrity: sha512-XRnlbKMTmktBkjCLE8/XcZFlnHvr2Ltdr1eJX4idL55/9BbORzyZEaIkBFDhFGCEWBBItsVrDxwx3gnisMitdw==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      react: '>=16.8'
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
 
   react-style-singleton@2.2.3:
     resolution: {integrity: sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ==}
@@ -2759,6 +2756,9 @@ packages:
 
   sentence-case@3.0.4:
     resolution: {integrity: sha512-8LS0JInaQMCRoQ7YUytAo/xUu5W2XnQxV2HI/6uM6U7CITS1RqPElr30V6uIqyMKM9lJGRVFy5/4CuzcixNYSg==}
+
+  set-cookie-parser@2.7.2:
+    resolution: {integrity: sha512-oeM1lpU/UvhTxw+g3cIfxXHyJRc/uidd3yK1P242gzHds0udQBYzs3y8j4gCCW+ZJ7ad0yctld8RYO+bdurlvw==}
 
   shell-quote@1.8.3:
     resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
@@ -4279,8 +4279,6 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
-  '@remix-run/router@1.23.2': {}
-
   '@repeaterjs/repeater@3.0.6': {}
 
   '@rolldown/binding-android-arm64@1.0.0-rc.12':
@@ -4619,6 +4617,8 @@ snapshots:
       upper-case: 2.0.2
 
   convert-source-map@2.0.0: {}
+
+  cookie@1.1.1: {}
 
   cosmiconfig@8.3.6(typescript@6.0.2):
     dependencies:
@@ -5787,17 +5787,13 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  react-router-dom@6.30.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  react-router@7.13.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
-      '@remix-run/router': 1.23.2
+      cookie: 1.1.1
       react: 19.2.4
+      set-cookie-parser: 2.7.2
+    optionalDependencies:
       react-dom: 19.2.4(react@19.2.4)
-      react-router: 6.30.3(react@19.2.4)
-
-  react-router@6.30.3(react@19.2.4):
-    dependencies:
-      '@remix-run/router': 1.23.2
-      react: 19.2.4
 
   react-style-singleton@2.2.3(@types/react@19.2.14)(react@19.2.4):
     dependencies:
@@ -5967,6 +5963,8 @@ snapshots:
       no-case: 3.0.4
       tslib: 2.8.1
       upper-case-first: 2.0.2
+
+  set-cookie-parser@2.7.2: {}
 
   shell-quote@1.8.3: {}
 

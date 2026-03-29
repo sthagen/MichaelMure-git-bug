@@ -17,7 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 
 import { Status, useUserProfileQuery } from "@/__generated__/graphql";
 import { LabelBadge } from "@/components/bugs/LabelBadge";
