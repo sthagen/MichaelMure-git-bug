@@ -1,26 +1,27 @@
+import { Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 
 interface CodeBreadcrumbProps {
   repoName: string;
-  ref: string;
+  currentRef: string;
   path: string;
-  // called when user clicks a breadcrumb segment — returns new path
-  onNavigate: (path: string) => void;
+  repo: string;
 }
 
-// Path breadcrumb for the code browser: repo name / ref / path segments.
-// Each segment is clickable to navigate up the tree.
-export function CodeBreadcrumb({ repoName, ref, path, onNavigate }: CodeBreadcrumbProps) {
+// Path breadcrumb for the code browser: repo name / path segments.
+// Each segment is a Link to the corresponding tree path.
+export function CodeBreadcrumb({ repoName, currentRef, path, repo }: CodeBreadcrumbProps) {
   const parts = path ? path.split("/").filter(Boolean) : [];
 
   return (
     <div className="flex flex-wrap items-center gap-1 font-mono text-sm">
-      <button
-        onClick={() => onNavigate("")}
+      <Link
+        to="/$repo/tree/$ref/$"
+        params={{ repo, ref: currentRef, _splat: "" }}
         className="text-foreground font-medium hover:underline"
       >
         {repoName}
-      </button>
+      </Link>
 
       {parts.map((part, i) => {
         const partPath = parts.slice(0, i + 1).join("/");
@@ -31,18 +32,19 @@ export function CodeBreadcrumb({ repoName, ref, path, onNavigate }: CodeBreadcru
             {isLast ? (
               <span className="text-foreground font-medium">{part}</span>
             ) : (
-              <button
-                onClick={() => onNavigate(partPath)}
+              <Link
+                to="/$repo/tree/$ref/$"
+                params={{ repo, ref: currentRef, _splat: partPath }}
                 className="text-muted-foreground hover:text-foreground hover:underline"
               >
                 {part}
-              </button>
+              </Link>
             )}
           </span>
         );
       })}
 
-      <span className="text-muted-foreground ml-2 text-xs">@ {ref}</span>
+      <span className="text-muted-foreground ml-2 text-xs">@ {currentRef}</span>
     </div>
   );
 }

@@ -35,7 +35,6 @@ function RouteComponent() {
       void navigate({
         to: "/$repo",
         params: { repo: repoSlug(data.repositories.nodes[0]?.name) },
-        search: { ref: "", path: "", type: "tree" as const },
         replace: true,
       });
     }
@@ -61,7 +60,6 @@ function RouteComponent() {
             key={repoSlug(repo.name)}
             to="/$repo"
             params={{ repo: repoSlug(repo.name) }}
-            search={{ ref: "", path: "", type: "tree" as const }}
             className="hover:bg-muted/50 flex items-center gap-3 px-4 py-4 transition-colors"
           >
             <FolderOpen className="text-muted-foreground size-5 shrink-0" />

@@ -14,11 +14,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RepoIndexRouteImport } from './routes/$repo/index'
 import { Route as AuthSelectIdentityRouteImport } from './routes/auth/select-identity'
 import { Route as RepoIssuesRouteImport } from './routes/$repo/_issues'
+import { Route as RepoCodeRouteImport } from './routes/$repo/_code'
 import { Route as RepoCommitHashRouteImport } from './routes/$repo/commit/$hash'
 import { Route as RepoIssuesIssuesIndexRouteImport } from './routes/$repo/_issues/issues/index'
 import { Route as RepoIssuesUserIdRouteImport } from './routes/$repo/_issues/user/$id'
 import { Route as RepoIssuesIssuesNewRouteImport } from './routes/$repo/_issues/issues/new'
 import { Route as RepoIssuesIssuesIdRouteImport } from './routes/$repo/_issues/issues/$id'
+import { Route as RepoCodeCommitsRefRouteImport } from './routes/$repo/_code/commits/$ref'
+import { Route as RepoCodeTreeRefSplatRouteImport } from './routes/$repo/_code/tree/$ref/$'
+import { Route as RepoCodeBlobRefSplatRouteImport } from './routes/$repo/_code/blob/$ref/$'
 
 const RepoRoute = RepoRouteImport.update({
   id: '/$repo',
@@ -42,6 +46,10 @@ const AuthSelectIdentityRoute = AuthSelectIdentityRouteImport.update({
 } as any)
 const RepoIssuesRoute = RepoIssuesRouteImport.update({
   id: '/_issues',
+  getParentRoute: () => RepoRoute,
+} as any)
+const RepoCodeRoute = RepoCodeRouteImport.update({
+  id: '/_code',
   getParentRoute: () => RepoRoute,
 } as any)
 const RepoCommitHashRoute = RepoCommitHashRouteImport.update({
@@ -69,6 +77,21 @@ const RepoIssuesIssuesIdRoute = RepoIssuesIssuesIdRouteImport.update({
   path: '/issues/$id',
   getParentRoute: () => RepoIssuesRoute,
 } as any)
+const RepoCodeCommitsRefRoute = RepoCodeCommitsRefRouteImport.update({
+  id: '/commits/$ref',
+  path: '/commits/$ref',
+  getParentRoute: () => RepoCodeRoute,
+} as any)
+const RepoCodeTreeRefSplatRoute = RepoCodeTreeRefSplatRouteImport.update({
+  id: '/tree/$ref/$',
+  path: '/tree/$ref/$',
+  getParentRoute: () => RepoCodeRoute,
+} as any)
+const RepoCodeBlobRefSplatRoute = RepoCodeBlobRefSplatRouteImport.update({
+  id: '/blob/$ref/$',
+  path: '/blob/$ref/$',
+  getParentRoute: () => RepoCodeRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -76,33 +99,43 @@ export interface FileRoutesByFullPath {
   '/auth/select-identity': typeof AuthSelectIdentityRoute
   '/$repo/': typeof RepoIndexRoute
   '/$repo/commit/$hash': typeof RepoCommitHashRoute
+  '/$repo/commits/$ref': typeof RepoCodeCommitsRefRoute
   '/$repo/issues/$id': typeof RepoIssuesIssuesIdRoute
   '/$repo/issues/new': typeof RepoIssuesIssuesNewRoute
   '/$repo/user/$id': typeof RepoIssuesUserIdRoute
   '/$repo/issues/': typeof RepoIssuesIssuesIndexRoute
+  '/$repo/blob/$ref/$': typeof RepoCodeBlobRefSplatRoute
+  '/$repo/tree/$ref/$': typeof RepoCodeTreeRefSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$repo': typeof RepoIndexRoute
   '/auth/select-identity': typeof AuthSelectIdentityRoute
   '/$repo/commit/$hash': typeof RepoCommitHashRoute
+  '/$repo/commits/$ref': typeof RepoCodeCommitsRefRoute
   '/$repo/issues/$id': typeof RepoIssuesIssuesIdRoute
   '/$repo/issues/new': typeof RepoIssuesIssuesNewRoute
   '/$repo/user/$id': typeof RepoIssuesUserIdRoute
   '/$repo/issues': typeof RepoIssuesIssuesIndexRoute
+  '/$repo/blob/$ref/$': typeof RepoCodeBlobRefSplatRoute
+  '/$repo/tree/$ref/$': typeof RepoCodeTreeRefSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$repo': typeof RepoRouteWithChildren
+  '/$repo/_code': typeof RepoCodeRouteWithChildren
   '/$repo/_issues': typeof RepoIssuesRouteWithChildren
   '/auth/select-identity': typeof AuthSelectIdentityRoute
   '/$repo/': typeof RepoIndexRoute
   '/$repo/commit/$hash': typeof RepoCommitHashRoute
+  '/$repo/_code/commits/$ref': typeof RepoCodeCommitsRefRoute
   '/$repo/_issues/issues/$id': typeof RepoIssuesIssuesIdRoute
   '/$repo/_issues/issues/new': typeof RepoIssuesIssuesNewRoute
   '/$repo/_issues/user/$id': typeof RepoIssuesUserIdRoute
   '/$repo/_issues/issues/': typeof RepoIssuesIssuesIndexRoute
+  '/$repo/_code/blob/$ref/$': typeof RepoCodeBlobRefSplatRoute
+  '/$repo/_code/tree/$ref/$': typeof RepoCodeTreeRefSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -112,32 +145,42 @@ export interface FileRouteTypes {
     | '/auth/select-identity'
     | '/$repo/'
     | '/$repo/commit/$hash'
+    | '/$repo/commits/$ref'
     | '/$repo/issues/$id'
     | '/$repo/issues/new'
     | '/$repo/user/$id'
     | '/$repo/issues/'
+    | '/$repo/blob/$ref/$'
+    | '/$repo/tree/$ref/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$repo'
     | '/auth/select-identity'
     | '/$repo/commit/$hash'
+    | '/$repo/commits/$ref'
     | '/$repo/issues/$id'
     | '/$repo/issues/new'
     | '/$repo/user/$id'
     | '/$repo/issues'
+    | '/$repo/blob/$ref/$'
+    | '/$repo/tree/$ref/$'
   id:
     | '__root__'
     | '/'
     | '/$repo'
+    | '/$repo/_code'
     | '/$repo/_issues'
     | '/auth/select-identity'
     | '/$repo/'
     | '/$repo/commit/$hash'
+    | '/$repo/_code/commits/$ref'
     | '/$repo/_issues/issues/$id'
     | '/$repo/_issues/issues/new'
     | '/$repo/_issues/user/$id'
     | '/$repo/_issues/issues/'
+    | '/$repo/_code/blob/$ref/$'
+    | '/$repo/_code/tree/$ref/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -183,6 +226,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RepoIssuesRouteImport
       parentRoute: typeof RepoRoute
     }
+    '/$repo/_code': {
+      id: '/$repo/_code'
+      path: ''
+      fullPath: '/$repo'
+      preLoaderRoute: typeof RepoCodeRouteImport
+      parentRoute: typeof RepoRoute
+    }
     '/$repo/commit/$hash': {
       id: '/$repo/commit/$hash'
       path: '/commit/$hash'
@@ -218,8 +268,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RepoIssuesIssuesIdRouteImport
       parentRoute: typeof RepoIssuesRoute
     }
+    '/$repo/_code/commits/$ref': {
+      id: '/$repo/_code/commits/$ref'
+      path: '/commits/$ref'
+      fullPath: '/$repo/commits/$ref'
+      preLoaderRoute: typeof RepoCodeCommitsRefRouteImport
+      parentRoute: typeof RepoCodeRoute
+    }
+    '/$repo/_code/tree/$ref/$': {
+      id: '/$repo/_code/tree/$ref/$'
+      path: '/tree/$ref/$'
+      fullPath: '/$repo/tree/$ref/$'
+      preLoaderRoute: typeof RepoCodeTreeRefSplatRouteImport
+      parentRoute: typeof RepoCodeRoute
+    }
+    '/$repo/_code/blob/$ref/$': {
+      id: '/$repo/_code/blob/$ref/$'
+      path: '/blob/$ref/$'
+      fullPath: '/$repo/blob/$ref/$'
+      preLoaderRoute: typeof RepoCodeBlobRefSplatRouteImport
+      parentRoute: typeof RepoCodeRoute
+    }
   }
 }
+
+interface RepoCodeRouteChildren {
+  RepoCodeCommitsRefRoute: typeof RepoCodeCommitsRefRoute
+  RepoCodeBlobRefSplatRoute: typeof RepoCodeBlobRefSplatRoute
+  RepoCodeTreeRefSplatRoute: typeof RepoCodeTreeRefSplatRoute
+}
+
+const RepoCodeRouteChildren: RepoCodeRouteChildren = {
+  RepoCodeCommitsRefRoute: RepoCodeCommitsRefRoute,
+  RepoCodeBlobRefSplatRoute: RepoCodeBlobRefSplatRoute,
+  RepoCodeTreeRefSplatRoute: RepoCodeTreeRefSplatRoute,
+}
+
+const RepoCodeRouteWithChildren = RepoCodeRoute._addFileChildren(
+  RepoCodeRouteChildren,
+)
 
 interface RepoIssuesRouteChildren {
   RepoIssuesIssuesIdRoute: typeof RepoIssuesIssuesIdRoute
@@ -240,12 +327,14 @@ const RepoIssuesRouteWithChildren = RepoIssuesRoute._addFileChildren(
 )
 
 interface RepoRouteChildren {
+  RepoCodeRoute: typeof RepoCodeRouteWithChildren
   RepoIssuesRoute: typeof RepoIssuesRouteWithChildren
   RepoIndexRoute: typeof RepoIndexRoute
   RepoCommitHashRoute: typeof RepoCommitHashRoute
 }
 
 const RepoRouteChildren: RepoRouteChildren = {
+  RepoCodeRoute: RepoCodeRouteWithChildren,
   RepoIssuesRoute: RepoIssuesRouteWithChildren,
   RepoIndexRoute: RepoIndexRoute,
   RepoCommitHashRoute: RepoCommitHashRoute,

@@ -9,11 +9,23 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface FileViewerProps {
-  blob: GitBlob;
+  blob: GitBlob | null;
   loading?: boolean;
 }
 
-export function FileViewer({ blob, loading }: FileViewerProps) {
+export function FileViewer({ blob, loading = false }: FileViewerProps) {
+  if (loading || !blob) {
+    return (
+      <div className="divide-border border-border divide-y rounded-md border">
+        <div className="flex items-center gap-2 px-4 py-2">
+          <Skeleton className="h-4 w-48" />
+        </div>
+        <div className="p-4">
+          <Skeleton className="h-64 w-full" />
+        </div>
+      </div>
+    );
+  }
   const [highlighted, setHighlighted] = useState<{ html: string; lineCount: number } | null>(null);
 
   useEffect(() => {
@@ -43,7 +55,7 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
   const { html, lineCount } = highlighted;
 
   function copyToClipboard() {
-    if (blob.text) void navigator.clipboard.writeText(blob.text);
+    if (blob?.text) void navigator.clipboard.writeText(blob.text);
   }
 
   return (

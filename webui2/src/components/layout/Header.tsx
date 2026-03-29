@@ -54,12 +54,7 @@ export function Header() {
         {/* Repo-scoped nav links — only shown when inside a repo */}
         {effectiveRepo && (
           <nav className="flex items-center gap-1">
-            <NavLink
-              to="/$repo"
-              params={{ repo: effectiveRepo }}
-              search={{ ref: "", path: "", type: "tree" as const }}
-              activeOptions={{ exact: true }}
-            >
+            <NavLink to="/$repo" params={{ repo: effectiveRepo }} activeOptions={{ exact: true }}>
               Code
             </NavLink>
             <NavLink
