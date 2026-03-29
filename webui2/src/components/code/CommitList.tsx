@@ -5,7 +5,7 @@ import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { formatDistanceToNow } from "date-fns";
 import { GitCommit } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,15 @@ const COMMITS_QUERY = gql`
 
 const PAGE_SIZE = 30;
 
+interface CommitListQueryData {
+  repository: {
+    commits: {
+      nodes: CommitNode[];
+      pageInfo: { hasNextPage: boolean; endCursor: string | null };
+    } | null;
+  } | null;
+}
+
 interface CommitListProps {
   ref_: string;
   path?: string;
@@ -52,15 +61,16 @@ export function CommitList({ ref_, path }: CommitListProps) {
   const [cursor, setCursor] = useState<string | null>(null);
   const [allCommits, setAllCommits] = useState<CommitNode[]>([]);
 
-  const { loading, error, fetchMore } = useQuery(COMMITS_QUERY, {
+  const { data, loading, error, fetchMore } = useQuery<CommitListQueryData>(COMMITS_QUERY, {
     variables: { repo, ref: ref_, path: path ?? null, after: null, first: PAGE_SIZE },
     skip: !ref_,
-    onCompleted(data) {
-      const nodes = data?.repository?.commits?.nodes ?? [];
-      setAllCommits(nodes);
-      setCursor(data?.repository?.commits?.pageInfo?.endCursor ?? null);
-    },
   });
+
+  useEffect(() => {
+    const nodes = data?.repository?.commits?.nodes ?? [];
+    setAllCommits(nodes);
+    setCursor(data?.repository?.commits?.pageInfo?.endCursor ?? null);
+  }, [data]);
 
   const hasMore = !!cursor && allCommits.length > 0 && allCommits.length % PAGE_SIZE === 0;
   const [loadingMore, setLoadingMore] = useState(false);
@@ -83,7 +93,7 @@ export function CommitList({ ref_, path }: CommitListProps) {
 
   if (error) {
     return (
-      <div className="rounded-md border border-border px-4 py-8 text-center text-sm text-destructive">
+      <div className="border-border text-destructive rounded-md border px-4 py-8 text-center text-sm">
         {error.message}
       </div>
     );
@@ -95,10 +105,10 @@ export function CommitList({ ref_, path }: CommitListProps) {
     <div className="space-y-6">
       {groups.map(([date, group]) => (
         <div key={date}>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
             Commits on {date}
           </h3>
-          <div className="divide-y divide-border overflow-hidden rounded-md border border-border">
+          <div className="divide-border border-border divide-y overflow-hidden rounded-md border">
             {group.map((commit) => (
               <CommitRow key={commit.hash} commit={commit} repo={repo} />
             ))}
@@ -120,23 +130,23 @@ export function CommitList({ ref_, path }: CommitListProps) {
 function CommitRow({ commit, repo }: { commit: CommitNode; repo: string | null }) {
   const commitPath = repo ? `/${repo}/commit/${commit.hash}` : `/commit/${commit.hash}`;
   return (
-    <div className="flex items-center gap-3 bg-background px-4 py-3 hover:bg-muted/30">
-      <GitCommit className="size-4 shrink-0 text-muted-foreground" />
+    <div className="bg-background hover:bg-muted/30 flex items-center gap-3 px-4 py-3">
+      <GitCommit className="text-muted-foreground size-4 shrink-0" />
       <div className="min-w-0 flex-1">
         <Link
           to={commitPath}
-          className="block truncate font-medium text-foreground hover:text-primary hover:underline"
+          className="text-foreground hover:text-primary block truncate font-medium hover:underline"
         >
           {commit.message}
         </Link>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+        <p className="text-muted-foreground mt-0.5 text-xs">
           {commit.authorName} &middot;{" "}
           {formatDistanceToNow(new Date(commit.date), { addSuffix: true })}
         </p>
       </div>
       <Link
         to={commitPath}
-        className="shrink-0 font-mono text-xs text-muted-foreground hover:text-foreground hover:underline"
+        className="text-muted-foreground hover:text-foreground shrink-0 font-mono text-xs hover:underline"
         title={commit.hash}
       >
         {commit.shortHash}
@@ -166,10 +176,10 @@ function CommitListSkeleton() {
       {Array.from({ length: 2 }).map((_, g) => (
         <div key={g}>
           <Skeleton className="mb-2 h-3 w-32" />
-          <div className="divide-y divide-border overflow-hidden rounded-md border border-border">
+          <div className="divide-border border-border divide-y overflow-hidden rounded-md border">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3 px-4 py-3">
-                <Skeleton className="size-4 rounded" />
+                <Skeleton className="size-4 rounded-sm" />
                 <div className="flex-1 space-y-1.5">
                   <Skeleton className="h-4 w-2/3" />
                   <Skeleton className="h-3 w-1/4" />

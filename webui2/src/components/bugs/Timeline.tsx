@@ -95,22 +95,22 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
         </AvatarFallback>
       </Avatar>
 
-      <div className="min-w-0 flex-1 rounded-md border border-border">
-        <div className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-2 text-sm">
+      <div className="border-border min-w-0 flex-1 rounded-md border">
+        <div className="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm">
           <Link
             to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
-            className="font-medium text-foreground hover:underline"
+            className="text-foreground font-medium hover:underline"
           >
             {item.author.displayName}
           </Link>
           <span className="text-muted-foreground">
             {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
           </span>
-          {item.edited && !editing && <span className="text-xs text-muted-foreground">edited</span>}
+          {item.edited && !editing && <span className="text-muted-foreground text-xs">edited</span>}
           {canEdit && !editing && (
             <button
               onClick={() => setEditing(true)}
-              className="ml-auto rounded px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground ml-auto rounded-sm px-1.5 py-0.5 text-xs"
             >
               Edit
             </button>
@@ -147,7 +147,7 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
             {item.message ? (
               <Markdown content={item.message} />
             ) : (
-              <p className="text-sm italic text-muted-foreground">No description provided.</p>
+              <p className="text-muted-foreground text-sm italic">No description provided.</p>
             )}
           </div>
         )}
@@ -164,7 +164,7 @@ type TitleChangeItem = Extract<TimelineNode, { __typename: "BugSetTitleTimelineI
 
 function EventRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 pl-2 text-sm text-muted-foreground">
+    <div className="text-muted-foreground flex items-center gap-3 pl-2 text-sm">
       <span className="flex size-8 shrink-0 items-center justify-center">{icon}</span>
       {children}
     </div>
@@ -178,7 +178,7 @@ function LabelChangeItem({ item }: { item: LabelChangeItem }) {
       <span>
         <Link
           to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
-          className="font-medium text-foreground hover:underline"
+          className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
         </Link>{" "}
@@ -220,7 +220,7 @@ function StatusChangeItem({ item }: { item: StatusChangeItem }) {
       <span>
         <Link
           to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
-          className="font-medium text-foreground hover:underline"
+          className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
         </Link>{" "}
@@ -238,12 +238,12 @@ function TitleChangeItem({ item }: { item: TitleChangeItem }) {
       <span>
         <Link
           to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
-          className="font-medium text-foreground hover:underline"
+          className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
         </Link>{" "}
         changed the title from <span className="line-through">{item.was}</span> to{" "}
-        <span className="font-medium text-foreground">{item.title}</span>{" "}
+        <span className="text-foreground font-medium">{item.title}</span>{" "}
         {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
       </span>
     </EventRow>

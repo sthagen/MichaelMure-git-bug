@@ -27,13 +27,17 @@ export function IdentitySelectPage() {
   const [working, setWorking] = useState(false);
 
   useEffect(() => {
-    void fetch("/auth/identities", { credentials: "include" })
-      .then((res) => {
+    async function loadIdentities() {
+      try {
+        const res = await fetch("/auth/identities", { credentials: "include" });
         if (!res.ok) throw new Error(`unexpected status ${res.status}`);
-        return res.json() as Promise<IdentityItem[]>;
-      })
-      .then(setIdentities)
-      .catch((e) => setError(String(e)));
+        const data: IdentityItem[] = await res.json();
+        setIdentities(data);
+      } catch (e) {
+        setError(String(e));
+      }
+    }
+    void loadIdentities();
   }, []);
 
   async function adopt(identityId: string | null) {
@@ -57,16 +61,16 @@ export function IdentitySelectPage() {
   return (
     <div className="mx-auto max-w-lg py-12">
       <div className="mb-2 flex items-center gap-3">
-        <UserCircle className="size-6 text-muted-foreground" />
+        <UserCircle className="text-muted-foreground size-6" />
         <h1 className="text-xl font-semibold">Choose your identity</h1>
       </div>
-      <p className="mb-8 text-sm text-muted-foreground">
+      <p className="text-muted-foreground mb-8 text-sm">
         No git-bug identity was found linked to your account. Select an existing identity to link
         it, or create a new one from your profile.
       </p>
 
       {error && (
-        <div className="mb-4 flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        <div className="border-destructive/30 bg-destructive/10 text-destructive mb-4 flex items-center gap-2 rounded-md border px-4 py-3 text-sm">
           <AlertCircle className="size-4 shrink-0" />
           {error}
         </div>
@@ -80,12 +84,12 @@ export function IdentitySelectPage() {
         </div>
       )}
 
-      <div className="divide-y divide-border rounded-md border border-border">
+      <div className="divide-border border-border divide-y rounded-md border">
         {identities?.map((id) => (
           <div key={id.id} className="flex items-center gap-3 px-4 py-3">
             <div className="min-w-0 flex-1">
               <p className="font-medium">{id.displayName}</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-muted-foreground text-xs">
                 {id.login ? `@${id.login} · ` : ""}
                 {id.repoSlug} · {id.humanId}
               </p>
@@ -106,7 +110,7 @@ export function IdentitySelectPage() {
         <div className="flex items-center gap-3 px-4 py-3">
           <div className="min-w-0 flex-1">
             <p className="font-medium">Create new identity</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               A fresh git-bug identity will be created from your OAuth profile.
             </p>
           </div>

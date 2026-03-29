@@ -123,9 +123,9 @@ export function BugListPage() {
       </form>
 
       {/* List container */}
-      <div className="rounded-md border border-border">
+      <div className="border-border rounded-md border">
         {/* Open / Closed toggle + filter dropdowns */}
-        <div className="flex items-center gap-2 overflow-x-auto border-b border-border px-4 py-2">
+        <div className="border-border flex items-center gap-2 overflow-x-auto border-b px-4 py-2">
           <div className="flex shrink-0 items-center gap-1">
             <button
               onClick={() =>
@@ -151,7 +151,7 @@ export function BugListPage() {
                 )}
               />
               Open
-              <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs tabular-nums leading-none">
+              <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums">
                 {openCount}
               </span>
             </button>
@@ -180,7 +180,7 @@ export function BugListPage() {
                 )}
               />
               Closed
-              <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs tabular-nums leading-none">
+              <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums">
                 {closedCount}
               </span>
             </button>
@@ -214,7 +214,7 @@ export function BugListPage() {
 
         {/* Bug rows */}
         {error && (
-          <p className="px-4 py-8 text-center text-sm text-destructive">
+          <p className="text-destructive px-4 py-8 text-center text-sm">
             Failed to load issues: {error.message}
           </p>
         )}
@@ -222,7 +222,7 @@ export function BugListPage() {
         {loading && !data && <BugListSkeleton />}
 
         {bugs?.nodes.length === 0 && (
-          <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+          <p className="text-muted-foreground px-4 py-8 text-center text-sm">
             No {statusFilter} issues found.
           </p>
         )}
@@ -254,18 +254,18 @@ export function BugListPage() {
         ))}
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 border-t border-border px-4 py-2">
+          <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={goPrev}
               disabled={!hasPrev || loading}
-              className="gap-1 text-muted-foreground"
+              className="text-muted-foreground gap-1"
             >
               <ChevronLeft className="size-4" />
               Previous
             </Button>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-sm">
               Page {page + 1} of {totalPages}
             </span>
             <Button
@@ -273,7 +273,7 @@ export function BugListPage() {
               size="sm"
               onClick={goNext}
               disabled={!hasNext || loading}
-              className="gap-1 text-muted-foreground"
+              className="text-muted-foreground gap-1"
             >
               Next
               <ChevronRight className="size-4" />
@@ -373,7 +373,7 @@ function parseQueryString(input: string): {
 
 function BugListSkeleton() {
   return (
-    <div className="divide-y divide-border">
+    <div className="divide-border divide-y">
       {Array.from({ length: 8 }).map((_, i) => (
         <div key={i} className="flex items-start gap-3 px-4 py-3">
           <Skeleton className="mt-0.5 size-4 rounded-full" />

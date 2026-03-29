@@ -17,7 +17,7 @@ export function CodeBreadcrumb({ repoName, ref, path, onNavigate }: CodeBreadcru
     <div className="flex flex-wrap items-center gap-1 font-mono text-sm">
       <button
         onClick={() => onNavigate("")}
-        className="font-medium text-foreground hover:underline"
+        className="text-foreground font-medium hover:underline"
       >
         {repoName}
       </button>
@@ -27,9 +27,9 @@ export function CodeBreadcrumb({ repoName, ref, path, onNavigate }: CodeBreadcru
         const isLast = i === parts.length - 1;
         return (
           <span key={partPath} className="flex items-center gap-1">
-            <ChevronRight className="size-3.5 text-muted-foreground" />
+            <ChevronRight className="text-muted-foreground size-3.5" />
             {isLast ? (
-              <span className="font-medium text-foreground">{part}</span>
+              <span className="text-foreground font-medium">{part}</span>
             ) : (
               <button
                 onClick={() => onNavigate(partPath)}
@@ -42,7 +42,7 @@ export function CodeBreadcrumb({ repoName, ref, path, onNavigate }: CodeBreadcru
         );
       })}
 
-      <span className="ml-2 text-xs text-muted-foreground">@ {ref}</span>
+      <span className="text-muted-foreground ml-2 text-xs">@ {ref}</span>
     </div>
   );
 }

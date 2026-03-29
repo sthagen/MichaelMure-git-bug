@@ -44,10 +44,10 @@ export function Header() {
   const effectiveRepo = repo === "auth" ? null : repo;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+    <header className="border-border bg-background/95 sticky top-0 z-50 border-b backdrop-blur">
       <div className="mx-auto flex h-14 max-w-screen-xl items-center gap-6 px-4">
         {/* Logo always goes to the repo picker root */}
-        <Link to="/" className="flex items-center gap-2 font-semibold text-foreground">
+        <Link to="/" className="text-foreground flex items-center gap-2 font-semibold">
           <Bug className="size-4" />
           <span>git-bug</span>
         </Link>
@@ -86,7 +86,7 @@ export function Header() {
         )}
 
         <div className="ml-auto flex items-center gap-2">
-          {mode === "readonly" && <span className="text-xs text-muted-foreground">Read only</span>}
+          {mode === "readonly" && <span className="text-muted-foreground text-xs">Read only</span>}
 
           <Button variant="ghost" size="icon" onClick={toggle} title="Toggle theme">
             {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}

@@ -27,7 +27,7 @@ export function NewBugPage() {
     });
     const humanId = result.data?.bugCreate.bug.humanId;
     if (humanId) {
-      navigate(repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}`);
+      void navigate(repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}`);
     }
   }
 
@@ -37,7 +37,7 @@ export function NewBugPage() {
     <div className="mx-auto max-w-3xl">
       <Link
         to={issuesHref}
-        className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
         Back to issues
@@ -72,7 +72,7 @@ export function NewBugPage() {
               <button
                 type="button"
                 onClick={() => setPreview(false)}
-                className={`rounded px-2 py-0.5 transition-colors ${
+                className={`rounded-sm px-2 py-0.5 transition-colors ${
                   !preview ? "bg-muted font-medium" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -82,7 +82,7 @@ export function NewBugPage() {
                 type="button"
                 onClick={() => setPreview(true)}
                 disabled={!message.trim()}
-                className={`rounded px-2 py-0.5 transition-colors disabled:opacity-40 ${
+                className={`rounded-sm px-2 py-0.5 transition-colors disabled:opacity-40 ${
                   preview ? "bg-muted font-medium" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -92,7 +92,7 @@ export function NewBugPage() {
           </div>
 
           {preview ? (
-            <div className="min-h-[200px] rounded-md border border-input px-3 py-2">
+            <div className="border-input min-h-[200px] rounded-md border px-3 py-2">
               <Markdown content={message} />
             </div>
           ) : (
@@ -107,14 +107,16 @@ export function NewBugPage() {
         </div>
 
         {error && (
-          <p className="text-sm text-destructive">Failed to create issue: {error.message}</p>
+          <p className="text-destructive text-sm">Failed to create issue: {error.message}</p>
         )}
 
         <div className="flex justify-end gap-2">
           <Button
             type="button"
             variant="ghost"
-            onClick={() => navigate(issuesHref)}
+            onClick={() => {
+              void navigate(issuesHref);
+            }}
             disabled={loading}
           >
             Cancel

@@ -40,7 +40,7 @@ export function BugRow({
   const authorHref = repo ? `/${repo}/user/${author.humanId}` : `/user/${author.humanId}`;
 
   return (
-    <div className="flex items-start gap-3 border-b border-border px-4 py-3 last:border-0 hover:bg-muted/30">
+    <div className="border-border hover:bg-muted/30 flex items-start gap-3 border-b px-4 py-3 last:border-0">
       <StatusIcon
         className={
           isOpen
@@ -53,7 +53,7 @@ export function BugRow({
         <div className="flex flex-wrap items-baseline gap-2">
           <Link
             to={issueHref}
-            className="font-medium text-foreground hover:text-primary hover:underline"
+            className="text-foreground hover:text-primary font-medium hover:underline"
           >
             {title}
           </Link>
@@ -66,7 +66,7 @@ export function BugRow({
             />
           ))}
         </div>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+        <p className="text-muted-foreground mt-0.5 text-xs">
           #{humanId} opened {formatDistanceToNow(new Date(createdAt), { addSuffix: true })} by{" "}
           <Link to={authorHref} className="hover:underline">
             {author.displayName}
@@ -75,7 +75,7 @@ export function BugRow({
       </div>
 
       {commentCount > 0 && (
-        <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+        <div className="text-muted-foreground flex shrink-0 items-center gap-1 text-xs">
           <MessageSquare className="size-3.5" />
           {commentCount}
         </div>

@@ -87,14 +87,14 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
 
   return (
     <div className="group flex items-start gap-2">
-      <h1 className="flex-1 text-2xl font-semibold leading-tight text-foreground">
+      <h1 className="text-foreground flex-1 text-2xl leading-tight font-semibold">
         {title}
-        <span className="ml-2 text-xl font-normal text-muted-foreground">#{humanId}</span>
+        <span className="text-muted-foreground ml-2 text-xl font-normal">#{humanId}</span>
       </h1>
       {user && (
         <button
           onClick={() => setEditing(true)}
-          className="mt-1 shrink-0 text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
+          className="text-muted-foreground hover:text-foreground mt-1 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
           title="Edit title"
         >
           <Pencil className="size-4" />

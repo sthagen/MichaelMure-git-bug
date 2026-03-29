@@ -24,7 +24,7 @@ export function BugDetailPage() {
 
   if (error) {
     return (
-      <div className="py-16 text-center text-sm text-destructive">
+      <div className="text-destructive py-16 text-center text-sm">
         Failed to load issue: {error.message}
       </div>
     );
@@ -36,7 +36,7 @@ export function BugDetailPage() {
 
   const bug = data?.repository?.bug;
   if (!bug) {
-    return <div className="py-16 text-center text-sm text-muted-foreground">Issue not found.</div>;
+    return <div className="text-muted-foreground py-16 text-center text-sm">Issue not found.</div>;
   }
 
   const issuesHref = repo ? `/${repo}/issues` : "/issues";
@@ -46,7 +46,7 @@ export function BugDetailPage() {
     <div>
       <Link
         to={issuesHref}
-        className="mb-4 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        className="text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
         Back to issues
@@ -57,10 +57,10 @@ export function BugDetailPage() {
         <TitleEditor bugPrefix={bug.humanId} title={bug.title} humanId={bug.humanId} ref_={repo} />
       </div>
 
-      <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+      <div className="text-muted-foreground mb-6 flex flex-wrap items-center gap-3 text-sm">
         <StatusBadge status={bug.status} />
         <span>
-          <Link to={authorHref} className="font-medium text-foreground hover:underline">
+          <Link to={authorHref} className="text-foreground font-medium hover:underline">
             {bug.author.displayName}
           </Link>{" "}
           opened this issue {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
@@ -83,7 +83,7 @@ export function BugDetailPage() {
           <Separator />
 
           <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
               Participants
             </h3>
             <div className="flex flex-wrap gap-1.5">
@@ -117,7 +117,7 @@ function BugDetailSkeleton() {
       <div className="flex gap-8">
         <div className="flex-1 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-md border border-border p-4">
+            <div key={i} className="border-border rounded-md border p-4">
               <Skeleton className="mb-3 h-4 w-1/4" />
               <Skeleton className="h-16 w-full" />
             </div>

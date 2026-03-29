@@ -299,13 +299,13 @@ export function QueryInput({ value, onChange, onSubmit, placeholder, className }
       )}
       onClick={() => inputRef.current?.focus()}
     >
-      <Search className="pointer-events-none absolute left-3 size-4 shrink-0 text-muted-foreground" />
+      <Search className="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0" />
 
       {/* Colored backdrop — same font/size/padding as the input. aria-hidden so
           screen readers only see the real input, not the duplicate text. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 flex items-center overflow-hidden whitespace-pre pl-9 pr-3 font-mono text-sm text-foreground"
+        className="text-foreground pointer-events-none absolute inset-0 flex items-center overflow-hidden pr-3 pl-9 font-mono text-sm whitespace-pre"
       >
         {value === "" ? null : segments.map((seg, i) => renderSegment(seg, i))}
       </div>
@@ -320,7 +320,7 @@ export function QueryInput({ value, onChange, onSubmit, placeholder, className }
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onSelect={handleSelect}
-        className="relative w-full bg-transparent py-2 pl-9 pr-3 font-mono text-sm text-transparent caret-foreground outline-none placeholder:font-sans placeholder:text-muted-foreground"
+        className="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
         spellCheck={false}
         autoComplete="off"
       />
@@ -329,7 +329,7 @@ export function QueryInput({ value, onChange, onSubmit, placeholder, className }
           Uses onMouseDown+preventDefault so clicking a suggestion doesn't blur
           the input before the click registers (classic focus-race problem). */}
       {showDropdown && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-md border border-border bg-popover shadow-md">
+        <div className="border-border bg-popover absolute top-full right-0 left-0 z-50 mt-1 overflow-hidden rounded-md border shadow-md">
           {suggestions.map((s, i) => (
             <button
               key={s.completedToken}
@@ -350,7 +350,7 @@ export function QueryInput({ value, onChange, onSubmit, placeholder, className }
               )}
               <span className="font-mono">{s.completedToken}</span>
               {s.display !== s.completedToken.split(":")[1]?.replace(/"/g, "") && (
-                <span className="ml-auto text-xs text-muted-foreground">{s.display}</span>
+                <span className="text-muted-foreground ml-auto text-xs">{s.display}</span>
               )}
             </button>
           ))}

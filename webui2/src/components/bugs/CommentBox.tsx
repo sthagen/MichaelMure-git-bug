@@ -80,14 +80,14 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
         </AvatarFallback>
       </Avatar>
 
-      <div className="min-w-0 flex-1 rounded-md border border-border">
+      <div className="border-border min-w-0 flex-1 rounded-md border">
         {/* Write / Preview tabs */}
-        <div className="flex border-b border-border">
+        <div className="border-border flex border-b">
           <button
             onClick={() => setPreview(false)}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               !preview
-                ? "border-b-2 border-primary text-foreground"
+                ? "border-primary text-foreground border-b-2"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -98,7 +98,7 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
             disabled={!hasMessage}
             className={`px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40 ${
               preview
-                ? "border-b-2 border-primary text-foreground"
+                ? "border-primary text-foreground border-b-2"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -120,7 +120,7 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
           />
         )}
 
-        <div className="flex items-center justify-end gap-2 border-t border-border px-3 py-2">
+        <div className="border-border flex items-center justify-end gap-2 border-t px-3 py-2">
           <Button
             variant="outline"
             size="sm"

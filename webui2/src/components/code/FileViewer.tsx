@@ -47,8 +47,8 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-md border border-border">
-      <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground">
+    <div className="border-border overflow-hidden rounded-md border">
+      <div className="border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-b px-4 py-2 text-xs">
         <span>
           {lineCount.toLocaleString()} lines · {formatBytes(blob.size)}
           {blob.isTruncated && " · truncated"}
@@ -65,13 +65,13 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
       </div>
 
       {blob.isBinary ? (
-        <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+        <div className="text-muted-foreground px-4 py-8 text-center text-sm">
           Binary file — {formatBytes(blob.size)}
         </div>
       ) : (
         <div className="flex overflow-x-auto font-mono text-xs leading-5">
           <div
-            className="select-none border-r border-border bg-muted/20 px-4 py-4 text-right text-muted-foreground/50"
+            className="border-border bg-muted/20 text-muted-foreground/50 border-r px-4 py-4 text-right select-none"
             aria-hidden
           >
             {Array.from({ length: lineCount }, (_, i) => (
@@ -95,8 +95,8 @@ function formatBytes(bytes: number): string {
 
 function FileViewerSkeleton() {
   return (
-    <div className="overflow-hidden rounded-md border border-border">
-      <div className="border-b border-border bg-muted/40 px-4 py-2">
+    <div className="border-border overflow-hidden rounded-md border">
+      <div className="border-border bg-muted/40 border-b px-4 py-2">
         <Skeleton className="h-4 w-32" />
       </div>
       <div className="flex gap-4 p-4">

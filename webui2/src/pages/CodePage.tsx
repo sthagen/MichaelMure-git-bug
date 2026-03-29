@@ -79,6 +79,31 @@ const BLOB_QUERY = gql`
   }
 `;
 
+interface RefsQueryData {
+  repository: {
+    name: string;
+    refs: { nodes: GitRef[] } | null;
+  } | null;
+}
+
+interface TreeQueryData {
+  repository: {
+    tree: GitTreeEntry[] | null;
+  } | null;
+}
+
+interface LastCommitsQueryData {
+  repository: {
+    lastCommits: GitLastCommit[] | null;
+  } | null;
+}
+
+interface BlobQueryData {
+  repository: {
+    blob: GitBlob | null;
+  } | null;
+}
+
 type ViewMode = "tree" | "blob" | "commits";
 
 export function CodePage() {
@@ -93,7 +118,7 @@ export function CodePage() {
     data: refsData,
     loading: refsLoading,
     error: refsError,
-  } = useQuery(REFS_QUERY, {
+  } = useQuery<RefsQueryData>(REFS_QUERY, {
     variables: { repo },
   });
   const refs: GitRef[] = refsData?.repository?.refs?.nodes ?? [];
@@ -116,14 +141,14 @@ export function CodePage() {
   const inTreeMode = viewMode === "tree" && !!currentRef;
   const inBlobMode = viewMode === "blob" && !!currentRef && !!currentPath;
 
-  const { data: treeData, loading: treeLoading } = useQuery(TREE_QUERY, {
+  const { data: treeData, loading: treeLoading } = useQuery<TreeQueryData>(TREE_QUERY, {
     variables: { repo, ref: currentRef, path: currentPath || null },
     skip: !inTreeMode,
   });
   const entries: GitTreeEntry[] = treeData?.repository?.tree ?? [];
 
   const entryNames = entries.map((e: GitTreeEntry) => e.name);
-  const { data: lastCommitsData } = useQuery(LAST_COMMITS_QUERY, {
+  const { data: lastCommitsData } = useQuery<LastCommitsQueryData>(LAST_COMMITS_QUERY, {
     variables: { repo, ref: currentRef, path: currentPath || null, names: entryNames },
     skip: !inTreeMode || entryNames.length === 0,
   });
@@ -135,7 +160,7 @@ export function CodePage() {
     lastCommit: lastCommitsByName.get(e.name)?.commit ?? undefined,
   }));
 
-  const { data: blobData, loading: blobLoading } = useQuery(BLOB_QUERY, {
+  const { data: blobData, loading: blobLoading } = useQuery<BlobQueryData>(BLOB_QUERY, {
     variables: { repo, ref: currentRef, path: currentPath },
     skip: !inBlobMode,
   });
@@ -149,7 +174,7 @@ export function CodePage() {
       ? `${currentPath}/${readmeEntry.name}`
       : readmeEntry.name
     : null;
-  const { data: readmeBlobData } = useQuery(BLOB_QUERY, {
+  const { data: readmeBlobData } = useQuery<BlobQueryData>(BLOB_QUERY, {
     variables: { repo, ref: currentRef, path: readmePath },
     skip: !inTreeMode || !readmePath,
   });
@@ -188,9 +213,9 @@ export function CodePage() {
   if (refsError) {
     return (
       <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <AlertCircle className="size-8 text-muted-foreground" />
+        <AlertCircle className="text-muted-foreground size-8" />
         <p className="text-sm font-medium">Code browser unavailable</p>
-        <p className="max-w-sm text-xs text-muted-foreground">{refsError.message}</p>
+        <p className="text-muted-foreground max-w-sm text-xs">{refsError.message}</p>
       </div>
     );
   }
@@ -240,7 +265,7 @@ export function CodePage() {
           />
           {readme && (
             <div className="rounded-md border">
-              <div className="border-b px-4 py-2 text-xs font-medium text-muted-foreground">
+              <div className="text-muted-foreground border-b px-4 py-2 text-xs font-medium">
                 README
               </div>
               <div className="px-6 py-4">

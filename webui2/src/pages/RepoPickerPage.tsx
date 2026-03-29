@@ -23,19 +23,19 @@ export function RepoPickerPage() {
   // Auto-redirect when there is exactly one repo — no need to pick.
   useEffect(() => {
     if (data?.repositories.nodes.length === 1) {
-      navigate("/" + repoSlug(data.repositories.nodes[0].name), { replace: true });
+      void navigate("/" + repoSlug(data.repositories.nodes[0].name), { replace: true });
     }
   }, [data, navigate]);
 
   return (
     <div className="mx-auto max-w-lg py-12">
       <div className="mb-8 flex items-center gap-3">
-        <GitFork className="size-6 text-muted-foreground" />
+        <GitFork className="text-muted-foreground size-6" />
         <h1 className="text-xl font-semibold">Repositories</h1>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+        <div className="border-destructive/30 bg-destructive/10 text-destructive flex items-center gap-2 rounded-md border px-4 py-3 text-sm">
           <AlertCircle className="size-4 shrink-0" />
           Failed to load repositories: {error.message}
         </div>
@@ -49,20 +49,20 @@ export function RepoPickerPage() {
         </div>
       )}
 
-      <div className="divide-y divide-border rounded-md border border-border">
+      <div className="divide-border border-border divide-y rounded-md border">
         {data?.repositories.nodes.map((repo) => (
           <Link
             key={repoSlug(repo.name)}
             to={`/${repoSlug(repo.name)}`}
-            className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted/50"
+            className="hover:bg-muted/50 flex items-center gap-3 px-4 py-4 transition-colors"
           >
-            <FolderOpen className="size-5 shrink-0 text-muted-foreground" />
-            <p className="font-medium text-foreground">{repoLabel(repo.name)}</p>
+            <FolderOpen className="text-muted-foreground size-5 shrink-0" />
+            <p className="text-foreground font-medium">{repoLabel(repo.name)}</p>
           </Link>
         ))}
 
         {data?.repositories.totalCount === 0 && (
-          <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+          <p className="text-muted-foreground px-4 py-8 text-center text-sm">
             No repositories found.
           </p>
         )}

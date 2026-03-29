@@ -190,28 +190,28 @@ export function IssueFilters({
             <Tag className="size-3.5" />
             Labels
             {selectedLabels.length > 0 && (
-              <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none">
+              <span className="bg-muted rounded-full px-1.5 py-0.5 text-xs leading-none">
                 {selectedLabels.length}
               </span>
             )}
             <ChevronDown className="size-3" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-56 bg-popover p-0 shadow-lg">
+        <PopoverContent align="end" className="bg-popover w-56 p-0 shadow-lg">
           {/* Search */}
-          <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-            <Search className="size-3.5 shrink-0 text-muted-foreground" />
+          <div className="border-border flex items-center gap-2 border-b px-3 py-2">
+            <Search className="text-muted-foreground size-3.5 shrink-0" />
             <input
               autoFocus
               placeholder="Search labels…"
               value={labelSearch}
               onChange={(e) => setLabelSearch(e.target.value)}
-              className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="placeholder:text-muted-foreground w-full bg-transparent text-sm outline-hidden"
             />
           </div>
           <div className="max-h-64 overflow-y-auto p-1">
             {sortedLabels.length === 0 && (
-              <p className="px-2 py-3 text-center text-xs text-muted-foreground">No labels found</p>
+              <p className="text-muted-foreground px-2 py-3 text-center text-xs">No labels found</p>
             )}
             {sortedLabels.map((label) => {
               const active = selectedLabels.includes(label.name);
@@ -219,7 +219,7 @@ export function IssueFilters({
                 <button
                   key={label.name}
                   onClick={() => toggleLabel(label.name)}
-                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted"
+                  className="hover:bg-muted flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm"
                 >
                   <span
                     className="size-2 shrink-0 rounded-full"
@@ -229,16 +229,16 @@ export function IssueFilters({
                     }}
                   />
                   <LabelBadge name={label.name} color={label.color} />
-                  {active && <Check className="ml-auto size-3.5 shrink-0 text-foreground" />}
+                  {active && <Check className="text-foreground ml-auto size-3.5 shrink-0" />}
                 </button>
               );
             })}
           </div>
           {selectedLabels.length > 0 && (
-            <div className="border-t border-border p-1">
+            <div className="border-border border-t p-1">
               <button
                 onClick={() => onLabelsChange([])}
-                className="flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted"
+                className="text-muted-foreground hover:bg-muted flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs"
               >
                 <X className="size-3" />
                 Clear labels
@@ -285,21 +285,21 @@ export function IssueFilters({
             <ChevronDown className="size-3" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-56 bg-popover p-0 shadow-lg">
+        <PopoverContent align="end" className="bg-popover w-56 p-0 shadow-lg">
           {/* Search */}
-          <div className="flex items-center gap-2 border-b border-border px-3 py-2">
-            <Search className="size-3.5 shrink-0 text-muted-foreground" />
+          <div className="border-border flex items-center gap-2 border-b px-3 py-2">
+            <Search className="text-muted-foreground size-3.5 shrink-0" />
             <input
               autoFocus
               placeholder="Search authors…"
               value={authorSearch}
               onChange={(e) => setAuthorSearch(e.target.value)}
-              className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="placeholder:text-muted-foreground w-full bg-transparent text-sm outline-hidden"
             />
           </div>
           <div className="max-h-64 overflow-y-auto p-1">
             {visibleIdentities.length === 0 && (
-              <p className="px-2 py-3 text-center text-xs text-muted-foreground">
+              <p className="text-muted-foreground px-2 py-3 text-center text-xs">
                 No authors found
               </p>
             )}
@@ -314,7 +314,7 @@ export function IssueFilters({
                       active ? null : authorQueryValue(identity),
                     )
                   }
-                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted"
+                  className="hover:bg-muted flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm"
                 >
                   <Avatar className="size-5 shrink-0">
                     <AvatarImage src={identity.avatarUrl ?? undefined} alt={identity.displayName} />
@@ -325,26 +325,26 @@ export function IssueFilters({
                   <div className="min-w-0 flex-1 text-left">
                     <div className="truncate">{identity.displayName}</div>
                     {identity.login && identity.login !== identity.displayName && (
-                      <div className="truncate text-xs text-muted-foreground">
+                      <div className="text-muted-foreground truncate text-xs">
                         @{identity.login}
                       </div>
                     )}
                   </div>
-                  {active && <Check className="size-3.5 shrink-0 text-foreground" />}
+                  {active && <Check className="text-foreground size-3.5 shrink-0" />}
                 </button>
               );
             })}
             {!isSearching && allIdentities.length > INITIAL_AUTHOR_LIMIT && (
-              <p className="px-2 py-1.5 text-center text-xs text-muted-foreground">
+              <p className="text-muted-foreground px-2 py-1.5 text-center text-xs">
                 {allIdentities.length - visibleIdentities.length} more — type to search
               </p>
             )}
           </div>
           {selectedAuthorId && (
-            <div className="border-t border-border p-1">
+            <div className="border-border border-t p-1">
               <button
                 onClick={() => onAuthorChange(null, null)}
-                className="flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-xs text-muted-foreground hover:bg-muted"
+                className="text-muted-foreground hover:bg-muted flex w-full items-center gap-1.5 rounded-sm px-2 py-1.5 text-xs"
               >
                 <X className="size-3" />
                 Clear author
@@ -370,16 +370,16 @@ export function IssueFilters({
             <ChevronDown className="size-3" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="w-56 bg-popover p-1 shadow-lg">
+        <PopoverContent align="end" className="bg-popover w-56 p-1 shadow-lg">
           {SORT_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => onSortChange(opt.value)}
-              className="flex w-full items-center gap-2 whitespace-nowrap rounded px-2 py-1.5 text-sm hover:bg-muted"
+              className="hover:bg-muted flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm whitespace-nowrap"
             >
               {opt.label}
               {sort === opt.value && (
-                <Check className="ml-auto size-3.5 shrink-0 text-foreground" />
+                <Check className="text-foreground ml-auto size-3.5 shrink-0" />
               )}
             </button>
           ))}

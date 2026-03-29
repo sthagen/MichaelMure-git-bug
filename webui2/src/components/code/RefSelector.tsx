@@ -29,11 +29,11 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
         <Button variant="outline" size="sm" className="gap-2 font-mono text-xs">
           <GitBranch className="size-3.5" />
           {currentRef}
-          <ChevronsUpDown className="size-3 text-muted-foreground" />
+          <ChevronsUpDown className="text-muted-foreground size-3" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-2">
-        <p className="mb-2 px-1 text-xs font-semibold text-muted-foreground">Switch branch / tag</p>
+        <p className="text-muted-foreground mb-2 px-1 text-xs font-semibold">Switch branch / tag</p>
         <Input
           placeholder="Filter…"
           className="mb-2 h-7 text-xs"
@@ -44,7 +44,7 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
         <div className="max-h-64 overflow-y-auto">
           {branches.length > 0 && (
             <div className="mb-1">
-              <p className="px-2 py-1 text-xs text-muted-foreground">Branches</p>
+              <p className="text-muted-foreground px-2 py-1 text-xs">Branches</p>
               {branches.map((ref) => (
                 <RefItem
                   key={ref.name}
@@ -61,7 +61,7 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
           )}
           {tags.length > 0 && (
             <div>
-              <p className="px-2 py-1 text-xs text-muted-foreground">Tags</p>
+              <p className="text-muted-foreground px-2 py-1 text-xs">Tags</p>
               {tags.map((ref) => (
                 <RefItem
                   key={ref.name}
@@ -77,7 +77,7 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
             </div>
           )}
           {filtered.length === 0 && (
-            <p className="px-2 py-2 text-xs text-muted-foreground">No results</p>
+            <p className="text-muted-foreground px-2 py-2 text-xs">No results</p>
           )}
         </div>
       </PopoverContent>
@@ -98,17 +98,17 @@ function RefItem({
     <button
       onClick={onSelect}
       className={cn(
-        "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-xs hover:bg-muted",
+        "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-xs hover:bg-muted",
         active && "font-medium",
       )}
     >
       {ref_.type === "BRANCH" ? (
-        <GitBranch className="size-3 shrink-0 text-muted-foreground" />
+        <GitBranch className="text-muted-foreground size-3 shrink-0" />
       ) : (
-        <Tag className="size-3 shrink-0 text-muted-foreground" />
+        <Tag className="text-muted-foreground size-3 shrink-0" />
       )}
       <span className="flex-1 truncate font-mono">{ref_.shortName}</span>
-      {active && <Check className="size-3 text-muted-foreground" />}
+      {active && <Check className="text-muted-foreground size-3" />}
     </button>
   );
 }

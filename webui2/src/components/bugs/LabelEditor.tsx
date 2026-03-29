@@ -46,7 +46,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
           Labels
         </h3>
         {user && validLabels.length > 0 && (
@@ -57,7 +57,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
               </button>
             </PopoverTrigger>
             <PopoverContent align="end" className="w-56 p-2">
-              <p className="mb-2 px-2 text-xs font-medium text-muted-foreground">Apply labels</p>
+              <p className="text-muted-foreground mb-2 px-2 text-xs font-medium">Apply labels</p>
               <div className="space-y-1">
                 {validLabels.map((label) => {
                   const active = currentNames.has(label.name);
@@ -67,7 +67,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
                       onClick={() => {
                         void toggleLabel(label.name);
                       }}
-                      className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted"
+                      className="hover:bg-muted flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm"
                     >
                       <span
                         className={`size-2 rounded-full border-2 transition-colors ${
@@ -94,7 +94,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
       </div>
 
       {currentLabels.length === 0 ? (
-        <p className="text-sm text-muted-foreground">None yet</p>
+        <p className="text-muted-foreground text-sm">None yet</p>
       ) : (
         <div className="flex flex-wrap gap-1">
           {currentLabels.map((label) => (

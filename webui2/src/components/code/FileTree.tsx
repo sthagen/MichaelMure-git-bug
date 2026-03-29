@@ -35,17 +35,17 @@ export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: F
   if (loading) return <FileTreeSkeleton />;
 
   return (
-    <div className="overflow-hidden rounded-md border border-border">
+    <div className="border-border overflow-hidden rounded-md border">
       <table className="w-full text-sm">
-        <tbody className="divide-y divide-border">
+        <tbody className="divide-border divide-y">
           {path && (
-            <tr className="cursor-pointer hover:bg-muted/40" onClick={onNavigateUp}>
+            <tr className="hover:bg-muted/40 cursor-pointer" onClick={onNavigateUp}>
               <td className="w-6 py-2 pl-4">
                 <Folder className="size-4 text-blue-500 dark:text-blue-400" />
               </td>
-              <td className="px-3 py-2 font-mono text-muted-foreground">..</td>
-              <td className="hidden px-3 py-2 text-muted-foreground md:table-cell" />
-              <td className="hidden px-4 py-2 text-right text-muted-foreground md:table-cell" />
+              <td className="text-muted-foreground px-3 py-2 font-mono">..</td>
+              <td className="text-muted-foreground hidden px-3 py-2 md:table-cell" />
+              <td className="text-muted-foreground hidden px-4 py-2 text-right md:table-cell" />
             </tr>
           )}
           {sorted.map((entry) => (
@@ -68,20 +68,20 @@ function FileTreeRow({
   const repo = useRepo();
 
   return (
-    <tr className="cursor-pointer hover:bg-muted/40" onClick={() => onNavigate(entry)}>
+    <tr className="hover:bg-muted/40 cursor-pointer" onClick={() => onNavigate(entry)}>
       <td className="w-6 py-2 pl-4">
         {isDir ? (
           <Folder className="size-4 text-blue-500 dark:text-blue-400" />
         ) : (
-          <File className="size-4 text-muted-foreground" />
+          <File className="text-muted-foreground size-4" />
         )}
       </td>
       <td className="px-3 py-2">
-        <span className={`font-mono ${isDir ? "font-medium text-foreground" : "text-foreground"}`}>
+        <span className={`font-mono ${isDir ? "text-foreground font-medium" : "text-foreground"}`}>
           {entry.name}
         </span>
       </td>
-      <td className="hidden max-w-xs truncate px-3 py-2 text-muted-foreground md:table-cell">
+      <td className="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell">
         {entry.lastCommit && (
           <Link
             to={
@@ -94,7 +94,7 @@ function FileTreeRow({
           </Link>
         )}
       </td>
-      <td className="hidden whitespace-nowrap px-4 py-2 text-right text-xs text-muted-foreground md:table-cell">
+      <td className="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell">
         {entry.lastCommit &&
           formatDistanceToNow(new Date(entry.lastCommit.date), { addSuffix: true })}
       </td>
@@ -104,11 +104,11 @@ function FileTreeRow({
 
 function FileTreeSkeleton() {
   return (
-    <div className="overflow-hidden rounded-md border border-border">
-      <div className="divide-y divide-border">
+    <div className="border-border overflow-hidden rounded-md border">
+      <div className="divide-border divide-y">
         {Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="flex items-center gap-3 px-4 py-2">
-            <Skeleton className="size-4 rounded" />
+            <Skeleton className="size-4 rounded-sm" />
             <Skeleton className="h-4 w-32" />
             <Skeleton className="ml-6 hidden h-4 w-64 md:block" />
             <Skeleton className="ml-auto hidden h-4 w-20 md:block" />

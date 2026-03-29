@@ -37,6 +37,21 @@ const DIFF_QUERY = gql`
   }
 `;
 
+interface DiffQueryData {
+  repository: {
+    commit: {
+      diff: {
+        path: string;
+        oldPath: string | null;
+        isBinary: boolean;
+        isNew: boolean;
+        isDelete: boolean;
+        hunks: HunkType[];
+      } | null;
+    } | null;
+  } | null;
+}
+
 interface FileDiffViewProps {
   hash: string;
   path: string;
@@ -60,7 +75,7 @@ const statusBadge: Record<string, string> = {
 export function FileDiffView({ hash, path, oldPath, status }: FileDiffViewProps) {
   const repo = useRepo();
   const [open, setOpen] = useState(false);
-  const [fetchDiff, { data, loading, error }] = useLazyQuery(DIFF_QUERY);
+  const [fetchDiff, { data, loading, error }] = useLazyQuery<DiffQueryData>(DIFF_QUERY);
 
   function toggle() {
     if (!open && !data && !loading) {
@@ -72,10 +87,10 @@ export function FileDiffView({ hash, path, oldPath, status }: FileDiffViewProps)
   const diff = data?.repository?.commit?.diff;
 
   return (
-    <div className="divide-y divide-border">
+    <div className="divide-border divide-y">
       <button
         onClick={toggle}
-        className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-muted/50"
+        className="hover:bg-muted/50 flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors"
       >
         <ChevronRight
           className={cn(
@@ -83,7 +98,7 @@ export function FileDiffView({ hash, path, oldPath, status }: FileDiffViewProps)
             open && "rotate-90",
           )}
         />
-        {statusIcon[status] ?? <FileEdit className="size-3.5 text-muted-foreground" />}
+        {statusIcon[status] ?? <FileEdit className="text-muted-foreground size-3.5" />}
         <span className="min-w-0 flex-1 font-mono text-sm">
           {status === "RENAMED" ? (
             <>
@@ -95,24 +110,24 @@ export function FileDiffView({ hash, path, oldPath, status }: FileDiffViewProps)
             path
           )}
         </span>
-        <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
+        <span className="border-border text-muted-foreground shrink-0 rounded-sm border px-1.5 py-0.5 font-mono text-xs">
           {statusBadge[status] ?? "?"}
         </span>
       </button>
 
       {open && (
         <div className="overflow-x-auto">
-          {loading && <div className="px-4 py-3 text-xs text-muted-foreground">Loading diff…</div>}
+          {loading && <div className="text-muted-foreground px-4 py-3 text-xs">Loading diff…</div>}
           {error && (
-            <div className="px-4 py-3 text-xs text-destructive">
+            <div className="text-destructive px-4 py-3 text-xs">
               Failed to load diff: {error.message}
             </div>
           )}
           {diff &&
             (diff.isBinary ? (
-              <div className="px-4 py-3 text-xs text-muted-foreground">Binary file</div>
+              <div className="text-muted-foreground px-4 py-3 text-xs">Binary file</div>
             ) : diff.hunks.length === 0 ? (
-              <div className="px-4 py-3 text-xs text-muted-foreground">No changes</div>
+              <div className="text-muted-foreground px-4 py-3 text-xs">No changes</div>
             ) : (
               diff.hunks.map((hunk: HunkType, i: number) => <Hunk key={i} hunk={hunk} />)
             ))}
@@ -134,7 +149,7 @@ type HunkType = {
 function Hunk({ hunk }: { hunk: HunkType }) {
   return (
     <div className="font-mono text-xs leading-5">
-      <div className="select-none bg-blue-50 px-4 py-0.5 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+      <div className="bg-blue-50 px-4 py-0.5 text-blue-600 select-none dark:bg-blue-950/40 dark:text-blue-400">
         @@ -{hunk.oldStart},{hunk.oldLines} +{hunk.newStart},{hunk.newLines} @@
       </div>
       {hunk.lines.map((line, i) => (
@@ -146,10 +161,10 @@ function Hunk({ hunk }: { hunk: HunkType }) {
             line.type === "DELETED" && "bg-red-50    dark:bg-red-950/30",
           )}
         >
-          <span className="w-10 shrink-0 select-none border-r border-border/50 px-2 text-right text-muted-foreground/50">
+          <span className="border-border/50 text-muted-foreground/50 w-10 shrink-0 border-r px-2 text-right select-none">
             {line.oldLine || ""}
           </span>
-          <span className="w-10 shrink-0 select-none border-r border-border/50 px-2 text-right text-muted-foreground/50">
+          <span className="border-border/50 text-muted-foreground/50 w-10 shrink-0 border-r px-2 text-right select-none">
             {line.newLine || ""}
           </span>
           <span

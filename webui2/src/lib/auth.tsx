@@ -76,7 +76,9 @@ function LocalAuthProvider({
   children: ReactNode;
   loginProviders: string[];
 }) {
-  const { data, loading } = useQuery(USER_IDENTITY_QUERY);
+  const { data, loading } = useQuery<{ repository: { userIdentity: AuthUser | null } }>(
+    USER_IDENTITY_QUERY,
+  );
   const user: AuthUser | null = data?.repository?.userIdentity ?? null;
   const mode: AuthMode = loading ? "local" : user ? "local" : "readonly";
   return (

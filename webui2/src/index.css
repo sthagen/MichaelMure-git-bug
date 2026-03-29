@@ -1,67 +1,117 @@
-/* highlight.js theme must be imported before any @layer rules (PostCSS requirement) */
+/* highlight.js theme must be imported before tailwind */
 @import "highlight.js/styles/github.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
-@layer base {
-  :root {
-    /* Blue-accented light palette. Primary is GitHub-style indigo-blue so
-       action buttons are clearly coloured, not a flat dark grey. */
-    --background: 0 0% 100%;
-    --foreground: 222 20% 18%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 20% 18%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 20% 18%;
-    --primary: 212 88% 44%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 214 32% 95%;
-    --secondary-foreground: 222 20% 18%;
-    --muted: 214 32% 96%;
-    --muted-foreground: 220 9% 46%;
-    --accent: 214 88% 95%;
-    --accent-foreground: 212 88% 35%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 214 32% 88%;
-    --input: 214 32% 88%;
-    --ring: 212 88% 44%;
-    --radius: 0.5rem;
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* Blue-accented light palette. Primary is GitHub-style indigo-blue so
+     action buttons are clearly coloured, not a flat dark grey. */
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222 20% 18%);
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222 20% 18%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222 20% 18%);
+  --primary: hsl(212 88% 44%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(214 32% 95%);
+  --secondary-foreground: hsl(222 20% 18%);
+  --muted: hsl(214 32% 96%);
+  --muted-foreground: hsl(220 9% 46%);
+  --accent: hsl(214 88% 95%);
+  --accent-foreground: hsl(212 88% 35%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(214 32% 88%);
+  --input: hsl(214 32% 88%);
+  --ring: hsl(212 88% 44%);
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Softer dark — background lifted slightly, text dimmed to reduce glare. */
+  --background: hsl(220 13% 15%);
+  --foreground: hsl(220 10% 72%);
+  --card: hsl(220 13% 18%);
+  --card-foreground: hsl(220 10% 72%);
+  --popover: hsl(220 13% 18%);
+  --popover-foreground: hsl(220 10% 72%);
+  --primary: hsl(213 88% 62%);
+  --primary-foreground: hsl(220 20% 10%);
+  --secondary: hsl(220 12% 24%);
+  --secondary-foreground: hsl(220 10% 72%);
+  --muted: hsl(220 12% 24%);
+  --muted-foreground: hsl(220 8% 52%);
+  --accent: hsl(220 20% 28%);
+  --accent-foreground: hsl(213 88% 72%);
+  --destructive: hsl(0 65% 50%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --border: hsl(220 12% 26%);
+  --input: hsl(220 12% 26%);
+  --ring: hsl(213 88% 62%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
   }
-
-  .dark {
-    /* Softer dark — background lifted slightly, text dimmed to reduce glare. */
-    --background: 220 13% 15%;
-    --foreground: 220 10% 72%;
-    --card: 220 13% 18%;
-    --card-foreground: 220 10% 72%;
-    --popover: 220 13% 18%;
-    --popover-foreground: 220 10% 72%;
-    --primary: 213 88% 62%;
-    --primary-foreground: 220 20% 10%;
-    --secondary: 220 12% 24%;
-    --secondary-foreground: 220 10% 72%;
-    --muted: 220 12% 24%;
-    --muted-foreground: 220 8% 52%;
-    --accent: 220 20% 28%;
-    --accent-foreground: 213 88% 72%;
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 12% 26%;
-    --input: 220 12% 26%;
-    --ring: 213 88% 62%;
+  to {
+    height: var(--radix-accordion-content-height);
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
   }
-  body {
-    @apply bg-background text-foreground;
+  to {
+    height: 0;
   }
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 /* ── Dark-mode overrides for highlight.js (imported above) ──────────────── */

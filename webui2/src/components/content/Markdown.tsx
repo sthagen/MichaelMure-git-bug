@@ -34,24 +34,27 @@ interface MarkdownProps {
 // lists, strikethrough). Used in Timeline comments and NewBugPage preview.
 export function Markdown({ content, className }: MarkdownProps) {
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm, remarkEmoji]}
-      rehypePlugins={[
-        rehypeRaw,
-        [rehypeSanitize, sanitizeSchema],
-        rehypeSlug,
-        [rehypeAutolinkHeadings, { behavior: "append" }],
-        [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
-      ]}
+    <div
       className={cn(
         "prose prose-sm dark:prose-invert max-w-none",
         "prose-pre:bg-muted prose-pre:text-foreground",
-        "prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
+        "prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
         "prose-img:inline prose-img:my-0",
         className,
       )}
     >
-      {content}
-    </ReactMarkdown>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkEmoji]}
+        rehypePlugins={[
+          rehypeRaw,
+          [rehypeSanitize, sanitizeSchema],
+          rehypeSlug,
+          [rehypeAutolinkHeadings, { behavior: "append" }],
+          [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
+        ]}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
   );
 }

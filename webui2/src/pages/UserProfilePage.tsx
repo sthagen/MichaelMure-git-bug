@@ -61,7 +61,7 @@ export function UserProfilePage() {
 
   if (error) {
     return (
-      <div className="py-16 text-center text-sm text-destructive">
+      <div className="text-destructive py-16 text-center text-sm">
         Failed to load profile: {error.message}
       </div>
     );
@@ -71,7 +71,7 @@ export function UserProfilePage() {
 
   const identity = data?.repository?.identity;
   if (!identity) {
-    return <div className="py-16 text-center text-sm text-muted-foreground">User not found.</div>;
+    return <div className="text-muted-foreground py-16 text-center text-sm">User not found.</div>;
   }
 
   const openCount = data?.repository?.openCount.totalCount ?? 0;
@@ -97,7 +97,7 @@ export function UserProfilePage() {
     <div>
       <Link
         to={issuesHref}
-        className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
         Back to issues
@@ -118,11 +118,11 @@ export function UserProfilePage() {
             {/* isProtected means this identity has been cryptographically signed */}
             {identity.isProtected && (
               <span title="Protected identity">
-                <ShieldCheck className="size-4 text-muted-foreground" />
+                <ShieldCheck className="text-muted-foreground size-4" />
               </span>
             )}
           </div>
-          <div className="mt-1 space-y-0.5 text-sm text-muted-foreground">
+          <div className="text-muted-foreground mt-1 space-y-0.5 text-sm">
             {identity.login && <p>@{identity.login}</p>}
             {identity.email && <p>{identity.email}</p>}
             <p className="font-mono text-xs">#{identity.humanId}</p>
@@ -130,22 +130,22 @@ export function UserProfilePage() {
 
           {/* Aggregate stats — always visible, independent of selected tab */}
           <div className="mt-3 flex items-center gap-4 text-sm">
-            <span className="flex items-center gap-1 text-muted-foreground">
+            <span className="text-muted-foreground flex items-center gap-1">
               <CircleDot className="size-3.5 text-green-600 dark:text-green-400" />
-              <span className="font-medium text-foreground">{openCount}</span> open
+              <span className="text-foreground font-medium">{openCount}</span> open
             </span>
-            <span className="flex items-center gap-1 text-muted-foreground">
+            <span className="text-muted-foreground flex items-center gap-1">
               <CircleCheck className="size-3.5 text-purple-600 dark:text-purple-400" />
-              <span className="font-medium text-foreground">{closedCount}</span> closed
+              <span className="text-foreground font-medium">{closedCount}</span> closed
             </span>
           </div>
         </div>
       </div>
 
       {/* ── Issue list ─────────────────────────────────────────────────── */}
-      <div className="rounded-md border border-border">
+      <div className="border-border rounded-md border">
         {/* Open / Closed toggle — mirrors BugListPage style */}
-        <div className="flex items-center gap-1 border-b border-border px-4 py-2">
+        <div className="border-border flex items-center gap-1 border-b px-4 py-2">
           <button
             onClick={() => switchStatus("open")}
             className={cn(
@@ -162,7 +162,7 @@ export function UserProfilePage() {
               )}
             />
             Open
-            <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none">
+            <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {openCount}
             </span>
           </button>
@@ -183,14 +183,14 @@ export function UserProfilePage() {
               )}
             />
             Closed
-            <span className="ml-0.5 rounded-full bg-muted px-1.5 py-0.5 text-xs leading-none">
+            <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {closedCount}
             </span>
           </button>
         </div>
 
         {bugs?.nodes.length === 0 && (
-          <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+          <p className="text-muted-foreground px-4 py-8 text-center text-sm">
             No {statusFilter} issues.
           </p>
         )}
@@ -201,7 +201,7 @@ export function UserProfilePage() {
           return (
             <div
               key={bug.id}
-              className="flex items-start gap-3 border-b border-border px-4 py-3 last:border-0"
+              className="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0"
             >
               <StatusIcon
                 className={cn(
@@ -215,7 +215,7 @@ export function UserProfilePage() {
                 <div className="flex flex-wrap items-baseline gap-2">
                   <Link
                     to={repo ? `/${repo}/issues/${bug.humanId}` : `/issues/${bug.humanId}`}
-                    className="font-medium text-foreground hover:text-primary hover:underline"
+                    className="text-foreground hover:text-primary font-medium hover:underline"
                   >
                     {bug.title}
                   </Link>
@@ -223,13 +223,13 @@ export function UserProfilePage() {
                     <LabelBadge key={label.name} name={label.name} color={label.color} />
                   ))}
                 </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
+                <p className="text-muted-foreground mt-0.5 text-xs">
                   #{bug.humanId} opened{" "}
                   {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
                 </p>
               </div>
               {bug.comments.totalCount > 0 && (
-                <div className="flex shrink-0 items-center gap-1 text-xs text-muted-foreground">
+                <div className="text-muted-foreground flex shrink-0 items-center gap-1 text-xs">
                   <MessageSquare className="size-3.5" />
                   {bug.comments.totalCount}
                 </div>
@@ -240,18 +240,18 @@ export function UserProfilePage() {
 
         {/* Pagination footer — only shown when there is more than one page */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 border-t border-border px-4 py-2">
+          <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={goPrev}
               disabled={!hasPrev || loading}
-              className="gap-1 text-muted-foreground"
+              className="text-muted-foreground gap-1"
             >
               <ChevronLeft className="size-4" />
               Previous
             </Button>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-muted-foreground text-sm">
               Page {page + 1} of {totalPages}
             </span>
             <Button
@@ -259,7 +259,7 @@ export function UserProfilePage() {
               size="sm"
               onClick={goNext}
               disabled={!hasNext || loading}
-              className="gap-1 text-muted-foreground"
+              className="text-muted-foreground gap-1"
             >
               Next
               <ChevronRight className="size-4" />
