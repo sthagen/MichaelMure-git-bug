@@ -17,19 +17,22 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import * as v from "valibot";
 
 import { useServerConfigQuery } from "@/__generated__/graphql";
 
+const authUserSchema = v.object({
+  id: v.string(),
+  humanId: v.string(),
+  name: v.nullable(v.string()),
+  displayName: v.string(),
+  avatarUrl: v.nullable(v.string()),
+  email: v.nullable(v.string()),
+  login: v.nullable(v.string()),
+});
+
 // AuthUser matches the Identity type fields we care about for auth purposes.
-export interface AuthUser {
-  id: string;
-  humanId: string;
-  name: string | null;
-  displayName: string;
-  avatarUrl: string | null;
-  email: string | null;
-  login: string | null;
-}
+export type AuthUser = v.InferOutput<typeof authUserSchema>;
 
 // 'local'    — single-user mode, identity from git config
 // 'external' — multi-user mode, identity from OAuth/OIDC session
@@ -108,9 +111,7 @@ function ExternalAuthProvider({
       .then(async (res) => {
         if (res.status === 401) return null;
         if (!res.ok) throw new Error(`/auth/user returned ${res.status}`);
-        // eslint-disable-next-line typescript-eslint/no-unsafe-assignment
-        const data: AuthUser = await res.json();
-        return data;
+        return v.parse(authUserSchema, await res.json());
       })
       .then((u) => setUser(u))
       .catch(() => setUser(null))

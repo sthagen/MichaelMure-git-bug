@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CircleDot, CircleCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
+import * as v from "valibot";
 
 import { useBugListQuery } from "@/__generated__/graphql";
 import { BugRow } from "@/components/bugs/BugRow";
@@ -13,17 +14,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
-type IssuesSearch = {
-  q: string;
-  after: string;
-};
+const issuesSearchSchema = v.object({
+  q: v.fallback(v.string(), "status:open"),
+  after: v.fallback(v.string(), ""),
+});
 
 export const Route = createFileRoute("/$repo/issues/")({
   component: RouteComponent,
-  validateSearch: (search: Record<string, unknown>): IssuesSearch => ({
-    q: typeof search.q === "string" ? search.q : "status:open",
-    after: typeof search.after === "string" ? search.after : "",
-  }),
+  validateSearch: (search) => v.parse(issuesSearchSchema, search),
 });
 
 const PAGE_SIZE = 25;
@@ -314,8 +312,8 @@ function tokenizeQuery(input: string): string[] {
 // Parse a query string back into structured filter state.
 const VALID_SORTS = new Set<string>(["creation-desc", "creation-asc", "edit-desc", "edit-asc"]);
 
-function isValidSort(v: string): v is SortValue {
-  return VALID_SORTS.has(v);
+function isValidSort(val: string): val is SortValue {
+  return VALID_SORTS.has(val);
 }
 
 function parseQueryString(input: string): {
@@ -337,8 +335,8 @@ function parseQueryString(input: string): {
     else if (token.startsWith("label:")) labels.push(token.slice(6));
     else if (token.startsWith("author:")) author = token.slice(7).replace(/^"|"$/g, "");
     else if (token.startsWith("sort:")) {
-      const v = token.slice(5);
-      if (isValidSort(v)) sort = v;
+      const val = token.slice(5);
+      if (isValidSort(val)) sort = val;
     } else free.push(token);
   }
 

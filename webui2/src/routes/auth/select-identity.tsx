@@ -9,6 +9,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { UserCircle, Plus, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import * as v from "valibot";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -17,14 +18,16 @@ export const Route = createFileRoute("/auth/select-identity")({
   component: RouteComponent,
 });
 
-interface IdentityItem {
-  repoSlug: string;
-  id: string;
-  humanId: string;
-  displayName: string;
-  login?: string;
-  avatarUrl?: string;
-}
+const identityItemSchema = v.object({
+  repoSlug: v.string(),
+  id: v.string(),
+  humanId: v.string(),
+  displayName: v.string(),
+  login: v.optional(v.string()),
+  avatarUrl: v.optional(v.string()),
+});
+
+type IdentityItem = v.InferOutput<typeof identityItemSchema>;
 
 function RouteComponent() {
   const [identities, setIdentities] = useState<IdentityItem[] | null>(null);
@@ -36,8 +39,7 @@ function RouteComponent() {
       try {
         const res = await fetch("/auth/identities", { credentials: "include" });
         if (!res.ok) throw new Error(`unexpected status ${res.status}`);
-        // eslint-disable-next-line typescript-eslint/no-unsafe-assignment
-        const data: IdentityItem[] = await res.json();
+        const data = v.parse(v.array(identityItemSchema), await res.json());
         setIdentities(data);
       } catch (e) {
         setError(String(e));

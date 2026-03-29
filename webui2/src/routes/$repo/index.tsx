@@ -6,6 +6,7 @@ import { useQuery, useReadQuery } from "@apollo/client/react";
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { AlertCircle, GitCommit } from "lucide-react";
 import { useEffect } from "react";
+import * as v from "valibot";
 
 import {
   GitObjectType,
@@ -111,28 +112,20 @@ interface BlobQueryData {
   } | null;
 }
 
-export type CodePageSearch = {
-  ref: string;
-  path: string;
-  type: "tree" | "blob" | "commits";
-};
+const codePageSearchSchema = v.object({
+  ref: v.fallback(v.string(), ""),
+  path: v.fallback(v.string(), ""),
+  type: v.fallback(v.picklist(["tree", "blob", "commits"]), "tree"),
+});
+
+export type CodePageSearch = v.InferOutput<typeof codePageSearchSchema>;
 
 type ViewMode = CodePageSearch["type"];
 
 export const Route = createFileRoute("/$repo/")({
   component: RouteComponent,
   pendingComponent: CodePageSkeleton,
-  validateSearch: (search: Record<string, unknown>): CodePageSearch => {
-    const ref = typeof search.ref === "string" ? search.ref : "";
-    const path = typeof search.path === "string" ? search.path : "";
-    const typeStr = typeof search.type === "string" ? search.type : "";
-    const validTypes: ViewMode[] = ["tree", "blob", "commits"];
-    return {
-      ref,
-      path,
-      type: validTypes.find((t) => t === typeStr) ?? "tree",
-    };
-  },
+  validateSearch: (search) => v.parse(codePageSearchSchema, search),
   loader: ({ params: { repo } }) => ({
     refsRef: preloadQuery<RefsQueryData>(REFS_QUERY, {
       variables: { repo: repo === "_" ? null : repo },
