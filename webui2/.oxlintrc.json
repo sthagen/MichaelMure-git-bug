@@ -19,5 +19,5 @@
     "typeAware": true,
     "typeCheck": true
   },
-  "ignorePatterns": ["src/__generated__/**"]
+  "ignorePatterns": ["src/__generated__/**", "src/routeTree.gen.ts"]
 }

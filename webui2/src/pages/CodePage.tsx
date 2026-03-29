@@ -104,7 +104,7 @@ interface BlobQueryData {
   } | null;
 }
 
-import type { CodePageSearch } from "@/App";
+import type { CodePageSearch } from "@/routes/$repo/index";
 
 type ViewMode = CodePageSearch["type"];
 
