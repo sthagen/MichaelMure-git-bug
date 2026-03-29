@@ -10,11 +10,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface FileViewerProps {
   blob: GitBlob | null;
-  loading?: boolean;
 }
 
-export function FileViewer({ blob, loading = false }: FileViewerProps) {
-  if (loading || !blob) {
+export function FileViewer({ blob }: FileViewerProps) {
+  if (!blob) {
     return (
       <div className="divide-border border-border divide-y rounded-md border">
         <div className="flex items-center gap-2 px-4 py-2">
@@ -51,7 +50,7 @@ export function FileViewer({ blob, loading = false }: FileViewerProps) {
     };
   }, [blob]);
 
-  if (loading || highlighted === null) return <FileViewerSkeleton />;
+  if (highlighted === null) return <FileViewerSkeleton />;
   const { html, lineCount } = highlighted;
 
   function copyToClipboard() {

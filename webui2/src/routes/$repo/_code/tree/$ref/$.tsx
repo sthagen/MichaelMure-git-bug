@@ -1,7 +1,7 @@
 // Tree view: /$repo/tree/$ref/...path
 
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useQuery, useReadQuery } from "@apollo/client/react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import {
@@ -13,6 +13,7 @@ import {
 import { FileTree } from "@/components/code/FileTree";
 import type { TreeEntryWithCommit } from "@/components/code/FileTree";
 import { Markdown } from "@/components/content/Markdown";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TREE_QUERY = gql`
   query CodePageTree($repo: String, $ref: String!, $path: String) {
@@ -42,7 +43,7 @@ const LAST_COMMITS_QUERY = gql`
   }
 `;
 
-const BLOB_QUERY = gql`
+const README_QUERY = gql`
   query CodePageReadme($repo: String, $ref: String!, $path: String!) {
     repository(ref: $repo) {
       blob(ref: $ref, path: $path) {
@@ -62,20 +63,43 @@ interface ReadmeQueryData {
   repository: { blob: GitBlob | null } | null;
 }
 
+function TreeSkeleton() {
+  return (
+    <div className="border-border overflow-hidden rounded-md border">
+      <div className="divide-border divide-y">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3 px-4 py-2">
+            <Skeleton className="size-4 rounded-sm" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="ml-6 hidden h-4 w-64 md:block" />
+            <Skeleton className="ml-auto hidden h-4 w-20 md:block" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/$repo/_code/tree/$ref/$")({
   component: TreeView,
+  pendingComponent: TreeSkeleton,
   beforeLoad: () => ({ viewMode: "tree" as const }),
+  loader: async ({ context: { preloadQuery, ref }, params: { ref: gitRef, _splat: path } }) => {
+    const treeRef = preloadQuery<TreeQueryData>(TREE_QUERY, {
+      variables: { repo: ref, ref: gitRef, path: path || null },
+    });
+    return { treeRef: await preloadQuery.toPromise(treeRef) };
+  },
 });
 
 function TreeView() {
   const { repo, ref: currentRef, _splat: currentPath = "" } = Route.useParams();
   const { ref: repoRef } = Route.useRouteContext();
-
-  const { data: treeData, loading: treeLoading } = useQuery<TreeQueryData>(TREE_QUERY, {
-    variables: { repo: repoRef, ref: currentRef, path: currentPath || null },
-  });
+  const { treeRef } = Route.useLoaderData();
+  const { data: treeData } = useReadQuery(treeRef);
   const entries: GitTreeEntry[] = treeData?.repository?.tree ?? [];
 
+  // Last commits and readme are cascading queries — they depend on the tree result
   const entryNames = entries.map((e) => e.name);
   const { data: lastCommitsData } = useQuery<LastCommitsQueryData>(LAST_COMMITS_QUERY, {
     variables: { repo: repoRef, ref: currentRef, path: currentPath || null, names: entryNames },
@@ -97,7 +121,7 @@ function TreeView() {
       ? `${currentPath}/${readmeEntry.name}`
       : readmeEntry.name
     : null;
-  const { data: readmeBlobData } = useQuery<ReadmeQueryData>(BLOB_QUERY, {
+  const { data: readmeBlobData } = useQuery<ReadmeQueryData>(README_QUERY, {
     variables: { repo: repoRef, ref: currentRef, path: readmePath },
     skip: !readmePath,
   });
@@ -110,7 +134,6 @@ function TreeView() {
         currentRef={currentRef}
         currentPath={currentPath}
         entries={entriesWithCommits}
-        loading={treeLoading}
       />
       {readme && (
         <div className="rounded-md border">

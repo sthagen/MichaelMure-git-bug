@@ -3,7 +3,6 @@ import { formatDistanceToNow } from "date-fns";
 import { Folder, File } from "lucide-react";
 
 import { GitObjectType, type GitTreeEntry } from "@/__generated__/graphql";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export interface TreeEntryWithCommit extends GitTreeEntry {
   lastCommit?: {
@@ -19,19 +18,16 @@ interface FileTreeProps {
   currentRef: string;
   currentPath: string;
   entries: TreeEntryWithCommit[];
-  loading?: boolean;
 }
 
 // Directory listing table for the code browser. Shows each entry's icon,
 // name, last-commit message (linked to commit detail), and relative date.
-export function FileTree({ repo, currentRef, currentPath, entries, loading }: FileTreeProps) {
+export function FileTree({ repo, currentRef, currentPath, entries }: FileTreeProps) {
   // Directories first, then files — each group alphabetical
   const sorted = entries.toSorted((a, b) => {
     if (a.type !== b.type) return a.type === GitObjectType.Tree ? -1 : 1;
     return a.name.localeCompare(b.name);
   });
-
-  if (loading) return <FileTreeSkeleton />;
 
   return (
     <div className="border-border overflow-hidden rounded-md border">
@@ -118,22 +114,5 @@ function FileTreeRow({
           formatDistanceToNow(new Date(entry.lastCommit.date), { addSuffix: true })}
       </td>
     </tr>
-  );
-}
-
-function FileTreeSkeleton() {
-  return (
-    <div className="border-border overflow-hidden rounded-md border">
-      <div className="divide-border divide-y">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="flex items-center gap-3 px-4 py-2">
-            <Skeleton className="size-4 rounded-sm" />
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="ml-6 hidden h-4 w-64 md:block" />
-            <Skeleton className="ml-auto hidden h-4 w-20 md:block" />
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }

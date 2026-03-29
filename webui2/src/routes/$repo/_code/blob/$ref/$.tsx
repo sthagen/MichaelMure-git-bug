@@ -1,11 +1,12 @@
 // Blob (file) view: /$repo/blob/$ref/...path
 
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import type { GitBlob } from "@/__generated__/graphql";
 import { FileViewer } from "@/components/code/FileViewer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const BLOB_QUERY = gql`
   query CodePageBlob($repo: String, $ref: String!, $path: String!) {
@@ -26,19 +27,34 @@ interface BlobQueryData {
   repository: { blob: GitBlob | null } | null;
 }
 
+function BlobSkeleton() {
+  return (
+    <div className="border-border overflow-hidden rounded-md border">
+      <div className="flex items-center gap-2 border-b px-4 py-2">
+        <Skeleton className="h-4 w-48" />
+      </div>
+      <div className="p-4">
+        <Skeleton className="h-64 w-full" />
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/$repo/_code/blob/$ref/$")({
   component: BlobView,
+  pendingComponent: BlobSkeleton,
   beforeLoad: () => ({ viewMode: "blob" as const }),
+  loader: async ({ context: { preloadQuery, ref }, params: { ref: gitRef, _splat: path } }) => {
+    const blobRef = preloadQuery<BlobQueryData>(BLOB_QUERY, {
+      variables: { repo: ref, ref: gitRef, path: path || "" },
+    });
+    return { blobRef: await preloadQuery.toPromise(blobRef) };
+  },
 });
 
 function BlobView() {
-  const { ref: currentRef, _splat: currentPath = "" } = Route.useParams();
-  const { ref: repoRef } = Route.useRouteContext();
+  const { blobRef } = Route.useLoaderData();
+  const { data } = useReadQuery(blobRef);
 
-  const { data, loading } = useQuery<BlobQueryData>(BLOB_QUERY, {
-    variables: { repo: repoRef, ref: currentRef, path: currentPath },
-    skip: !currentPath,
-  });
-
-  return <FileViewer blob={data?.repository?.blob ?? null} loading={loading} />;
+  return <FileViewer blob={data?.repository?.blob ?? null} />;
 }
