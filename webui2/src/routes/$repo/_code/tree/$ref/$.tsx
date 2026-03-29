@@ -116,7 +116,10 @@ function TreeView() {
         <div className="rounded-md border">
           <div className="text-muted-foreground border-b px-4 py-2 text-xs font-medium">README</div>
           <div className="px-6 py-4">
-            <Markdown content={readme} />
+            <Markdown
+              content={readme}
+              repoContext={{ repo, ref: currentRef, basePath: currentPath }}
+            />
           </div>
         </div>
       )}
