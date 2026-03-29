@@ -1,9 +1,17 @@
+import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CircleDot, CircleCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import * as v from "valibot";
 
-import { useBugListQuery } from "@/__generated__/graphql";
+import {
+  type BugListQuery,
+  BugListDocument,
+  type ValidLabelsQuery,
+  ValidLabelsDocument,
+  type AllIdentitiesQuery,
+  AllIdentitiesDocument,
+} from "@/__generated__/graphql";
 import { BugRow } from "@/components/bugs/BugRow";
 import { IssueFilters } from "@/components/bugs/IssueFilters";
 import type { SortValue } from "@/components/bugs/IssueFilters";
@@ -11,6 +19,7 @@ import { QueryInput } from "@/components/bugs/QueryInput";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { preloadQuery } from "@/lib/apollo";
 import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +30,32 @@ const issuesSearchSchema = v.object({
 
 export const Route = createFileRoute("/$repo/issues/")({
   component: RouteComponent,
+  pendingComponent: BugListSkeleton,
   validateSearch: (search) => v.parse(issuesSearchSchema, search),
+  loaderDeps: ({ search: { q, after } }) => ({ q, after }),
+  loader: ({ params: { repo }, deps: { q, after } }) => {
+    const ref = repo === "_" ? null : repo;
+    const parsed = parseQueryString(q);
+    const baseQuery = buildBaseQuery(parsed.labels, parsed.author, parsed.freeText);
+    return {
+      bugListRef: preloadQuery<BugListQuery>(BugListDocument, {
+        variables: {
+          ref,
+          openQuery: `status:open ${baseQuery}`.trim(),
+          closedQuery: `status:closed ${baseQuery}`.trim(),
+          listQuery: q,
+          first: PAGE_SIZE,
+          after: after || undefined,
+        },
+      }),
+      labelsRef: preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
+        variables: { ref },
+      }),
+      identitiesRef: preloadQuery<AllIdentitiesQuery>(AllIdentitiesDocument, {
+        variables: { ref },
+      }),
+    };
+  },
 });
 
 const PAGE_SIZE = 25;
@@ -47,26 +81,16 @@ function RouteComponent() {
   // Draft is the text input value — starts from URL, only committed on submit
   const [draft, setDraft] = useState(q);
 
-  // Build the three query variants from the URL state
-  const baseQuery = buildBaseQuery(selectedLabels, selectedAuthorQuery, parsed.freeText);
-  const openQuery = `status:open ${baseQuery}`.trim();
-  const closedQuery = `status:closed ${baseQuery}`.trim();
-  const listQuery = q;
-
-  const { data, loading, error } = useBugListQuery({
-    variables: {
-      ref: repo,
-      openQuery,
-      closedQuery,
-      listQuery,
-      first: PAGE_SIZE,
-      after: after || undefined,
-    },
-  });
+  const { bugListRef, labelsRef, identitiesRef } = Route.useLoaderData();
+  const { data } = useReadQuery(bugListRef);
+  const { data: labelsData } = useReadQuery(labelsRef);
+  const { data: identitiesData } = useReadQuery(identitiesRef);
 
   const openCount = data?.repository?.openCount.totalCount ?? 0;
   const closedCount = data?.repository?.closedCount.totalCount ?? 0;
   const bugs = data?.repository?.bugs;
+  const validLabels = labelsData?.repository?.validLabels.nodes ?? [];
+  const allIdentities = identitiesData?.repository?.allIdentities.nodes ?? [];
   const totalCount = bugs?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasNext = bugs?.pageInfo.hasNextPage ?? false;
@@ -109,6 +133,8 @@ function RouteComponent() {
           onChange={setDraft}
           onSubmit={handleSearch}
           placeholder="status:open author:… label:…"
+          labels={validLabels}
+          identities={allIdentities}
         />
         <Button type="submit">Search</Button>
       </form>
@@ -167,6 +193,8 @@ function RouteComponent() {
 
           <div className="ml-auto">
             <IssueFilters
+              labels={validLabels}
+              identities={allIdentities}
               selectedLabels={selectedLabels}
               onLabelsChange={(labels) =>
                 applyFilters(statusFilter, labels, selectedAuthorQuery, parsed.freeText)
@@ -185,14 +213,6 @@ function RouteComponent() {
         </div>
 
         {/* Bug rows */}
-        {error && (
-          <p className="text-destructive px-4 py-8 text-center text-sm">
-            Failed to load issues: {error.message}
-          </p>
-        )}
-
-        {loading && !data && <BugListSkeleton />}
-
         {bugs?.nodes.length === 0 && (
           <p className="text-muted-foreground px-4 py-8 text-center text-sm">
             No {statusFilter} issues found.
@@ -232,7 +252,7 @@ function RouteComponent() {
               search={{ q, after: "" }}
               variant="ghost"
               size="sm"
-              disabled={!hasPrev || loading}
+              disabled={!hasPrev}
               className="text-muted-foreground gap-1"
             >
               <ChevronLeft className="size-4" />
@@ -247,7 +267,7 @@ function RouteComponent() {
               search={{ q, after: bugs?.pageInfo.endCursor ?? "" }}
               variant="ghost"
               size="sm"
-              disabled={!hasNext || loading}
+              disabled={!hasNext}
               className="text-muted-foreground gap-1"
             >
               Next

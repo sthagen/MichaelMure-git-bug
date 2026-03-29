@@ -1,11 +1,9 @@
 import { ArrowUpDown, ChevronDown, Tag, User, X, Search, Check } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { useValidLabelsQuery, useAllIdentitiesQuery } from "@/__generated__/graphql";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/lib/auth";
-import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
 import { LabelBadge } from "./LabelBadge";
@@ -41,7 +39,24 @@ const SORT_OPTIONS: { value: SortValue; label: string }[] = [
   { value: "edit-asc", label: "Least recently updated" },
 ];
 
+export interface LabelItem {
+  name: string;
+  color: { R: number; G: number; B: number };
+}
+
+export interface IdentityItem {
+  id: string;
+  humanId: string;
+  name?: string | null;
+  email?: string | null;
+  login?: string | null;
+  displayName: string;
+  avatarUrl?: string | null;
+}
+
 interface IssueFiltersProps {
+  labels: readonly LabelItem[];
+  identities: readonly IdentityItem[];
   selectedLabels: string[];
   onLabelsChange: (labels: string[]) => void;
   selectedAuthorId: string | null;
@@ -64,6 +79,8 @@ interface IssueFiltersProps {
 // queryValue (login/name for the query string). They're kept separate because
 // two identities can share the same display name, but humanId is always unique.
 export function IssueFilters({
+  labels,
+  identities,
   selectedLabels,
   onLabelsChange,
   selectedAuthorId,
@@ -73,26 +90,17 @@ export function IssueFilters({
   onSortChange,
 }: IssueFiltersProps) {
   const { user } = useAuth();
-  const repo = useRepo();
-  const { data: labelsData } = useValidLabelsQuery({ variables: { ref: repo } });
-  const { data: authorsData } = useAllIdentitiesQuery({ variables: { ref: repo } });
   const [labelSearch, setLabelSearch] = useState("");
   const [authorSearch, setAuthorSearch] = useState("");
 
   const validLabels = useMemo(
-    () =>
-      (labelsData?.repository?.validLabels.nodes ?? []).toSorted((a, b) =>
-        a.name.localeCompare(b.name),
-      ),
-    [labelsData],
+    () => labels.toSorted((a, b) => a.name.localeCompare(b.name)),
+    [labels],
   );
 
   const allIdentities = useMemo(
-    () =>
-      (authorsData?.repository?.allIdentities.nodes ?? []).toSorted((a, b) =>
-        a.displayName.localeCompare(b.displayName),
-      ),
-    [authorsData],
+    () => identities.toSorted((a, b) => a.displayName.localeCompare(b.displayName)),
+    [identities],
   );
 
   const filteredLabels = labelSearch.trim()

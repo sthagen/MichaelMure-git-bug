@@ -12,8 +12,7 @@
 import { Search } from "lucide-react";
 import { useState, useRef, useMemo, type ChangeEvent } from "react";
 
-import { useValidLabelsQuery, useAllIdentitiesQuery } from "@/__generated__/graphql";
-import { useRepo } from "@/lib/repo";
+import type { LabelItem, IdentityItem } from "@/components/bugs/IssueFilters";
 import { cn } from "@/lib/utils";
 
 // ── Segment parsing (for the syntax-highlight backdrop) ───────────────────────
@@ -152,28 +151,28 @@ interface QueryInputProps {
   onSubmit: () => void;
   placeholder?: string;
   className?: string;
+  labels: readonly LabelItem[];
+  identities: readonly IdentityItem[];
 }
 
-export function QueryInput({ value, onChange, onSubmit, placeholder, className }: QueryInputProps) {
+export function QueryInput({
+  value,
+  onChange,
+  onSubmit,
+  placeholder,
+  className,
+  labels,
+  identities,
+}: QueryInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const repo = useRepo();
 
   // Autocomplete state: null when the dropdown is hidden.
   const [completion, setCompletion] = useState<CompletionInfo | null>(null);
   // Keyboard-highlighted index within the visible suggestions list.
   const [acIndex, setAcIndex] = useState(0);
 
-  // Fetch all labels and identities for autocomplete suggestions.
-  // These queries are cheap (cached by Apollo) and already used by IssueFilters,
-  // so there is no extra network cost.
-  const { data: labelsData } = useValidLabelsQuery({ variables: { ref: repo } });
-  const { data: authorsData } = useAllIdentitiesQuery({ variables: { ref: repo } });
-
-  const allLabels = useMemo(() => labelsData?.repository?.validLabels.nodes ?? [], [labelsData]);
-  const allAuthors = useMemo(
-    () => authorsData?.repository?.allIdentities.nodes ?? [],
-    [authorsData],
-  );
+  const allLabels = labels;
+  const allAuthors = identities;
 
   // Compute the filtered suggestion list whenever completion info changes.
   const suggestions = useMemo(() => {
