@@ -1,7 +1,6 @@
 import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowLeft } from "lucide-react";
 
 import { type BugDetailQuery, BugDetailDocument } from "@/__generated__/graphql";
 import { CommentBox } from "@/components/bugs/CommentBox";
@@ -10,6 +9,7 @@ import { StatusBadge } from "@/components/bugs/StatusBadge";
 import { Timeline } from "@/components/bugs/Timeline";
 import { TitleEditor } from "@/components/bugs/TitleEditor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BackLink } from "@/components/ui/back-link";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -42,15 +42,9 @@ function RouteComponent() {
 
   return (
     <div>
-      <Link
-        to="/$repo/issues"
-        params={{ repo: repo }}
-        search={{ q: "status:open", after: "" }}
-        className="text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1.5 text-sm"
-      >
-        <ArrowLeft className="size-3.5" />
+      <BackLink to="/$repo/issues" params={{ repo }} search={{ q: "status:open", after: "" }}>
         Back to issues
-      </Link>
+      </BackLink>
 
       {/* Title row — hover reveals edit button when logged in */}
       <div className="mb-3">

@@ -1,9 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useBugCreateMutation } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";
+import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
@@ -38,15 +38,9 @@ function RouteComponent() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link
-        to="/$repo/issues"
-        params={{ repo: repo }}
-        search={{ q: "status:open", after: "" }}
-        className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
-      >
-        <ArrowLeft className="size-3.5" />
+      <BackLink to="/$repo/issues" params={{ repo }} search={{ q: "status:open", after: "" }}>
         Back to issues
-      </Link>
+      </BackLink>
 
       <h1 className="mb-6 text-xl font-semibold">New issue</h1>
 
