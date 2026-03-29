@@ -31,33 +31,3 @@ const CreatedButtonLink = createLink(ButtonLinkComponent);
 export const ButtonLink: LinkComponent<typeof ButtonLinkComponent> = (props) => {
   return <CreatedButtonLink preload="intent" {...props} />;
 };
-
-// A nav link that uses activeProps/inactiveProps for styling.
-// Replaces the manual useMatchRoute() pattern in the header.
-const NavLinkComponent = React.forwardRef<
-  HTMLAnchorElement,
-  React.AnchorHTMLAttributes<HTMLAnchorElement>
->(({ children, ...props }, ref) => {
-  return (
-    <a ref={ref} {...props}>
-      {children}
-    </a>
-  );
-});
-NavLinkComponent.displayName = "NavLinkComponent";
-
-const CreatedNavLink = createLink(NavLinkComponent);
-
-export const NavLink: LinkComponent<typeof NavLinkComponent> = (props) => {
-  return (
-    <CreatedNavLink
-      preload="intent"
-      className="text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
-      activeProps={{ className: "bg-accent text-accent-foreground" }}
-      inactiveProps={{
-        className: "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-      }}
-      {...props}
-    />
-  );
-};

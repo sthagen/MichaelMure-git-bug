@@ -6,14 +6,15 @@
 // In external mode, shows a "Sign in" button when logged out and a sign-out
 // action when logged in.
 
-import { Link, useParams } from "@tanstack/react-router";
+import { Link, useParams, useRouterState } from "@tanstack/react-router";
 import { Bug, Plus, Sun, Moon, LogIn, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ButtonLink, NavLink } from "@/components/ui/button-link";
+import { ButtonLink } from "@/components/ui/button-link";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
+import { cn } from "@/lib/utils";
 
 // SignOutButton sends a POST to /auth/logout and reloads the page.
 // A full reload is the simplest way to reset all Apollo cache + React state.
@@ -52,20 +53,7 @@ export function Header() {
         </Link>
 
         {/* Repo-scoped nav links — only shown when inside a repo */}
-        {effectiveRepo && (
-          <nav className="flex items-center gap-1">
-            <NavLink to="/$repo" params={{ repo: effectiveRepo }} activeOptions={{ exact: true }}>
-              Code
-            </NavLink>
-            <NavLink
-              to="/$repo/issues"
-              params={{ repo: effectiveRepo }}
-              search={{ q: "status:open", after: "" }}
-            >
-              Issues
-            </NavLink>
-          </nav>
-        )}
+        {effectiveRepo && <RepoNav repo={effectiveRepo} />}
 
         <div className="ml-auto flex items-center gap-2">
           {mode === "readonly" && <span className="text-muted-foreground text-xs">Read only</span>}
@@ -108,6 +96,40 @@ export function Header() {
         </div>
       </div>
     </header>
+  );
+}
+
+const navLinkBase = "rounded-md px-3 py-1.5 text-sm font-medium transition-colors";
+const navLinkActive = "bg-accent text-accent-foreground";
+const navLinkInactive = "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
+
+function RepoNav({ repo }: { repo: string }) {
+  // Determine which section is active from the matched route IDs.
+  // The _code layout match means we're in the code browser; _issues means issues.
+  const matchedIds = useRouterState({
+    select: (s) => s.matches.map((m) => m.routeId),
+  });
+  const isCodeActive = matchedIds.some((id) => id.includes("/_code"));
+  const isIssuesActive = matchedIds.some((id) => id.includes("/_issues"));
+
+  return (
+    <nav className="flex items-center gap-1">
+      <Link
+        to="/$repo"
+        params={{ repo }}
+        className={cn(navLinkBase, isCodeActive ? navLinkActive : navLinkInactive)}
+      >
+        Code
+      </Link>
+      <Link
+        to="/$repo/issues"
+        params={{ repo }}
+        search={{ q: "status:open", after: "" }}
+        className={cn(navLinkBase, isIssuesActive ? navLinkActive : navLinkInactive)}
+      >
+        Issues
+      </Link>
+    </nav>
   );
 }
 
