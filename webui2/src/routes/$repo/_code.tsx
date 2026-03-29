@@ -6,9 +6,9 @@ import { useReadQuery } from "@apollo/client/react";
 import {
   createFileRoute,
   Outlet,
-  useMatchRoute,
   useNavigate,
   useParams,
+  useRouterState,
 } from "@tanstack/react-router";
 import { GitCommit } from "lucide-react";
 
@@ -17,6 +17,8 @@ import { CodeBreadcrumb } from "@/components/code/CodeBreadcrumb";
 import { RefSelector } from "@/components/code/RefSelector";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
+
+export type CodeViewMode = "tree" | "blob" | "commits";
 
 export const Route = createFileRoute("/$repo/_code")({
   component: CodeLayout,
@@ -30,7 +32,7 @@ function CodeLayout() {
   const refs: GitRef[] = refsData?.repository?.refs?.nodes ?? [];
   const repoName = refsData?.repository?.name ?? repoRef ?? "default-repo";
 
-  // Read child route params (ref and splat path) via loose useParams
+  // Read child route params (ref and splat path)
   const allParams = useParams({ strict: false }) as {
     ref?: string;
     _splat?: string;
@@ -38,35 +40,33 @@ function CodeLayout() {
   const currentRef = allParams.ref ?? "";
   const currentPath = allParams._splat ?? "";
 
-  const matchRoute = useMatchRoute();
-  const isBlobView = !!matchRoute({
-    to: "/$repo/blob/$ref/$",
-    params: { repo, ref: currentRef, _splat: currentPath },
-    fuzzy: true,
-  });
-  const isCommitsView = !!matchRoute({
-    to: "/$repo/commits/$ref",
-    params: { repo, ref: currentRef },
-    fuzzy: true,
+  // Read viewMode from the deepest child route's context.
+  // Each child (tree, blob, commits) sets viewMode in its beforeLoad.
+  const viewMode: CodeViewMode = useRouterState({
+    select: (s) => {
+      const ctx = s.matches.at(-1)?.context;
+      if (ctx && typeof ctx === "object" && "viewMode" in ctx) {
+        return ctx.viewMode as CodeViewMode;
+      }
+      return "tree";
+    },
   });
 
   const navigate = useNavigate();
 
   function handleRefSelect(newRef: GitRef) {
-    if (isCommitsView) {
-      void navigate({
-        to: "/$repo/commits/$ref",
-        params: { repo, ref: newRef.shortName },
-      });
-    } else if (isBlobView) {
+    const refName = newRef.shortName;
+    if (viewMode === "commits") {
+      void navigate({ to: "/$repo/commits/$ref", params: { repo, ref: refName } });
+    } else if (viewMode === "blob") {
       void navigate({
         to: "/$repo/blob/$ref/$",
-        params: { repo, ref: newRef.shortName, _splat: currentPath },
+        params: { repo, ref: refName, _splat: currentPath },
       });
     } else {
       void navigate({
         to: "/$repo/tree/$ref/$",
-        params: { repo, ref: newRef.shortName, _splat: currentPath },
+        params: { repo, ref: refName, _splat: currentPath },
       });
     }
   }
@@ -81,7 +81,7 @@ function CodeLayout() {
           repo={repo}
         />
         <div className="flex items-center gap-2">
-          {isCommitsView ? (
+          {viewMode === "commits" ? (
             <ButtonLink
               to="/$repo/tree/$ref/$"
               params={{ repo, ref: currentRef, _splat: currentPath }}

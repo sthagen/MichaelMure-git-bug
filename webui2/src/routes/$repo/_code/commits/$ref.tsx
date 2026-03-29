@@ -6,6 +6,7 @@ import { CommitList } from "@/components/code/CommitList";
 
 export const Route = createFileRoute("/$repo/_code/commits/$ref")({
   component: CommitsView,
+  beforeLoad: () => ({ viewMode: "commits" as const }),
 });
 
 function CommitsView() {

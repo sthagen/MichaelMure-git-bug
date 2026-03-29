@@ -28,6 +28,7 @@ interface BlobQueryData {
 
 export const Route = createFileRoute("/$repo/_code/blob/$ref/$")({
   component: BlobView,
+  beforeLoad: () => ({ viewMode: "blob" as const }),
 });
 
 function BlobView() {

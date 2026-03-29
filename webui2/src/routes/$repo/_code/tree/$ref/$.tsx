@@ -64,6 +64,7 @@ interface ReadmeQueryData {
 
 export const Route = createFileRoute("/$repo/_code/tree/$ref/$")({
   component: TreeView,
+  beforeLoad: () => ({ viewMode: "tree" as const }),
 });
 
 function TreeView() {
