@@ -34,7 +34,7 @@ function RouteComponent() {
     if (data?.repositories.nodes.length === 1) {
       void navigate({
         to: "/$repo",
-        params: { repo: repoSlug(data.repositories.nodes[0].name) },
+        params: { repo: repoSlug(data.repositories.nodes[0]?.name) },
         search: { ref: "", path: "", type: "tree" as const },
         replace: true,
       });

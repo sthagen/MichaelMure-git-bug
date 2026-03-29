@@ -256,7 +256,8 @@ export function QueryInput({ value, onChange, onSubmit, placeholder, className }
       setAcIndex((i) => (i - 1 + suggestions.length) % suggestions.length);
     } else if (e.key === "Enter" || e.key === "Tab") {
       e.preventDefault();
-      applySuggestion(suggestions[acIndex]);
+      const suggestion = suggestions[acIndex];
+      if (suggestion) applySuggestion(suggestion);
     } else if (e.key === "Escape") {
       setCompletion(null);
     }
