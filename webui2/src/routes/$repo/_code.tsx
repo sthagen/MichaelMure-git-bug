@@ -39,6 +39,11 @@ function CodeLayout() {
   const currentPath = allParams._splat ?? "";
 
   const matchRoute = useMatchRoute();
+  const isBlobView = !!matchRoute({
+    to: "/$repo/blob/$ref/$",
+    params: { repo, ref: currentRef, _splat: currentPath },
+    fuzzy: true,
+  });
   const isCommitsView = !!matchRoute({
     to: "/$repo/commits/$ref",
     params: { repo, ref: currentRef },
@@ -47,11 +52,23 @@ function CodeLayout() {
 
   const navigate = useNavigate();
 
-  function handleRefSelect(ref: GitRef) {
-    void navigate({
-      to: "/$repo/tree/$ref/$",
-      params: { repo, ref: ref.shortName, _splat: "" },
-    });
+  function handleRefSelect(newRef: GitRef) {
+    if (isCommitsView) {
+      void navigate({
+        to: "/$repo/commits/$ref",
+        params: { repo, ref: newRef.shortName },
+      });
+    } else if (isBlobView) {
+      void navigate({
+        to: "/$repo/blob/$ref/$",
+        params: { repo, ref: newRef.shortName, _splat: currentPath },
+      });
+    } else {
+      void navigate({
+        to: "/$repo/tree/$ref/$",
+        params: { repo, ref: newRef.shortName, _splat: currentPath },
+      });
+    }
   }
 
   return (
