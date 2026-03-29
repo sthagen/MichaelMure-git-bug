@@ -124,13 +124,21 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
           <Button
             variant="outline"
             size="sm"
-            onClick={handleToggleStatus}
+            onClick={() => {
+              void handleToggleStatus();
+            }}
             disabled={busy}
             className="min-w-[7.5rem]"
           >
             {isOpen ? "Close issue" : "Reopen issue"}
           </Button>
-          <Button size="sm" onClick={handleComment} disabled={!hasMessage || busy}>
+          <Button
+            size="sm"
+            onClick={() => {
+              void handleComment();
+            }}
+            disabled={!hasMessage || busy}
+          >
             Comment
           </Button>
         </div>

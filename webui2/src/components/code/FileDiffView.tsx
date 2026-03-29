@@ -63,7 +63,7 @@ export function FileDiffView({ hash, path, oldPath, status }: FileDiffViewProps)
 
   function toggle() {
     if (!open && !data && !loading) {
-      fetchDiff({ variables: { repo, hash, path } });
+      void fetchDiff({ variables: { repo, hash, path } });
     }
     setOpen((v) => !v);
   }

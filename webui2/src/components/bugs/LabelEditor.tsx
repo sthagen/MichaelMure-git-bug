@@ -64,7 +64,9 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps
                   return (
                     <button
                       key={label.name}
-                      onClick={() => toggleLabel(label.name)}
+                      onClick={() => {
+                        void toggleLabel(label.name);
+                      }}
                       className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-muted"
                     >
                       <span

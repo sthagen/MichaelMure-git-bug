@@ -1,5 +1,5 @@
 import { ArrowUpDown, ChevronDown, Tag, User, X, Search, Check } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useValidLabelsQuery, useAllIdentitiesQuery } from "@/__generated__/graphql";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -79,12 +79,20 @@ export function IssueFilters({
   const [labelSearch, setLabelSearch] = useState("");
   const [authorSearch, setAuthorSearch] = useState("");
 
-  const validLabels = [...(labelsData?.repository?.validLabels.nodes ?? [])].sort((a, b) =>
-    a.name.localeCompare(b.name),
+  const validLabels = useMemo(
+    () =>
+      [...(labelsData?.repository?.validLabels.nodes ?? [])].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+    [labelsData],
   );
 
-  const allIdentities = [...(authorsData?.repository?.allIdentities.nodes ?? [])].sort((a, b) =>
-    a.displayName.localeCompare(b.displayName),
+  const allIdentities = useMemo(
+    () =>
+      [...(authorsData?.repository?.allIdentities.nodes ?? [])].sort((a, b) =>
+        a.displayName.localeCompare(b.displayName),
+      ),
+    [authorsData],
   );
 
   const filteredLabels = labelSearch.trim()

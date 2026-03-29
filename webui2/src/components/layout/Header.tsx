@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 // A full reload is the simplest way to reset all Apollo cache + React state.
 function SignOutButton() {
   function handleSignOut() {
-    fetch("/auth/logout", { method: "POST", credentials: "include" }).finally(() =>
+    void fetch("/auth/logout", { method: "POST", credentials: "include" }).finally(() =>
       window.location.assign("/"),
     );
   }

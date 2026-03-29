@@ -45,7 +45,12 @@ export function NewBugPage() {
 
       <h1 className="mb-6 text-xl font-semibold">New issue</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form
+        onSubmit={(e) => {
+          void handleSubmit(e);
+        }}
+        className="space-y-4"
+      >
         <div>
           <label htmlFor="title" className="mb-1.5 block text-sm font-medium">
             Title

@@ -169,8 +169,11 @@ export function QueryInput({ value, onChange, onSubmit, placeholder, className }
   const { data: labelsData } = useValidLabelsQuery({ variables: { ref: repo } });
   const { data: authorsData } = useAllIdentitiesQuery({ variables: { ref: repo } });
 
-  const allLabels = labelsData?.repository?.validLabels.nodes ?? [];
-  const allAuthors = authorsData?.repository?.allIdentities.nodes ?? [];
+  const allLabels = useMemo(() => labelsData?.repository?.validLabels.nodes ?? [], [labelsData]);
+  const allAuthors = useMemo(
+    () => authorsData?.repository?.allIdentities.nodes ?? [],
+    [authorsData],
+  );
 
   // Compute the filtered suggestion list whenever completion info changes.
   const suggestions = useMemo(() => {

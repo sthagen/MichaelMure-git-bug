@@ -27,7 +27,7 @@ export function IdentitySelectPage() {
   const [working, setWorking] = useState(false);
 
   useEffect(() => {
-    fetch("/auth/identities", { credentials: "include" })
+    void fetch("/auth/identities", { credentials: "include" })
       .then((res) => {
         if (!res.ok) throw new Error(`unexpected status ${res.status}`);
         return res.json() as Promise<IdentityItem[]>;
@@ -90,7 +90,13 @@ export function IdentitySelectPage() {
                 {id.repoSlug} · {id.humanId}
               </p>
             </div>
-            <Button size="sm" disabled={working} onClick={() => adopt(id.id)}>
+            <Button
+              size="sm"
+              disabled={working}
+              onClick={() => {
+                void adopt(id.id);
+              }}
+            >
               Adopt
             </Button>
           </div>
@@ -104,7 +110,13 @@ export function IdentitySelectPage() {
               A fresh git-bug identity will be created from your OAuth profile.
             </p>
           </div>
-          <Button size="sm" disabled={working} onClick={() => adopt(null)}>
+          <Button
+            size="sm"
+            disabled={working}
+            onClick={() => {
+              void adopt(null);
+            }}
+          >
             <Plus className="size-4" />
             Create
           </Button>

@@ -23,7 +23,7 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
     }
     setHighlighted(null);
     let cancelled = false;
-    import("highlight.js").then(({ default: hljs }) => {
+    void import("highlight.js").then(({ default: hljs }) => {
       if (cancelled) return;
       const ext = blob.path.split(".").pop() ?? "";
       const result = hljs.getLanguage(ext)
@@ -43,7 +43,7 @@ export function FileViewer({ blob, loading }: FileViewerProps) {
   const { html, lineCount } = highlighted;
 
   function copyToClipboard() {
-    if (blob.text) navigator.clipboard.writeText(blob.text);
+    if (blob.text) void navigator.clipboard.writeText(blob.text);
   }
 
   return (

@@ -44,7 +44,7 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter") handleSave();
+    if (e.key === "Enter") void handleSave();
     if (e.key === "Escape") {
       setValue(title);
       setEditing(false);
@@ -62,7 +62,13 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
           className="text-xl font-semibold"
           disabled={loading}
         />
-        <Button size="sm" onClick={handleSave} disabled={loading || !value.trim()}>
+        <Button
+          size="sm"
+          onClick={() => {
+            void handleSave();
+          }}
+          disabled={loading || !value.trim()}
+        >
           Save
         </Button>
         <Button

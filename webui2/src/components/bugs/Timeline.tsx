@@ -74,7 +74,7 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
       setEditing(false);
       return;
     }
-    editComment({
+    void editComment({
       variables: { input: { targetPrefix: item.id, message: editValue } },
     }).then(() => setEditing(false));
   }

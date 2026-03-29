@@ -67,7 +67,7 @@ export function CommitList({ ref_, path }: CommitListProps) {
   function loadMore() {
     if (!cursor) return;
     setLoadingMore(true);
-    fetchMore({
+    void fetchMore({
       variables: { after: cursor },
     })
       .then((result) => {

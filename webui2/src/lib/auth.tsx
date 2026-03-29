@@ -101,7 +101,7 @@ function ExternalAuthProvider({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/auth/user", { credentials: "include" })
+    void fetch("/auth/user", { credentials: "include" })
       .then((res) => {
         if (res.status === 401) return null;
         if (!res.ok) throw new Error(`/auth/user returned ${res.status}`);
