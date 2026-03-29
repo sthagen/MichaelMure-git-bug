@@ -1,4 +1,5 @@
 import { ApolloClient, InMemoryCache, HttpLink } from "@apollo/client";
+import { createQueryPreloader } from "@apollo/client/react";
 
 const httpLink = new HttpLink({
   uri: "/graphql",
@@ -18,3 +19,7 @@ export const client = new ApolloClient({
     },
   }),
 });
+
+// Preloader for use in TanStack Router loaders. Returns a QueryRef
+// that components read with useReadQuery() for suspense-based rendering.
+export const preloadQuery = createQueryPreloader(client);
