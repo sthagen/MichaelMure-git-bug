@@ -91,7 +91,10 @@ export function FileViewer({ blob, loading = false }: FileViewerProps) {
             ))}
           </div>
           <pre className="flex-1 overflow-visible px-4 py-4">
-            <code className="hljs" dangerouslySetInnerHTML={{ __html: html }} />
+            <code
+              className="hljs !bg-transparent !p-0"
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
           </pre>
         </div>
       )}
