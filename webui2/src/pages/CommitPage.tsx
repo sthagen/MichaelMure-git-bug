@@ -3,9 +3,9 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { Link, useParams } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { ArrowLeft, GitCommit } from "lucide-react";
-import { Link, useParams, useNavigate } from "react-router";
 
 import { FileDiffView } from "@/components/code/FileDiffView";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -54,8 +54,7 @@ interface CommitQueryData {
 }
 
 export function CommitPage() {
-  const { hash } = useParams<{ hash: string }>();
-  const navigate = useNavigate();
+  const { hash } = useParams({ strict: false });
   const repo = useRepo();
 
   const { data, loading, error } = useQuery<CommitQueryData>(COMMIT_QUERY, {
@@ -83,7 +82,7 @@ export function CommitPage() {
     <div>
       <button
         onClick={() => {
-          void navigate(-1);
+          window.history.back();
         }}
         className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
       >
@@ -119,7 +118,8 @@ export function CommitPage() {
             <span key={p} className="text-muted-foreground">
               parent{" "}
               <Link
-                to={repo ? `/${repo}/commit/${p}` : `/commit/${p}`}
+                to="/$repo/commit/$hash"
+                params={{ repo: repo!, hash: p }}
                 className="text-foreground font-mono hover:underline"
               >
                 {p.slice(0, 7)}

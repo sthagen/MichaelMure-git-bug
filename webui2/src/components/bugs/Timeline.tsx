@@ -1,7 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Tag, GitPullRequestClosed, Pencil, CircleDot } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router";
 
 import {
   Status,
@@ -98,7 +98,8 @@ function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string
       <div className="border-border min-w-0 flex-1 rounded-md border">
         <div className="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm">
           <Link
-            to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+            to="/$repo/user/$id"
+            params={{ repo: repo!, id: item.author.humanId }}
             className="text-foreground font-medium hover:underline"
           >
             {item.author.displayName}
@@ -177,7 +178,8 @@ function LabelChangeItem({ item }: { item: LabelChangeItem }) {
     <EventRow icon={<Tag className="size-4" />}>
       <span>
         <Link
-          to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+          to="/$repo/user/$id"
+          params={{ repo: repo!, id: item.author.humanId }}
           className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
@@ -219,7 +221,8 @@ function StatusChangeItem({ item }: { item: StatusChangeItem }) {
     >
       <span>
         <Link
-          to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+          to="/$repo/user/$id"
+          params={{ repo: repo!, id: item.author.humanId }}
           className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
@@ -237,7 +240,8 @@ function TitleChangeItem({ item }: { item: TitleChangeItem }) {
     <EventRow icon={<Pencil className="size-4" />}>
       <span>
         <Link
-          to={repo ? `/${repo}/user/${item.author.humanId}` : `/user/${item.author.humanId}`}
+          to="/$repo/user/$id"
+          params={{ repo: repo!, id: item.author.humanId }}
           className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}

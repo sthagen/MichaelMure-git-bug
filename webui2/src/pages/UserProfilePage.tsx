@@ -6,6 +6,7 @@
 // The :id param is treated as a humanId prefix and passed directly to the
 // identity(prefix) and allBugs(query:"author:...") GraphQL arguments.
 
+import { useParams, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowLeft,
@@ -17,7 +18,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { useParams, Link } from "react-router";
 
 import { Status, useUserProfileQuery } from "@/__generated__/graphql";
 import { LabelBadge } from "@/components/bugs/LabelBadge";
@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 const PAGE_SIZE = 25;
 
 export function UserProfilePage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams({ strict: false });
   const repo = useRepo();
   const [statusFilter, setStatusFilter] = useState<"open" | "closed">("open");
 
@@ -91,12 +91,11 @@ export function UserProfilePage() {
     setCursors((prev) => prev.slice(0, -1));
   }
 
-  const issuesHref = repo ? `/${repo}/issues` : "/issues";
-
   return (
     <div>
       <Link
-        to={issuesHref}
+        to="/$repo/issues"
+        params={{ repo: repo! }}
         className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
@@ -214,7 +213,8 @@ export function UserProfilePage() {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-baseline gap-2">
                   <Link
-                    to={repo ? `/${repo}/issues/${bug.humanId}` : `/issues/${bug.humanId}`}
+                    to="/$repo/issues/$id"
+                    params={{ repo: repo!, id: bug.humanId }}
                     className="text-foreground hover:text-primary font-medium hover:underline"
                   >
                     {bug.title}

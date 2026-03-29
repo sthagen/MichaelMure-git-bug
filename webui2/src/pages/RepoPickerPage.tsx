@@ -1,9 +1,9 @@
 // Repository picker page (/). Auto-redirects when there is exactly one repo.
 // Shows a list when multiple repos are registered.
 
+import { Link, useNavigate } from "@tanstack/react-router";
 import { GitFork, FolderOpen, AlertCircle } from "lucide-react";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router";
 
 import { useRepositoriesQuery } from "@/__generated__/graphql";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -23,7 +23,12 @@ export function RepoPickerPage() {
   // Auto-redirect when there is exactly one repo — no need to pick.
   useEffect(() => {
     if (data?.repositories.nodes.length === 1) {
-      void navigate("/" + repoSlug(data.repositories.nodes[0].name), { replace: true });
+      void navigate({
+        to: "/$repo",
+        params: { repo: repoSlug(data.repositories.nodes[0].name) },
+        search: { ref: "", path: "", type: "tree" as const },
+        replace: true,
+      });
     }
   }, [data, navigate]);
 
@@ -53,7 +58,9 @@ export function RepoPickerPage() {
         {data?.repositories.nodes.map((repo) => (
           <Link
             key={repoSlug(repo.name)}
-            to={`/${repoSlug(repo.name)}`}
+            to="/$repo"
+            params={{ repo: repoSlug(repo.name) }}
+            search={{ ref: "", path: "", type: "tree" as const }}
             className="hover:bg-muted/50 flex items-center gap-3 px-4 py-4 transition-colors"
           >
             <FolderOpen className="text-muted-foreground size-5 shrink-0" />

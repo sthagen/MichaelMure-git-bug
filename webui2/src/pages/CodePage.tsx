@@ -3,9 +3,9 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { AlertCircle, GitCommit } from "lucide-react";
 import { useEffect } from "react";
-import { useSearchParams } from "react-router";
 
 import type { GitRef, GitTreeEntry, GitBlob, GitLastCommit } from "@/__generated__/graphql";
 import { CodeBreadcrumb } from "@/components/code/CodeBreadcrumb";
@@ -104,15 +104,14 @@ interface BlobQueryData {
   } | null;
 }
 
-type ViewMode = "tree" | "blob" | "commits";
+import type { CodePageSearch } from "@/App";
+
+type ViewMode = CodePageSearch["type"];
 
 export function CodePage() {
   const repo = useRepo();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const currentRef = searchParams.get("ref") ?? "";
-  const currentPath = searchParams.get("path") ?? "";
-  const viewMode: ViewMode = (searchParams.get("type") as ViewMode) ?? "tree";
+  const navigate = useNavigate({ from: "/$repo/" });
+  const { ref: currentRef, path: currentPath, type: viewMode } = useSearch({ from: "/$repo/" });
 
   const {
     data: refsData,
@@ -125,16 +124,13 @@ export function CodePage() {
 
   // Set default ref from query result once loaded
   useEffect(() => {
-    if (refsLoading || refs.length === 0 || searchParams.get("ref")) return;
+    if (refsLoading || refs.length === 0 || currentRef) return;
     const defaultRef = refs.find((r: GitRef) => r.isDefault) ?? refs[0];
     if (defaultRef) {
-      setSearchParams(
-        (prev) => {
-          prev.set("ref", defaultRef.shortName);
-          return prev;
-        },
-        { replace: true },
-      );
+      void navigate({
+        search: (prev) => ({ ...prev, ref: defaultRef.shortName }),
+        replace: true,
+      });
     }
   }, [refsLoading, refs.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -182,32 +178,23 @@ export function CodePage() {
 
   const repoName = refsData?.repository?.name ?? repo ?? "default-repo";
 
-  function navigate(path: string, type: ViewMode = "tree") {
-    setSearchParams((prev) => {
-      prev.set("path", path);
-      prev.set("type", type);
-      return prev;
-    });
+  function navigateTo(path: string, type: ViewMode = "tree") {
+    void navigate({ search: (prev) => ({ ...prev, path, type }) });
   }
 
   function handleEntryClick(entry: TreeEntryWithCommit) {
     const newPath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
-    navigate(newPath, entry.type === "BLOB" ? "blob" : "tree");
+    navigateTo(newPath, entry.type === "BLOB" ? "blob" : "tree");
   }
 
   function handleNavigateUp() {
     const parts = currentPath.split("/").filter(Boolean);
     parts.pop();
-    navigate(parts.join("/"), "tree");
+    navigateTo(parts.join("/"), "tree");
   }
 
   function handleRefSelect(ref: GitRef) {
-    setSearchParams((prev) => {
-      prev.set("ref", ref.shortName);
-      prev.set("path", "");
-      prev.set("type", "tree");
-      return prev;
-    });
+    void navigate({ search: { ref: ref.shortName, path: "", type: "tree" } });
   }
 
   if (refsError) {
@@ -230,7 +217,7 @@ export function CodePage() {
             repoName={repoName}
             ref={currentRef}
             path={currentPath}
-            onNavigate={(p) => navigate(p, "tree")}
+            onNavigate={(p) => navigateTo(p, "tree")}
           />
         )}
         <div className="flex items-center gap-2">
@@ -238,7 +225,7 @@ export function CodePage() {
             <Button
               variant={viewMode === "commits" ? "secondary" : "outline"}
               size="sm"
-              onClick={() => navigate(currentPath, viewMode === "commits" ? "tree" : "commits")}
+              onClick={() => navigateTo(currentPath, viewMode === "commits" ? "tree" : "commits")}
             >
               <GitCommit className="size-3.5" />
               History

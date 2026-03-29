@@ -1,6 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { MessageSquare, CircleDot, CircleCheck } from "lucide-react";
-import { Link } from "react-router";
 
 import { Status } from "@/__generated__/graphql";
 

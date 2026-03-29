@@ -1,6 +1,6 @@
+import { useParams, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft } from "lucide-react";
-import { useParams, Link } from "react-router";
 
 import { useBugDetailQuery } from "@/__generated__/graphql";
 import { CommentBox } from "@/components/bugs/CommentBox";
@@ -16,7 +16,7 @@ import { useRepo } from "@/lib/repo";
 // Issue detail page (/:repo/issues/:id). Shows title, status, timeline of
 // comments and events, and a sidebar with labels and participants.
 export function BugDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams({ strict: false });
   const repo = useRepo();
   const { data, loading, error } = useBugDetailQuery({
     variables: { ref: repo, prefix: id! },

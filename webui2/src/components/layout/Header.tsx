@@ -6,8 +6,8 @@
 // In external mode, shows a "Sign in" button when logged out and a sign-out
 // action when logged in.
 
+import { Link, useMatchRoute, useParams } from "@tanstack/react-router";
 import { Bug, Plus, Sun, Moon, LogIn, LogOut } from "lucide-react";
-import { Link, useMatch, NavLink } from "react-router";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -34,14 +34,20 @@ export function Header() {
   const { user, mode, loginProviders } = useAuth();
   const { theme, toggle } = useTheme();
 
-  // Detect if we're inside a /:repo route and grab the slug.
-  // useMatch works from any component in the tree, unlike useParams which is
-  // scoped to the nearest Route element.
-  const repoMatch = useMatch({ path: "/:repo/*", end: false });
-  const repo = repoMatch?.params.repo ?? null;
+  // Detect if we're inside a /$repo route and grab the slug.
+  const params = useParams({ strict: false });
+  const repo = params.repo ?? null;
 
   // Don't show repo nav on the /auth/* pages.
   const effectiveRepo = repo === "auth" ? null : repo;
+
+  const matchRoute = useMatchRoute();
+  const isCodeActive = effectiveRepo
+    ? !!matchRoute({ to: "/$repo", params: { repo: effectiveRepo }, fuzzy: false })
+    : false;
+  const isIssuesActive = effectiveRepo
+    ? !!matchRoute({ to: "/$repo/issues", params: { repo: effectiveRepo }, fuzzy: true })
+    : false;
 
   return (
     <header className="border-border bg-background/95 sticky top-0 z-50 border-b backdrop-blur">
@@ -55,33 +61,31 @@ export function Header() {
         {/* Repo-scoped nav links — only shown when inside a repo */}
         {effectiveRepo && (
           <nav className="flex items-center gap-1">
-            <NavLink
-              to={`/${effectiveRepo}`}
-              end
-              className={({ isActive }) =>
-                cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                )
-              }
+            <Link
+              to="/$repo"
+              params={{ repo: effectiveRepo }}
+              search={{ ref: "", path: "", type: "tree" as const }}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                isCodeActive
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+              )}
             >
               Code
-            </NavLink>
-            <NavLink
-              to={`/${effectiveRepo}/issues`}
-              className={({ isActive }) =>
-                cn(
-                  "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-                )
-              }
+            </Link>
+            <Link
+              to="/$repo/issues"
+              params={{ repo: effectiveRepo }}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                isIssuesActive
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+              )}
             >
               Issues
-            </NavLink>
+            </Link>
           </nav>
         )}
 
@@ -107,12 +111,12 @@ export function Header() {
           {user && effectiveRepo && (
             <>
               <Button asChild size="sm">
-                <Link to={`/${effectiveRepo}/issues/new`}>
+                <Link to="/$repo/issues/new" params={{ repo: effectiveRepo }}>
                   <Plus className="size-4" />
                   New issue
                 </Link>
               </Button>
-              <Link to={`/${effectiveRepo}/user/${user.humanId}`}>
+              <Link to="/$repo/user/$id" params={{ repo: effectiveRepo, id: user.humanId }}>
                 <Avatar className="size-7">
                   <AvatarImage src={user.avatarUrl ?? undefined} alt={user.displayName} />
                   <AvatarFallback className="text-xs">

@@ -3,10 +3,10 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
+import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { GitCommit } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

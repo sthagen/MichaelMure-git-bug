@@ -1,6 +1,6 @@
+import { useNavigate, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { useNavigate, Link } from "react-router";
 
 import { useBugCreateMutation } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";
@@ -27,7 +27,7 @@ export function NewBugPage() {
     });
     const humanId = result.data?.bugCreate.bug.humanId;
     if (humanId) {
-      void navigate(repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}`);
+      void navigate({ to: repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}` });
     }
   }
 
@@ -115,7 +115,7 @@ export function NewBugPage() {
             type="button"
             variant="ghost"
             onClick={() => {
-              void navigate(issuesHref);
+              void navigate({ to: issuesHref });
             }}
             disabled={loading}
           >

@@ -1,6 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Folder, File } from "lucide-react";
-import { Link } from "react-router";
 
 import type { GitTreeEntry } from "@/__generated__/graphql";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -84,9 +84,8 @@ function FileTreeRow({
       <td className="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell">
         {entry.lastCommit && (
           <Link
-            to={
-              repo ? `/${repo}/commit/${entry.lastCommit.hash}` : `/commit/${entry.lastCommit.hash}`
-            }
+            to="/$repo/commit/$hash"
+            params={{ repo: repo!, hash: entry.lastCommit.hash }}
             className="hover:text-foreground hover:underline"
             onClick={(e) => e.stopPropagation()}
           >
