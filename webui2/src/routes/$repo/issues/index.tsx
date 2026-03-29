@@ -33,28 +33,32 @@ export const Route = createFileRoute("/$repo/issues/")({
   pendingComponent: BugListSkeleton,
   validateSearch: (search) => v.parse(issuesSearchSchema, search),
   loaderDeps: ({ search: { q, after } }) => ({ q, after }),
-  loader: ({ params: { repo }, deps: { q, after } }) => {
+  loader: async ({ params: { repo }, deps: { q, after } }) => {
     const ref = repo === "_" ? null : repo;
     const parsed = parseQueryString(q);
     const baseQuery = buildBaseQuery(parsed.labels, parsed.author, parsed.freeText);
-    return {
-      bugListRef: preloadQuery<BugListQuery>(BugListDocument, {
-        variables: {
-          ref,
-          openQuery: `status:open ${baseQuery}`.trim(),
-          closedQuery: `status:closed ${baseQuery}`.trim(),
-          listQuery: q,
-          first: PAGE_SIZE,
-          after: after || undefined,
-        },
-      }),
-      labelsRef: preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
-        variables: { ref },
-      }),
-      identitiesRef: preloadQuery<AllIdentitiesQuery>(AllIdentitiesDocument, {
-        variables: { ref },
-      }),
-    };
+    const bugListRef = preloadQuery<BugListQuery>(BugListDocument, {
+      variables: {
+        ref,
+        openQuery: `status:open ${baseQuery}`.trim(),
+        closedQuery: `status:closed ${baseQuery}`.trim(),
+        listQuery: q,
+        first: PAGE_SIZE,
+        after: after || undefined,
+      },
+    });
+    const labelsRef = preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
+      variables: { ref },
+    });
+    const identitiesRef = preloadQuery<AllIdentitiesQuery>(AllIdentitiesDocument, {
+      variables: { ref },
+    });
+    await Promise.all([
+      preloadQuery.toPromise(bugListRef),
+      preloadQuery.toPromise(labelsRef),
+      preloadQuery.toPromise(identitiesRef),
+    ]);
+    return { bugListRef, labelsRef, identitiesRef };
   },
 });
 

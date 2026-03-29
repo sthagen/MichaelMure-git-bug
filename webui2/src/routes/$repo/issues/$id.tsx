@@ -23,14 +23,17 @@ import { useRepo } from "@/lib/repo";
 export const Route = createFileRoute("/$repo/issues/$id")({
   component: RouteComponent,
   pendingComponent: BugDetailSkeleton,
-  loader: ({ params: { repo, id } }) => ({
-    bugDetailRef: preloadQuery<BugDetailQuery>(BugDetailDocument, {
-      variables: { ref: repo === "_" ? null : repo, prefix: id },
-    }),
-    labelsRef: preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
-      variables: { ref: repo === "_" ? null : repo },
-    }),
-  }),
+  loader: async ({ params: { repo, id } }) => {
+    const ref = repo === "_" ? null : repo;
+    const bugDetailRef = preloadQuery<BugDetailQuery>(BugDetailDocument, {
+      variables: { ref, prefix: id },
+    });
+    const labelsRef = preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
+      variables: { ref },
+    });
+    await Promise.all([preloadQuery.toPromise(bugDetailRef), preloadQuery.toPromise(labelsRef)]);
+    return { bugDetailRef, labelsRef };
+  },
 });
 
 // Issue detail page (/:repo/issues/:id). Shows title, status, timeline of

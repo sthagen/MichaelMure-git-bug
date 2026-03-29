@@ -126,11 +126,13 @@ export const Route = createFileRoute("/$repo/")({
   component: RouteComponent,
   pendingComponent: CodePageSkeleton,
   validateSearch: (search) => v.parse(codePageSearchSchema, search),
-  loader: ({ params: { repo } }) => ({
-    refsRef: preloadQuery<RefsQueryData>(REFS_QUERY, {
+  loader: async ({ params: { repo } }) => {
+    const refsRef = preloadQuery<RefsQueryData>(REFS_QUERY, {
       variables: { repo: repo === "_" ? null : repo },
-    }),
-  }),
+    });
+    await preloadQuery.toPromise(refsRef);
+    return { refsRef };
+  },
 });
 
 function RouteComponent() {

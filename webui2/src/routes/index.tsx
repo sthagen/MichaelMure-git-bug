@@ -11,9 +11,11 @@ import { preloadQuery } from "@/lib/apollo";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
-  loader: () => ({
-    repositoriesRef: preloadQuery<RepositoriesQuery>(RepositoriesDocument),
-  }),
+  loader: async () => {
+    const repositoriesRef = preloadQuery<RepositoriesQuery>(RepositoriesDocument);
+    await preloadQuery.toPromise(repositoriesRef);
+    return { repositoriesRef };
+  },
 });
 
 function repoSlug(name: string | null | undefined): string {

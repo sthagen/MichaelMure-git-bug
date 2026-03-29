@@ -57,11 +57,13 @@ interface CommitQueryData {
 export const Route = createFileRoute("/$repo/commit/$hash")({
   component: RouteComponent,
   pendingComponent: CommitPageSkeleton,
-  loader: ({ params: { repo, hash } }) => ({
-    commitRef: preloadQuery<CommitQueryData>(COMMIT_QUERY, {
+  loader: async ({ params: { repo, hash } }) => {
+    const commitRef = preloadQuery<CommitQueryData>(COMMIT_QUERY, {
       variables: { repo: repo === "_" ? null : repo, hash },
-    }),
-  }),
+    });
+    await preloadQuery.toPromise(commitRef);
+    return { commitRef };
+  },
 });
 
 function RouteComponent() {
