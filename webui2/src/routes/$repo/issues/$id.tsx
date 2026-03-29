@@ -3,7 +3,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 
-import { type BugDetailQuery, BugDetailDocument } from "@/__generated__/graphql";
+import {
+  type BugDetailQuery,
+  BugDetailDocument,
+  type ValidLabelsQuery,
+  ValidLabelsDocument,
+} from "@/__generated__/graphql";
 import { CommentBox } from "@/components/bugs/CommentBox";
 import { LabelEditor } from "@/components/bugs/LabelEditor";
 import { StatusBadge } from "@/components/bugs/StatusBadge";
@@ -22,6 +27,9 @@ export const Route = createFileRoute("/$repo/issues/$id")({
     bugDetailRef: preloadQuery<BugDetailQuery>(BugDetailDocument, {
       variables: { ref: repo === "_" ? null : repo, prefix: id },
     }),
+    labelsRef: preloadQuery<ValidLabelsQuery>(ValidLabelsDocument, {
+      variables: { ref: repo === "_" ? null : repo },
+    }),
   }),
 });
 
@@ -29,8 +37,10 @@ export const Route = createFileRoute("/$repo/issues/$id")({
 // comments and events, and a sidebar with labels and participants.
 function RouteComponent() {
   const repo = useRepo();
-  const { bugDetailRef } = Route.useLoaderData();
+  const { bugDetailRef, labelsRef } = Route.useLoaderData();
   const { data } = useReadQuery(bugDetailRef);
+  const { data: labelsData } = useReadQuery(labelsRef);
+  const validLabels = labelsData?.repository?.validLabels.nodes ?? [];
 
   const bug = data?.repository?.bug;
   if (!bug) {
@@ -79,7 +89,12 @@ function RouteComponent() {
 
         {/* Sidebar */}
         <aside className="w-56 shrink-0 space-y-6">
-          <LabelEditor bugPrefix={bug.humanId} currentLabels={bug.labels} ref_={repo} />
+          <LabelEditor
+            bugPrefix={bug.humanId}
+            currentLabels={bug.labels}
+            ref_={repo}
+            validLabels={validLabels}
+          />
 
           <Separator />
 

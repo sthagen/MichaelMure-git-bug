@@ -1,10 +1,6 @@
 import { Settings2 } from "lucide-react";
 
-import {
-  useValidLabelsQuery,
-  useBugChangeLabelsMutation,
-  BugDetailDocument,
-} from "@/__generated__/graphql";
+import { useBugChangeLabelsMutation, BugDetailDocument } from "@/__generated__/graphql";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/lib/auth";
 
@@ -15,19 +11,19 @@ interface LabelEditorProps {
   currentLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>;
   /** Current repo slug, passed as `ref` in refetch query variables. */
   ref_?: string | null;
+  /** Pre-fetched valid labels for the repository. */
+  validLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>;
 }
 
 // Gear-icon popover in the BugDetailPage sidebar for adding/removing labels.
 // Loads all valid labels from the repo and toggles them via bugChangeLabels.
 // Hidden in read-only mode.
-export function LabelEditor({ bugPrefix, currentLabels, ref_ }: LabelEditorProps) {
+export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: LabelEditorProps) {
   const { user } = useAuth();
-  const { data } = useValidLabelsQuery({ skip: !user, variables: { ref: ref_ } });
   const [changeLabels] = useBugChangeLabelsMutation({
     refetchQueries: [{ query: BugDetailDocument, variables: { ref: ref_, prefix: bugPrefix } }],
   });
 
-  const validLabels = data?.repository?.validLabels.nodes ?? [];
   const currentNames = new Set(currentLabels.map((l) => l.name));
 
   async function toggleLabel(name: string) {
