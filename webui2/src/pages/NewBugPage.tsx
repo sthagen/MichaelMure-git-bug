@@ -1,10 +1,11 @@
-import { useNavigate, Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 
 import { useBugCreateMutation } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useRepo } from "@/lib/repo";
@@ -16,27 +17,27 @@ export function NewBugPage() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [preview, setPreview] = useState(false);
-
   const [createBug, { loading, error }] = useBugCreateMutation();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim()) return;
     const result = await createBug({
       variables: { input: { title: title.trim(), message: message.trim() } },
     });
     const humanId = result.data?.bugCreate.bug.humanId;
     if (humanId) {
-      void navigate({ to: repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}` });
+      void navigate({
+        to: "/$repo/issues/$id",
+        params: { repo: repo!, id: humanId },
+      });
     }
   }
-
-  const issuesHref = repo ? `/${repo}/issues` : "/issues";
 
   return (
     <div className="mx-auto max-w-3xl">
       <Link
-        to={issuesHref}
+        to="/$repo/issues"
+        params={{ repo: repo! }}
         className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
@@ -51,24 +52,17 @@ export function NewBugPage() {
         }}
         className="space-y-4"
       >
-        <div>
-          <label htmlFor="title" className="mb-1.5 block text-sm font-medium">
-            Title
-          </label>
-          <Input
-            id="title"
-            placeholder="Brief description of the issue"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            disabled={loading}
-          />
-        </div>
+        <Input
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={loading}
+          autoFocus
+        />
 
         <div>
-          <div className="mb-1.5 flex items-center justify-between">
-            <label className="text-sm font-medium">Description</label>
-            <div className="flex gap-1 text-sm">
+          <div className="mb-2">
+            <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setPreview(false)}
@@ -111,16 +105,9 @@ export function NewBugPage() {
         )}
 
         <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => {
-              void navigate({ to: issuesHref });
-            }}
-            disabled={loading}
-          >
+          <ButtonLink to="/$repo/issues" params={{ repo: repo! }} variant="ghost">
             Cancel
-          </Button>
+          </ButtonLink>
           <Button type="submit" disabled={!title.trim() || loading}>
             {loading ? "Creating…" : "Submit new issue"}
           </Button>

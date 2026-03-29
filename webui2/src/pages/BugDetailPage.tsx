@@ -39,13 +39,11 @@ export function BugDetailPage() {
     return <div className="text-muted-foreground py-16 text-center text-sm">Issue not found.</div>;
   }
 
-  const issuesHref = repo ? `/${repo}/issues` : "/issues";
-  const authorHref = repo ? `/${repo}/user/${bug.author.humanId}` : `/user/${bug.author.humanId}`;
-
   return (
     <div>
       <Link
-        to={issuesHref}
+        to="/$repo/issues"
+        params={{ repo: repo! }}
         className="text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
@@ -60,7 +58,11 @@ export function BugDetailPage() {
       <div className="text-muted-foreground mb-6 flex flex-wrap items-center gap-3 text-sm">
         <StatusBadge status={bug.status} />
         <span>
-          <Link to={authorHref} className="text-foreground font-medium hover:underline">
+          <Link
+            to="/$repo/user/$id"
+            params={{ repo: repo!, id: bug.author.humanId }}
+            className="text-foreground font-medium hover:underline"
+          >
             {bug.author.displayName}
           </Link>{" "}
           opened this issue {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
@@ -88,9 +90,13 @@ export function BugDetailPage() {
             </h3>
             <div className="flex flex-wrap gap-1.5">
               {bug.participants.nodes.map((p) => {
-                const participantHref = repo ? `/${repo}/user/${p.humanId}` : `/user/${p.humanId}`;
                 return (
-                  <Link key={p.id} to={participantHref} title={p.displayName}>
+                  <Link
+                    key={p.id}
+                    to="/$repo/user/$id"
+                    params={{ repo: repo!, id: p.humanId }}
+                    title={p.displayName}
+                  >
                     <Avatar className="size-6">
                       <AvatarImage src={p.avatarUrl ?? undefined} alt={p.displayName} />
                       <AvatarFallback className="text-[10px]">

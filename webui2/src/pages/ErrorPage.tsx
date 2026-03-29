@@ -1,9 +1,10 @@
 // Global error boundary page. Rendered by TanStack Router when a route throws.
 
-import { Link, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 
 export function ErrorPage({ error }: { error?: Error }) {
   const router = useRouter();
@@ -24,9 +25,9 @@ export function ErrorPage({ error }: { error?: Error }) {
         >
           Try again
         </Button>
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/">Go home</Link>
-        </Button>
+        <ButtonLink to="/" variant="outline" size="sm">
+          Go home
+        </ButtonLink>
       </div>
     </div>
   );

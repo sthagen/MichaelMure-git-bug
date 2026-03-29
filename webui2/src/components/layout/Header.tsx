@@ -6,14 +6,14 @@
 // In external mode, shows a "Sign in" button when logged out and a sign-out
 // action when logged in.
 
-import { Link, useMatchRoute, useParams } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { Bug, Plus, Sun, Moon, LogIn, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { ButtonLink, NavLink } from "@/components/ui/button-link";
 import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
-import { cn } from "@/lib/utils";
 
 // SignOutButton sends a POST to /auth/logout and reloads the page.
 // A full reload is the simplest way to reset all Apollo cache + React state.
@@ -41,14 +41,6 @@ export function Header() {
   // Don't show repo nav on the /auth/* pages.
   const effectiveRepo = repo === "auth" ? null : repo;
 
-  const matchRoute = useMatchRoute();
-  const isCodeActive = effectiveRepo
-    ? !!matchRoute({ to: "/$repo", params: { repo: effectiveRepo }, fuzzy: false })
-    : false;
-  const isIssuesActive = effectiveRepo
-    ? !!matchRoute({ to: "/$repo/issues", params: { repo: effectiveRepo }, fuzzy: true })
-    : false;
-
   return (
     <header className="border-border bg-background/95 sticky top-0 z-50 border-b backdrop-blur">
       <div className="mx-auto flex h-14 max-w-screen-xl items-center gap-6 px-4">
@@ -61,31 +53,17 @@ export function Header() {
         {/* Repo-scoped nav links — only shown when inside a repo */}
         {effectiveRepo && (
           <nav className="flex items-center gap-1">
-            <Link
+            <NavLink
               to="/$repo"
               params={{ repo: effectiveRepo }}
               search={{ ref: "", path: "", type: "tree" as const }}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                isCodeActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-              )}
+              activeOptions={{ exact: true }}
             >
               Code
-            </Link>
-            <Link
-              to="/$repo/issues"
-              params={{ repo: effectiveRepo }}
-              className={cn(
-                "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                isIssuesActive
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-              )}
-            >
+            </NavLink>
+            <NavLink to="/$repo/issues" params={{ repo: effectiveRepo }}>
               Issues
-            </Link>
+            </NavLink>
           </nav>
         )}
 
@@ -110,12 +88,10 @@ export function Header() {
 
           {user && effectiveRepo && (
             <>
-              <Button asChild size="sm">
-                <Link to="/$repo/issues/new" params={{ repo: effectiveRepo }}>
-                  <Plus className="size-4" />
-                  New issue
-                </Link>
-              </Button>
+              <ButtonLink to="/$repo/issues/new" params={{ repo: effectiveRepo }} size="sm">
+                <Plus className="size-4" />
+                New issue
+              </ButtonLink>
               <Link to="/$repo/user/$id" params={{ repo: effectiveRepo, id: user.humanId }}>
                 <Avatar className="size-7">
                   <AvatarImage src={user.avatarUrl ?? undefined} alt={user.displayName} />

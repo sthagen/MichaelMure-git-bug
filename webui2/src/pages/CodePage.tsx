@@ -15,7 +15,7 @@ import type { TreeEntryWithCommit } from "@/components/code/FileTree";
 import { FileViewer } from "@/components/code/FileViewer";
 import { RefSelector } from "@/components/code/RefSelector";
 import { Markdown } from "@/components/content/Markdown";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRepo } from "@/lib/repo";
 
@@ -222,14 +222,20 @@ export function CodePage() {
         )}
         <div className="flex items-center gap-2">
           {!refsLoading && (
-            <Button
+            <ButtonLink
+              to="/$repo"
+              params={{ repo: repo! }}
+              search={{
+                ref: currentRef,
+                path: currentPath,
+                type: viewMode === "commits" ? "tree" : "commits",
+              }}
               variant={viewMode === "commits" ? "secondary" : "outline"}
               size="sm"
-              onClick={() => navigateTo(currentPath, viewMode === "commits" ? "tree" : "commits")}
             >
               <GitCommit className="size-3.5" />
               History
-            </Button>
+            </ButtonLink>
           )}
           {refsLoading ? (
             <Skeleton className="h-8 w-28" />
