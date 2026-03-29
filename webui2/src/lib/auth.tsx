@@ -105,10 +105,12 @@ function ExternalAuthProvider({
 
   useEffect(() => {
     void fetch("/auth/user", { credentials: "include" })
-      .then((res) => {
+      .then(async (res) => {
         if (res.status === 401) return null;
         if (!res.ok) throw new Error(`/auth/user returned ${res.status}`);
-        return res.json() as Promise<AuthUser>;
+        // eslint-disable-next-line typescript-eslint/no-unsafe-assignment
+        const data: AuthUser = await res.json();
+        return data;
       })
       .then((u) => setUser(u))
       .catch(() => setUser(null))

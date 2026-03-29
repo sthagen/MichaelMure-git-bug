@@ -7,7 +7,13 @@ import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router"
 import { AlertCircle, GitCommit } from "lucide-react";
 import { useEffect } from "react";
 
-import type { GitRef, GitTreeEntry, GitBlob, GitLastCommit } from "@/__generated__/graphql";
+import {
+  GitObjectType,
+  type GitRef,
+  type GitTreeEntry,
+  type GitBlob,
+  type GitLastCommit,
+} from "@/__generated__/graphql";
 import { CodeBreadcrumb } from "@/components/code/CodeBreadcrumb";
 import { CommitList } from "@/components/code/CommitList";
 import { FileTree } from "@/components/code/FileTree";
@@ -116,13 +122,17 @@ type ViewMode = CodePageSearch["type"];
 export const Route = createFileRoute("/$repo/")({
   component: RouteComponent,
   pendingComponent: CodePageSkeleton,
-  validateSearch: (search: Record<string, unknown>): CodePageSearch => ({
-    ref: (search.ref as string) ?? "",
-    path: (search.path as string) ?? "",
-    type: ["tree", "blob", "commits"].includes(search.type as string)
-      ? (search.type as CodePageSearch["type"])
-      : "tree",
-  }),
+  validateSearch: (search: Record<string, unknown>): CodePageSearch => {
+    const ref = typeof search.ref === "string" ? search.ref : "";
+    const path = typeof search.path === "string" ? search.path : "";
+    const typeStr = typeof search.type === "string" ? search.type : "";
+    const validTypes: ViewMode[] = ["tree", "blob", "commits"];
+    return {
+      ref,
+      path,
+      type: validTypes.find((t) => t === typeStr) ?? "tree",
+    };
+  },
   loader: ({ params: { repo } }) => ({
     refsRef: preloadQuery<RefsQueryData>(REFS_QUERY, {
       variables: { repo: repo === "_" ? null : repo },
@@ -180,7 +190,8 @@ function RouteComponent() {
   const blob: GitBlob | null = blobData?.repository?.blob ?? null;
 
   const readmeEntry = entries.find(
-    (e: GitTreeEntry) => e.type === "BLOB" && /^readme(\.md|\.txt|\.rst)?$/i.test(e.name),
+    (e: GitTreeEntry) =>
+      e.type === GitObjectType.Blob && /^readme(\.md|\.txt|\.rst)?$/i.test(e.name),
   );
   const readmePath = readmeEntry
     ? currentPath
@@ -201,7 +212,7 @@ function RouteComponent() {
 
   function handleEntryClick(entry: TreeEntryWithCommit) {
     const newPath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
-    navigateTo(newPath, entry.type === "BLOB" ? "blob" : "tree");
+    navigateTo(newPath, entry.type === GitObjectType.Blob ? "blob" : "tree");
   }
 
   function handleNavigateUp() {

@@ -81,7 +81,7 @@ export function IssueFilters({
 
   const validLabels = useMemo(
     () =>
-      [...(labelsData?.repository?.validLabels.nodes ?? [])].sort((a, b) =>
+      (labelsData?.repository?.validLabels.nodes ?? []).toSorted((a, b) =>
         a.name.localeCompare(b.name),
       ),
     [labelsData],
@@ -89,7 +89,7 @@ export function IssueFilters({
 
   const allIdentities = useMemo(
     () =>
-      [...(authorsData?.repository?.allIdentities.nodes ?? [])].sort((a, b) =>
+      (authorsData?.repository?.allIdentities.nodes ?? []).toSorted((a, b) =>
         a.displayName.localeCompare(b.displayName),
       ),
     [authorsData],

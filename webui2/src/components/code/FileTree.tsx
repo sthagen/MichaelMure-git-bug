@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Folder, File } from "lucide-react";
 
-import type { GitTreeEntry } from "@/__generated__/graphql";
+import { GitObjectType, type GitTreeEntry } from "@/__generated__/graphql";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRepo } from "@/lib/repo";
 
@@ -27,8 +27,8 @@ interface FileTreeProps {
 // name, last-commit message (linked to commit detail), and relative date.
 export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: FileTreeProps) {
   // Directories first, then files — each group alphabetical
-  const sorted = [...entries].sort((a, b) => {
-    if (a.type !== b.type) return a.type === "TREE" ? -1 : 1;
+  const sorted = entries.toSorted((a, b) => {
+    if (a.type !== b.type) return a.type === GitObjectType.Tree ? -1 : 1;
     return a.name.localeCompare(b.name);
   });
 
@@ -64,7 +64,7 @@ function FileTreeRow({
   entry: TreeEntryWithCommit;
   onNavigate: (entry: TreeEntryWithCommit) => void;
 }) {
-  const isDir = entry.type === "TREE";
+  const isDir = entry.type === GitObjectType.Tree;
   const repo = useRepo();
 
   return (

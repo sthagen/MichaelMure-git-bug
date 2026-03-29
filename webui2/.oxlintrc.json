@@ -13,7 +13,8 @@
     "typescript/no-unsafe-member-access": "warn",
     "typescript/no-unsafe-return": "warn",
     "typescript/await-thenable": "error",
-    "typescript/no-unnecessary-type-assertion": "warn"
+    "typescript/no-unnecessary-type-assertion": "warn",
+    "react/react-in-jsx-scope": "off"
   },
   "options": {
     "typeAware": true,

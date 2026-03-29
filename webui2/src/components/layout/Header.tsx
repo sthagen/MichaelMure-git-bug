@@ -17,12 +17,13 @@ import { useTheme } from "@/lib/theme";
 
 // SignOutButton sends a POST to /auth/logout and reloads the page.
 // A full reload is the simplest way to reset all Apollo cache + React state.
+function handleSignOut() {
+  void fetch("/auth/logout", { method: "POST", credentials: "include" }).finally(() =>
+    window.location.assign("/"),
+  );
+}
+
 function SignOutButton() {
-  function handleSignOut() {
-    void fetch("/auth/logout", { method: "POST", credentials: "include" }).finally(() =>
-      window.location.assign("/"),
-    );
-  }
   return (
     <Button variant="ghost" size="sm" onClick={handleSignOut} title="Sign out">
       <LogOut className="size-4" />

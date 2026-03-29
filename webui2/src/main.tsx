@@ -2,6 +2,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
+// eslint-disable-next-line import/no-unassigned-import
 import "./index.css";
 import { client } from "@/lib/apollo";
 import { AuthProvider } from "@/lib/auth";

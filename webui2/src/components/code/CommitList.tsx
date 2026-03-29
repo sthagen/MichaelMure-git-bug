@@ -177,7 +177,7 @@ function CommitListSkeleton() {
         <div key={g}>
           <Skeleton className="mb-2 h-3 w-32" />
           <div className="divide-border border-border divide-y overflow-hidden rounded-md border">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 4 }).map((_c, i) => (
               <div key={i} className="flex items-center gap-3 px-4 py-3">
                 <Skeleton className="size-4 rounded-sm" />
                 <div className="flex-1 space-y-1.5">

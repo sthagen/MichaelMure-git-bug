@@ -36,6 +36,7 @@ function RouteComponent() {
       try {
         const res = await fetch("/auth/identities", { credentials: "include" });
         if (!res.ok) throw new Error(`unexpected status ${res.status}`);
+        // eslint-disable-next-line typescript-eslint/no-unsafe-assignment
         const data: IdentityItem[] = await res.json();
         setIdentities(data);
       } catch (e) {

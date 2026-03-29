@@ -1,6 +1,7 @@
 {
   "extends": ["@tsconfig/strictest/tsconfig.json", "@tsconfig/vite-react/tsconfig.json"],
   "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "exactOptionalPropertyTypes": false,
     "noPropertyAccessFromIndexSignature": false,
     "paths": {

@@ -21,8 +21,8 @@ type IssuesSearch = {
 export const Route = createFileRoute("/$repo/issues/")({
   component: RouteComponent,
   validateSearch: (search: Record<string, unknown>): IssuesSearch => ({
-    q: (search.q as string) ?? "status:open",
-    after: (search.after as string) ?? "",
+    q: typeof search.q === "string" ? search.q : "status:open",
+    after: typeof search.after === "string" ? search.after : "",
   }),
 });
 
@@ -312,7 +312,11 @@ function tokenizeQuery(input: string): string[] {
 }
 
 // Parse a query string back into structured filter state.
-const VALID_SORTS = new Set<SortValue>(["creation-desc", "creation-asc", "edit-desc", "edit-asc"]);
+const VALID_SORTS = new Set<string>(["creation-desc", "creation-asc", "edit-desc", "edit-asc"]);
+
+function isValidSort(v: string): v is SortValue {
+  return VALID_SORTS.has(v);
+}
 
 function parseQueryString(input: string): {
   status: StatusFilter;
@@ -333,8 +337,8 @@ function parseQueryString(input: string): {
     else if (token.startsWith("label:")) labels.push(token.slice(6));
     else if (token.startsWith("author:")) author = token.slice(7).replace(/^"|"$/g, "");
     else if (token.startsWith("sort:")) {
-      const v = token.slice(5) as SortValue;
-      if (VALID_SORTS.has(v)) sort = v;
+      const v = token.slice(5);
+      if (isValidSort(v)) sort = v;
     } else free.push(token);
   }
 
