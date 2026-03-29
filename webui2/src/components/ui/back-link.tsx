@@ -17,7 +17,7 @@ export function BackLink({
     return (
       <button
         onClick={() => router.history.back()}
-        className="text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1.5 text-sm"
+        className="text-muted-foreground hover:text-foreground mb-4 flex cursor-pointer items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
         {children}
