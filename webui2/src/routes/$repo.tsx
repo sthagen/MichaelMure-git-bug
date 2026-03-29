@@ -6,10 +6,8 @@ import {
   type AllIdentitiesQuery,
   AllIdentitiesDocument,
 } from "@/__generated__/graphql";
-import { RepoShell } from "@/lib/repo";
 
 export const Route = createFileRoute("/$repo")({
-  component: RepoShell,
   beforeLoad: ({ params: { repo }, context: { preloadQuery } }) => {
     // Normalize the repo slug: "_" means the default (null) repo
     const ref = repo === "_" ? null : repo;

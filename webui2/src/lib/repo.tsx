@@ -1,29 +1,12 @@
-// Provides the current repository slug (the $repo URL segment) to all
-// components rendered inside a /$repo/* route.
-//
-// Usage:
-//   - Wrap the /$repo route subtree with <RepoShell /> as the route element.
-//   - Read the current slug in any child component with useRepo().
-//   - Pass the slug as `ref` to all GraphQL repository queries.
-
-import { Outlet, useParams } from "@tanstack/react-router";
-import { createContext, useContext } from "react";
-
-const RepoContext = createContext<string | null>(null);
-
-// Route element for /$repo routes. Reads the $repo param and provides it
-// via context so any descendant can call useRepo() without prop drilling.
-export function RepoShell() {
-  const { repo } = useParams({ strict: false });
-  return (
-    <RepoContext.Provider value={repo ?? null}>
-      <Outlet />
-    </RepoContext.Provider>
-  );
-}
-
-// Returns the current repo slug from the nearest RepoShell ancestor.
+// Returns the resolved repo ref from the router context.
 // Returns null when rendered outside of a /$repo route (e.g. the picker page).
+//
+// The $repo route's beforeLoad normalizes the slug ("_" → null) and provides
+// it as context.ref, so callers don't need to handle the "_" case.
+
+import { useRouteContext } from "@tanstack/react-router";
+
 export function useRepo(): string | null {
-  return useContext(RepoContext);
+  const context = useRouteContext({ strict: false });
+  return (context as { ref?: string | null }).ref ?? null;
 }
