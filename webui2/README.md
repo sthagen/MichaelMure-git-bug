@@ -11,8 +11,8 @@ You need two processes running:
 go run . webui --no-open --port 3000
 
 # 2. Vite dev server (from this directory)
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Open http://localhost:5173. Vite proxies `/graphql`, `/api`, and `/auth` to the Go server on port 3000.
@@ -56,7 +56,7 @@ src/
 **Bug tracking** uses GraphQL (`/graphql`). Queries and mutations are defined in `src/graphql/*.graphql` and codegen produces typed React hooks into `src/__generated__/graphql.ts`. After changing any `.graphql` file run:
 
 ```bash
-npm run codegen
+pnpm codegen
 ```
 
 **Code browser** uses REST endpoints at `/api/repos/{owner}/{repo}/git/*` implemented in `api/http/git_browse_handler.go`. `_` is used for both owner and repo (local single-user setup). The TypeScript client is `src/lib/gitApi.ts`.
@@ -93,7 +93,7 @@ make build
 Or manually:
 
 ```bash
-npm run build        # outputs to webui2/dist/
+pnpm build           # outputs to webui2/dist/
 cd .. && go build .  # embeds dist/ into the binary
 ```
 
