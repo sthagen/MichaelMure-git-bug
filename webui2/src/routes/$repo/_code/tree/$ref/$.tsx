@@ -2,7 +2,7 @@
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import {
   GitObjectType,
@@ -70,7 +70,6 @@ export const Route = createFileRoute("/$repo/_code/tree/$ref/$")({
 function TreeView() {
   const { repo, ref: currentRef, _splat: currentPath = "" } = Route.useParams();
   const { ref: repoRef } = Route.useRouteContext();
-  const navigate = useNavigate();
 
   const { data: treeData, loading: treeLoading } = useQuery<TreeQueryData>(TREE_QUERY, {
     variables: { repo: repoRef, ref: currentRef, path: currentPath || null },
@@ -104,39 +103,14 @@ function TreeView() {
   });
   const readme: string | null = readmeBlobData?.repository?.blob?.text ?? null;
 
-  function handleEntryClick(entry: TreeEntryWithCommit) {
-    const newPath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
-    if (entry.type === GitObjectType.Blob) {
-      void navigate({
-        to: "/$repo/blob/$ref/$",
-        params: { repo, ref: currentRef, _splat: newPath },
-      });
-    } else {
-      void navigate({
-        to: "/$repo/tree/$ref/$",
-        params: { repo, ref: currentRef, _splat: newPath },
-      });
-    }
-  }
-
-  function handleNavigateUp() {
-    const parts = currentPath.split("/").filter(Boolean);
-    parts.pop();
-    void navigate({
-      to: "/$repo/tree/$ref/$",
-      params: { repo, ref: currentRef, _splat: parts.join("/") },
-    });
-  }
-
   return (
     <>
       <FileTree
         repo={repo}
+        currentRef={currentRef}
+        currentPath={currentPath}
         entries={entriesWithCommits}
-        path={currentPath}
         loading={treeLoading}
-        onNavigate={handleEntryClick}
-        onNavigateUp={handleNavigateUp}
       />
       {readme && (
         <div className="rounded-md border">

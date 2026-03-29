@@ -15,8 +15,7 @@ interface BugRowProps {
   author: { humanId: string; displayName: string; avatarUrl?: string | null };
   createdAt: string;
   commentCount: number;
-  /** Current repo slug, used to build /:repo/issues/:id and /:repo/user/:id links. */
-  repo: string | null;
+  repo: string;
   onLabelClick?: (name: string) => void;
 }
 
@@ -36,9 +35,6 @@ export function BugRow({
   const isOpen = status === Status.Open;
   const StatusIcon = isOpen ? CircleDot : CircleCheck;
 
-  const issueHref = repo ? `/${repo}/issues/${humanId}` : `/issues/${humanId}`;
-  const authorHref = repo ? `/${repo}/user/${author.humanId}` : `/user/${author.humanId}`;
-
   return (
     <div className="border-border hover:bg-muted/30 flex items-start gap-3 border-b px-4 py-3 last:border-0">
       <StatusIcon
@@ -52,7 +48,8 @@ export function BugRow({
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-2">
           <Link
-            to={issueHref}
+            to="/$repo/issues/$id"
+            params={{ repo, id: humanId }}
             className="text-foreground hover:text-primary font-medium hover:underline"
           >
             {title}
@@ -68,7 +65,11 @@ export function BugRow({
         </div>
         <p className="text-muted-foreground mt-0.5 text-xs">
           #{humanId} opened {formatDistanceToNow(new Date(createdAt), { addSuffix: true })} by{" "}
-          <Link to={authorHref} className="hover:underline">
+          <Link
+            to="/$repo/user/$id"
+            params={{ repo, id: author.humanId }}
+            className="hover:underline"
+          >
             {author.displayName}
           </Link>
         </p>

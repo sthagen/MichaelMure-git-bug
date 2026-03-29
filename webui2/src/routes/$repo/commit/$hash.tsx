@@ -3,7 +3,7 @@
 
 import { gql } from "@apollo/client";
 import { useReadQuery } from "@apollo/client/react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useCanGoBack, useRouter } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { ArrowLeft, GitCommit } from "lucide-react";
 
@@ -68,6 +68,8 @@ function RouteComponent() {
   const { repo } = Route.useParams();
   const { commitRef } = Route.useLoaderData();
   const { data } = useReadQuery(commitRef);
+  const canGoBack = useCanGoBack();
+  const router = useRouter();
 
   const commit = data?.repository?.commit;
   if (!commit) return null;
@@ -77,15 +79,15 @@ function RouteComponent() {
 
   return (
     <div>
-      <button
-        onClick={() => {
-          window.history.back();
-        }}
-        className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
-      >
-        <ArrowLeft className="size-3.5" />
-        Back
-      </button>
+      {canGoBack && (
+        <button
+          onClick={() => router.history.back()}
+          className="text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1.5 text-sm"
+        >
+          <ArrowLeft className="size-3.5" />
+          Back
+        </button>
+      )}
 
       <div className="border-border mb-6 rounded-md border p-5">
         <div className="mb-1 flex items-start gap-3">
