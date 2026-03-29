@@ -61,7 +61,11 @@ export function Header() {
             >
               Code
             </NavLink>
-            <NavLink to="/$repo/issues" params={{ repo: effectiveRepo }}>
+            <NavLink
+              to="/$repo/issues"
+              params={{ repo: effectiveRepo }}
+              search={{ q: "status:open", after: "" }}
+            >
               Issues
             </NavLink>
           </nav>

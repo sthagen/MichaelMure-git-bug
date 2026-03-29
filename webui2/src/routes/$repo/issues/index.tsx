@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CircleDot, CircleCheck, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { useBugListQuery } from "@/__generated__/graphql";
 import { BugRow } from "@/components/bugs/BugRow";
@@ -8,49 +8,52 @@ import { IssueFilters } from "@/components/bugs/IssueFilters";
 import type { SortValue } from "@/components/bugs/IssueFilters";
 import { QueryInput } from "@/components/bugs/QueryInput";
 import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
+type IssuesSearch = {
+  q: string;
+  after: string;
+};
+
 export const Route = createFileRoute("/$repo/issues/")({
   component: RouteComponent,
+  validateSearch: (search: Record<string, unknown>): IssuesSearch => ({
+    q: (search.q as string) ?? "status:open",
+    after: (search.after as string) ?? "",
+  }),
 });
 
 const PAGE_SIZE = 25;
 
 type StatusFilter = "open" | "closed";
 
-// Issue list page (/:repo/issues). Search bar with structured query, open/closed toggle,
-// label+author filter dropdowns, and paginated bug rows.
 function RouteComponent() {
   const repo = useRepo();
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("open");
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-  // humanId — uniquely identifies the selection for the dropdown UI
-  const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
-  // query value (login/name) — what goes into author:... in the query string
-  const [selectedAuthorQuery, setSelectedAuthorQuery] = useState<string | null>(null);
-  const [freeText, setFreeText] = useState("");
-  const [sort, setSort] = useState<SortValue>("creation-desc");
-  const [draft, setDraft] = useState(() => buildQueryString("open", [], null, "", "creation-desc"));
+  const navigate = useNavigate({ from: "/$repo/issues/" });
+  const { q, after } = Route.useSearch();
 
-  // Cursor-stack pagination: cursors[i] is the `after` value to fetch page i.
-  // cursors[0] is always undefined (first page needs no cursor).
-  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
-  const page = cursors.length - 1; // 0-indexed current page
+  // Parse the URL query into structured filter state for the dropdowns
+  const parsed = parseQueryString(q);
+  const {
+    status: statusFilter,
+    labels: selectedLabels,
+    author: selectedAuthorQuery,
+    sort,
+  } = parsed;
+  // We don't have the humanId from URL — the dropdown will match by query value
+  const selectedAuthorId: string | null = null;
 
-  // Build separate query strings: two for the always-visible counts (open/closed),
-  // one for the paginated list. The count queries share all filters except status.
-  const baseQuery = buildBaseQuery(selectedLabels, selectedAuthorQuery, freeText);
+  // Draft is the text input value — starts from URL, only committed on submit
+  const [draft, setDraft] = useState(q);
+
+  // Build the three query variants from the URL state
+  const baseQuery = buildBaseQuery(selectedLabels, selectedAuthorQuery, parsed.freeText);
   const openQuery = `status:open ${baseQuery}`.trim();
   const closedQuery = `status:closed ${baseQuery}`.trim();
-  const listQuery = buildQueryString(
-    statusFilter,
-    selectedLabels,
-    selectedAuthorQuery,
-    freeText,
-    sort,
-  );
+  const listQuery = q;
 
   const { data, loading, error } = useBugListQuery({
     variables: {
@@ -59,7 +62,7 @@ function RouteComponent() {
       closedQuery,
       listQuery,
       first: PAGE_SIZE,
-      after: cursors[page],
+      after: after || undefined,
     },
   });
 
@@ -69,49 +72,34 @@ function RouteComponent() {
   const totalCount = bugs?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasNext = bugs?.pageInfo.hasNextPage ?? false;
-  const hasPrev = page > 0;
+  const hasPrev = !!after;
 
-  // Reset to page 1 whenever the list query changes.
-  useEffect(() => {
-    setCursors([undefined]);
-  }, [listQuery]);
+  // Navigate to new search params (resets pagination)
+  function setSearch(newQ: string) {
+    setDraft(newQ);
+    void navigate({ search: { q: newQ, after: "" } });
+  }
 
-  // Apply all filters at once, keeping draft in sync with the structured state.
+  // Apply structured filters → build query string → navigate
   function applyFilters(
     status: StatusFilter,
     labels: string[],
-    authorId: string | null,
     authorQuery: string | null,
     text: string,
     sortVal: SortValue = sort,
   ) {
-    setStatusFilter(status);
-    setSelectedLabels(labels);
-    setSelectedAuthorId(authorId);
-    setSelectedAuthorQuery(authorQuery);
-    setFreeText(text);
-    setSort(sortVal);
-    setDraft(buildQueryString(status, labels, authorQuery, text, sortVal));
+    setSearch(buildQueryString(status, labels, authorQuery, text, sortVal));
   }
 
-  // Parse the draft text box on submit so manual edits update the dropdowns too.
-  // When parsing we don't know the humanId — clear it so the dropdown resets.
-  // Called both from the <form> onSubmit (with event) and from QueryInput's
-  // Enter-key handler (without event), so e is optional.
+  // Parse the draft text box on submit
   function handleSearch(e?: React.FormEvent) {
     e?.preventDefault();
-    const p = parseQueryString(draft);
-    applyFilters(p.status, p.labels, null, p.author, p.freeText, p.sort);
+    setSearch(draft);
   }
 
-  function goNext() {
-    const endCursor = bugs?.pageInfo.endCursor;
-    if (!endCursor) return;
-    setCursors((prev) => [...prev, endCursor]);
-  }
-
-  function goPrev() {
-    setCursors((prev) => prev.slice(0, -1));
+  // Build query string with toggled status
+  function queryWithStatus(status: StatusFilter): string {
+    return buildQueryString(status, selectedLabels, selectedAuthorQuery, parsed.freeText, sort);
   }
 
   return (
@@ -132,16 +120,10 @@ function RouteComponent() {
         {/* Open / Closed toggle + filter dropdowns */}
         <div className="border-border flex items-center gap-2 overflow-x-auto border-b px-4 py-2">
           <div className="flex shrink-0 items-center gap-1">
-            <button
-              onClick={() =>
-                applyFilters(
-                  "open",
-                  selectedLabels,
-                  selectedAuthorId,
-                  selectedAuthorQuery,
-                  freeText,
-                )
-              }
+            <Link
+              to="/$repo/issues"
+              params={{ repo: repo! }}
+              search={{ q: queryWithStatus("open"), after: "" }}
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                 statusFilter === "open"
@@ -159,18 +141,12 @@ function RouteComponent() {
               <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums">
                 {openCount}
               </span>
-            </button>
+            </Link>
 
-            <button
-              onClick={() =>
-                applyFilters(
-                  "closed",
-                  selectedLabels,
-                  selectedAuthorId,
-                  selectedAuthorQuery,
-                  freeText,
-                )
-              }
+            <Link
+              to="/$repo/issues"
+              params={{ repo: repo! }}
+              search={{ q: queryWithStatus("closed"), after: "" }}
               className={cn(
                 "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                 statusFilter === "closed"
@@ -188,30 +164,23 @@ function RouteComponent() {
               <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums">
                 {closedCount}
               </span>
-            </button>
+            </Link>
           </div>
 
           <div className="ml-auto">
             <IssueFilters
               selectedLabels={selectedLabels}
               onLabelsChange={(labels) =>
-                applyFilters(statusFilter, labels, selectedAuthorId, selectedAuthorQuery, freeText)
+                applyFilters(statusFilter, labels, selectedAuthorQuery, parsed.freeText)
               }
               selectedAuthorId={selectedAuthorId}
-              onAuthorChange={(id, qv) =>
-                applyFilters(statusFilter, selectedLabels, id, qv, freeText)
+              onAuthorChange={(_id, qv) =>
+                applyFilters(statusFilter, selectedLabels, qv, parsed.freeText)
               }
               recentAuthorIds={bugs?.nodes?.map((b) => b.author.humanId) ?? []}
               sort={sort}
               onSortChange={(s) =>
-                applyFilters(
-                  statusFilter,
-                  selectedLabels,
-                  selectedAuthorId,
-                  selectedAuthorQuery,
-                  freeText,
-                  s,
-                )
+                applyFilters(statusFilter, selectedLabels, selectedAuthorQuery, parsed.freeText, s)
               }
             />
           </div>
@@ -249,9 +218,8 @@ function RouteComponent() {
                 applyFilters(
                   statusFilter,
                   [...selectedLabels, name],
-                  selectedAuthorId,
                   selectedAuthorQuery,
-                  freeText,
+                  parsed.freeText,
                 );
               }
             }}
@@ -260,29 +228,33 @@ function RouteComponent() {
 
         {totalPages > 1 && (
           <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
-            <Button
+            <ButtonLink
+              to="/$repo/issues"
+              params={{ repo: repo! }}
+              search={{ q, after: "" }}
               variant="ghost"
               size="sm"
-              onClick={goPrev}
               disabled={!hasPrev || loading}
               className="text-muted-foreground gap-1"
             >
               <ChevronLeft className="size-4" />
               Previous
-            </Button>
+            </ButtonLink>
             <span className="text-muted-foreground text-sm">
-              Page {page + 1} of {totalPages}
+              Page {after ? 2 : 1} of {totalPages}
             </span>
-            <Button
+            <ButtonLink
+              to="/$repo/issues"
+              params={{ repo: repo! }}
+              search={{ q, after: bugs?.pageInfo.endCursor ?? "" }}
               variant="ghost"
               size="sm"
-              onClick={goNext}
               disabled={!hasNext || loading}
               className="text-muted-foreground gap-1"
             >
               Next
               <ChevronRight className="size-4" />
-            </Button>
+            </ButtonLink>
           </div>
         )}
       </div>
@@ -305,8 +277,6 @@ function buildBaseQuery(labels: string[], author: string | null, freeText: strin
 }
 
 // Build the structured query string sent to the GraphQL allBugs(query:) argument.
-// Multi-word label/author values are wrapped in quotes so the backend parser
-// treats them as a single token (e.g. label:"my label" vs label:my label).
 function buildQueryString(
   status: StatusFilter,
   labels: string[],
@@ -321,9 +291,7 @@ function buildQueryString(
   return parts.join(" ");
 }
 
-// Tokenize a query string, keeping quoted spans (e.g. author:"René Descartes")
-// as single tokens. Quotes are preserved in the output so callers can strip them
-// when extracting values.
+// Tokenize a query string, keeping quoted spans as single tokens.
 function tokenizeQuery(input: string): string[] {
   const tokens: string[] = [];
   let current = "";
@@ -343,10 +311,7 @@ function tokenizeQuery(input: string): string[] {
   return tokens;
 }
 
-// Parse a free-text query string back into structured filter state so that
-// manual edits to the search box are reflected in the dropdown UI on submit.
-// Strips surrounding quotes from values (they're an encoding detail, not part
-// of the value itself). Unknown tokens fall through to freeText.
+// Parse a query string back into structured filter state.
 const VALID_SORTS = new Set<SortValue>(["creation-desc", "creation-asc", "edit-desc", "edit-asc"]);
 
 function parseQueryString(input: string): {

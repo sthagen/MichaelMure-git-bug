@@ -42,6 +42,7 @@ function RouteComponent() {
       <Link
         to="/$repo/issues"
         params={{ repo: repo! }}
+        search={{ q: "status:open", after: "" }}
         className="text-muted-foreground hover:text-foreground mb-4 flex items-center gap-1.5 text-sm"
       >
         <ArrowLeft className="size-3.5" />
