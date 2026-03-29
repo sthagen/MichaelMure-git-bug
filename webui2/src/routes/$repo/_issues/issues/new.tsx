@@ -9,7 +9,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export const Route = createFileRoute("/$repo/issues/new")({
+export const Route = createFileRoute("/$repo/_issues/issues/new")({
   component: RouteComponent,
 });
 

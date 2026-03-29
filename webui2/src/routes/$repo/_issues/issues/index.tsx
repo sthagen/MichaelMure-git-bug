@@ -19,7 +19,7 @@ const issuesSearchSchema = v.object({
   after: v.fallback(v.string(), ""),
 });
 
-export const Route = createFileRoute("/$repo/issues/")({
+export const Route = createFileRoute("/$repo/_issues/issues/")({
   component: RouteComponent,
   pendingComponent: BugListSkeleton,
   validateSearch: (search) => v.parse(issuesSearchSchema, search),

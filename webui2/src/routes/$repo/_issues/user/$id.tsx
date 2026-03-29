@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/$repo/user/$id")({
+export const Route = createFileRoute("/$repo/_issues/user/$id")({
   component: RouteComponent,
 });
 

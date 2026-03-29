@@ -13,7 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export const Route = createFileRoute("/$repo/issues/$id")({
+export const Route = createFileRoute("/$repo/_issues/issues/$id")({
   component: RouteComponent,
   pendingComponent: BugDetailSkeleton,
   loader: async ({ context: { preloadQuery, ref }, params: { id } }) => {
