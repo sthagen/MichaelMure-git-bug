@@ -6,7 +6,6 @@ import { useLazyQuery } from "@apollo/client/react";
 import { ChevronRight, FilePlus, FileMinus, FileEdit } from "lucide-react";
 import { useState } from "react";
 
-import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
 const DIFF_QUERY = gql`
@@ -53,6 +52,7 @@ interface DiffQueryData {
 }
 
 interface FileDiffViewProps {
+  repo: string | null;
   hash: string;
   path: string;
   oldPath?: string;
@@ -72,8 +72,7 @@ const statusBadge: Record<string, string> = {
   RENAMED: "R",
 };
 
-export function FileDiffView({ hash, path, oldPath, status }: FileDiffViewProps) {
-  const repo = useRepo();
+export function FileDiffView({ repo, hash, path, oldPath, status }: FileDiffViewProps) {
   const [open, setOpen] = useState(false);
   const [fetchDiff, { data, loading, error }] = useLazyQuery<DiffQueryData>(DIFF_QUERY);
 

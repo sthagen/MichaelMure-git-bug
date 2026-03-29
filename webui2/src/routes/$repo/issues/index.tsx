@@ -12,7 +12,6 @@ import { QueryInput } from "@/components/bugs/QueryInput";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
 const issuesSearchSchema = v.object({
@@ -47,7 +46,7 @@ const PAGE_SIZE = 25;
 type StatusFilter = "open" | "closed";
 
 function RouteComponent() {
-  const repo = useRepo();
+  const { ref: repo } = Route.useRouteContext();
   const navigate = useNavigate({ from: "/$repo/issues/" });
   const { q, after } = Route.useSearch();
 

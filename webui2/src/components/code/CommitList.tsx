@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRepo } from "@/lib/repo";
 
 const COMMITS_QUERY = gql`
   query CommitList($repo: String, $ref: String!, $path: String, $after: String, $first: Int) {
@@ -44,6 +43,7 @@ interface CommitListQueryData {
 }
 
 interface CommitListProps {
+  repo: string | null;
   ref_: string;
   path?: string;
 }
@@ -56,8 +56,7 @@ type CommitNode = {
   date: string;
 };
 
-export function CommitList({ ref_, path }: CommitListProps) {
-  const repo = useRepo();
+export function CommitList({ repo, ref_, path }: CommitListProps) {
   const [cursor, setCursor] = useState<string | null>(null);
   const [allCommits, setAllCommits] = useState<CommitNode[]>([]);
 

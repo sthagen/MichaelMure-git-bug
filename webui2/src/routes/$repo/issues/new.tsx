@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useRepo } from "@/lib/repo";
 
 export const Route = createFileRoute("/$repo/issues/new")({
   component: RouteComponent,
@@ -17,7 +16,7 @@ export const Route = createFileRoute("/$repo/issues/new")({
 // New issue form (/:repo/issues/new). Title + body with write/preview tabs.
 function RouteComponent() {
   const navigate = useNavigate();
-  const repo = useRepo();
+  const { ref: repo } = Route.useRouteContext();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [preview, setPreview] = useState(false);

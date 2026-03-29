@@ -9,7 +9,6 @@ import { ArrowLeft, GitCommit } from "lucide-react";
 
 import { FileDiffView } from "@/components/code/FileDiffView";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRepo } from "@/lib/repo";
 
 const COMMIT_QUERY = gql`
   query CommitPageDetail($repo: String, $hash: String!) {
@@ -65,7 +64,7 @@ export const Route = createFileRoute("/$repo/commit/$hash")({
 });
 
 function RouteComponent() {
-  const repo = useRepo();
+  const { ref: repo } = Route.useRouteContext();
   const { commitRef } = Route.useLoaderData();
   const { data } = useReadQuery(commitRef);
 
@@ -137,6 +136,7 @@ function RouteComponent() {
           {files.map((file: { path: string; oldPath?: string | null; status: string }) => (
             <FileDiffView
               key={file.path}
+              repo={repo}
               hash={commit.hash}
               path={file.path}
               oldPath={file.oldPath ?? undefined}

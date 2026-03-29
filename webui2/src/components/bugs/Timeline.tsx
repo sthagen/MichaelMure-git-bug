@@ -14,7 +14,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
-import { useRepo } from "@/lib/repo";
 
 import { LabelBadge } from "./LabelBadge";
 
@@ -23,6 +22,7 @@ type TimelineNode = NonNullable<
 >;
 
 interface TimelineProps {
+  repo: string | null;
   bugPrefix: string;
   items: TimelineNode[];
 }
@@ -30,20 +30,20 @@ interface TimelineProps {
 // Ordered sequence of events on a bug: comments (create and add-comment) and
 // inline events (label changes, status changes, title edits). Comment items
 // support inline editing for the logged-in user.
-export function Timeline({ bugPrefix, items }: TimelineProps) {
+export function Timeline({ repo, bugPrefix, items }: TimelineProps) {
   return (
     <div className="space-y-4">
       {items.map((item) => {
         switch (item.__typename) {
           case "BugCreateTimelineItem":
           case "BugAddCommentTimelineItem":
-            return <CommentItem key={item.id} item={item} bugPrefix={bugPrefix} />;
+            return <CommentItem key={item.id} item={item} bugPrefix={bugPrefix} repo={repo} />;
           case "BugLabelChangeTimelineItem":
-            return <LabelChangeItem key={item.id} item={item} />;
+            return <LabelChangeItem key={item.id} item={item} repo={repo} />;
           case "BugSetStatusTimelineItem":
-            return <StatusChangeItem key={item.id} item={item} />;
+            return <StatusChangeItem key={item.id} item={item} repo={repo} />;
           case "BugSetTitleTimelineItem":
-            return <TitleChangeItem key={item.id} item={item} />;
+            return <TitleChangeItem key={item.id} item={item} repo={repo} />;
           default:
             return null;
         }
@@ -59,9 +59,16 @@ type CommentItem = Extract<
   { __typename: "BugCreateTimelineItem" | "BugAddCommentTimelineItem" }
 >;
 
-function CommentItem({ item, bugPrefix }: { item: CommentItem; bugPrefix: string }) {
+function CommentItem({
+  item,
+  bugPrefix,
+  repo,
+}: {
+  item: CommentItem;
+  bugPrefix: string;
+  repo: string | null;
+}) {
   const { user } = useAuth();
-  const repo = useRepo();
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.message ?? "");
 
@@ -172,8 +179,7 @@ function EventRow({ icon, children }: { icon: React.ReactNode; children: React.R
   );
 }
 
-function LabelChangeItem({ item }: { item: LabelChangeItem }) {
-  const repo = useRepo();
+function LabelChangeItem({ item, repo }: { item: LabelChangeItem; repo: string | null }) {
   return (
     <EventRow icon={<Tag className="size-4" />}>
       <span>
@@ -206,8 +212,7 @@ function LabelChangeItem({ item }: { item: LabelChangeItem }) {
   );
 }
 
-function StatusChangeItem({ item }: { item: StatusChangeItem }) {
-  const repo = useRepo();
+function StatusChangeItem({ item, repo }: { item: StatusChangeItem; repo: string | null }) {
   const isOpen = item.status === Status.Open;
   return (
     <EventRow
@@ -234,8 +239,7 @@ function StatusChangeItem({ item }: { item: StatusChangeItem }) {
   );
 }
 
-function TitleChangeItem({ item }: { item: TitleChangeItem }) {
-  const repo = useRepo();
+function TitleChangeItem({ item, repo }: { item: TitleChangeItem; repo: string | null }) {
   return (
     <EventRow icon={<Pencil className="size-4" />}>
       <span>

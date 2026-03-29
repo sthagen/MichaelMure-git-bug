@@ -12,7 +12,6 @@ import { TitleEditor } from "@/components/bugs/TitleEditor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRepo } from "@/lib/repo";
 
 export const Route = createFileRoute("/$repo/issues/$id")({
   component: RouteComponent,
@@ -28,7 +27,7 @@ export const Route = createFileRoute("/$repo/issues/$id")({
 // Issue detail page (/:repo/issues/:id). Shows title, status, timeline of
 // comments and events, and a sidebar with labels and participants.
 function RouteComponent() {
-  const repo = useRepo();
+  const { ref: repo } = Route.useRouteContext();
   const { bugDetailRef } = Route.useLoaderData();
   const { labelsRef } = Route.useRouteContext();
   const { data } = useReadQuery(bugDetailRef);
@@ -76,7 +75,7 @@ function RouteComponent() {
       <div className="flex gap-8">
         {/* Timeline + comment box */}
         <div className="min-w-0 flex-1 space-y-4">
-          <Timeline bugPrefix={bug.humanId} items={bug.timeline.nodes} />
+          <Timeline repo={repo} bugPrefix={bug.humanId} items={bug.timeline.nodes} />
           <CommentBox bugPrefix={bug.humanId} bugStatus={bug.status} ref_={repo} />
         </div>
 

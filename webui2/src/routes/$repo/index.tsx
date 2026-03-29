@@ -24,7 +24,6 @@ import { RefSelector } from "@/components/code/RefSelector";
 import { Markdown } from "@/components/content/Markdown";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRepo } from "@/lib/repo";
 
 const REFS_QUERY = gql`
   query CodePageRefs($repo: String) {
@@ -134,7 +133,7 @@ export const Route = createFileRoute("/$repo/")({
 });
 
 function RouteComponent() {
-  const repo = useRepo();
+  const { ref: repo } = Route.useRouteContext();
   const navigate = useNavigate({ from: "/$repo/" });
   const { ref: currentRef, path: currentPath, type: viewMode } = useSearch({ from: "/$repo/" });
 
@@ -257,10 +256,11 @@ function RouteComponent() {
       </div>
 
       {viewMode === "commits" ? (
-        <CommitList ref_={currentRef} path={currentPath || undefined} />
+        <CommitList repo={repo} ref_={currentRef} path={currentPath || undefined} />
       ) : viewMode === "tree" || !blob ? (
         <>
           <FileTree
+            repo={repo}
             entries={entriesWithCommits}
             path={currentPath}
             loading={treeLoading}

@@ -24,7 +24,6 @@ import { LabelBadge } from "@/components/bugs/LabelBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRepo } from "@/lib/repo";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/$repo/user/$id")({
@@ -35,7 +34,7 @@ const PAGE_SIZE = 25;
 
 function RouteComponent() {
   const { id } = useParams({ strict: false });
-  const repo = useRepo();
+  const { ref: repo } = Route.useRouteContext();
   const [statusFilter, setStatusFilter] = useState<"open" | "closed">("open");
 
   // Cursor-stack pagination: cursors[i] is the `after` value to fetch page i.

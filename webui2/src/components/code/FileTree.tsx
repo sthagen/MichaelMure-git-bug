@@ -4,7 +4,6 @@ import { Folder, File } from "lucide-react";
 
 import { GitObjectType, type GitTreeEntry } from "@/__generated__/graphql";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRepo } from "@/lib/repo";
 
 export interface TreeEntryWithCommit extends GitTreeEntry {
   lastCommit?: {
@@ -16,6 +15,7 @@ export interface TreeEntryWithCommit extends GitTreeEntry {
 }
 
 interface FileTreeProps {
+  repo: string | null;
   entries: TreeEntryWithCommit[];
   path: string;
   loading?: boolean;
@@ -25,7 +25,14 @@ interface FileTreeProps {
 
 // Directory listing table for the code browser. Shows each entry's icon,
 // name, last-commit message (linked to commit detail), and relative date.
-export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: FileTreeProps) {
+export function FileTree({
+  repo,
+  entries,
+  path,
+  loading,
+  onNavigate,
+  onNavigateUp,
+}: FileTreeProps) {
   // Directories first, then files — each group alphabetical
   const sorted = entries.toSorted((a, b) => {
     if (a.type !== b.type) return a.type === GitObjectType.Tree ? -1 : 1;
@@ -49,7 +56,7 @@ export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: F
             </tr>
           )}
           {sorted.map((entry) => (
-            <FileTreeRow key={entry.name} entry={entry} onNavigate={onNavigate} />
+            <FileTreeRow key={entry.name} entry={entry} repo={repo} onNavigate={onNavigate} />
           ))}
         </tbody>
       </table>
@@ -59,13 +66,14 @@ export function FileTree({ entries, path, loading, onNavigate, onNavigateUp }: F
 
 function FileTreeRow({
   entry,
+  repo,
   onNavigate,
 }: {
   entry: TreeEntryWithCommit;
+  repo: string | null;
   onNavigate: (entry: TreeEntryWithCommit) => void;
 }) {
   const isDir = entry.type === GitObjectType.Tree;
-  const repo = useRepo();
 
   return (
     <tr className="hover:bg-muted/40 cursor-pointer" onClick={() => onNavigate(entry)}>
