@@ -68,6 +68,7 @@ export function BugRow({
           <Link
             to="/$repo/user/$id"
             params={{ repo, id: author.humanId }}
+            search={{ status: "open" as const, after: "" }}
             className="hover:underline"
           >
             {author.displayName}

@@ -1,11 +1,9 @@
 // User profile page (/user/:id). Fetches an identity by prefix and shows:
 //   - avatar, display name, login, email, humanId, protected badge
 //   - open/closed issue toggle with BOTH counts always visible
-//   - paginated list of that user's bugs (cursor-stack, same approach as BugListPage)
-//
-// The :id param is treated as a humanId prefix and passed directly to the
-// identity(prefix) and allBugs(query:"author:...") GraphQL arguments.
+//   - paginated list of that user's bugs
 
+import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -16,81 +14,48 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useState } from "react";
+import * as v from "valibot";
 
-import {
-  Status,
-  useUserProfileQuery,
-  type UserProfileQuery,
-  UserProfileDocument,
-} from "@/__generated__/graphql";
+import { Status, type UserProfileQuery, UserProfileDocument } from "@/__generated__/graphql";
 import { LabelBadge } from "@/components/bugs/LabelBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+
+const profileSearchSchema = v.object({
+  status: v.fallback(v.picklist(["open", "closed"]), "open"),
+  after: v.fallback(v.string(), ""),
+});
+
+const PAGE_SIZE = 25;
 
 export const Route = createFileRoute("/$repo/_issues/user/$id")({
   component: RouteComponent,
   pendingComponent: ProfileSkeleton,
-  loader: async ({ context: { preloadQuery, ref }, params: { id } }) => {
-    // Preload the initial page (open issues, no cursor) so the router
-    // waits before transitioning. Subsequent pagination/filter changes
-    // use useQuery which hits the Apollo cache or fetches fresh.
+  validateSearch: (search) => v.parse(profileSearchSchema, search),
+  loaderDeps: ({ search: { status, after } }) => ({ status, after }),
+  loader: async ({ context: { preloadQuery, ref }, params: { id }, deps: { status, after } }) => {
     const profileRef = preloadQuery<UserProfileQuery>(UserProfileDocument, {
       variables: {
         ref,
         prefix: id,
         openQuery: `author:${id} status:open`,
         closedQuery: `author:${id} status:closed`,
-        listQuery: `author:${id} status:open`,
-        after: undefined,
+        listQuery: `author:${id} status:${status}`,
+        after: after || undefined,
       },
     });
     return { profileRef: await preloadQuery.toPromise(profileRef) };
   },
 });
 
-const PAGE_SIZE = 25;
-
 function RouteComponent() {
   const { id, repo } = Route.useParams();
-  const { ref } = Route.useRouteContext();
-  const [statusFilter, setStatusFilter] = useState<"open" | "closed">("open");
-
-  // Cursor-stack pagination: cursors[i] is the `after` value to fetch page i.
-  // Resetting to [undefined] returns to page 1. Shared pattern with BugListPage.
-  const [cursors, setCursors] = useState<(string | undefined)[]>([undefined]);
-  const page = cursors.length - 1;
-
-  // Three allBugs aliases in one round-trip:
-  //   openCount / closedCount — always fetched so both badge numbers are visible
-  //   bugs — paginated list for the selected tab
-  const { data, loading, error } = useUserProfileQuery({
-    variables: {
-      ref,
-      prefix: id,
-      openQuery: `author:${id} status:open`,
-      closedQuery: `author:${id} status:closed`,
-      listQuery: `author:${id} status:${statusFilter}`,
-      after: cursors[page],
-    },
-  });
-
-  function switchStatus(next: "open" | "closed") {
-    if (next === statusFilter) return;
-    setStatusFilter(next);
-    setCursors([undefined]); // reset to page 1 on tab change
-  }
-
-  if (error) {
-    return (
-      <div className="text-destructive py-16 text-center text-sm">
-        Failed to load profile: {error.message}
-      </div>
-    );
-  }
+  const { status: statusFilter, after } = Route.useSearch();
+  const { profileRef } = Route.useLoaderData();
+  const { data } = useReadQuery(profileRef);
 
   const identity = data?.repository?.identity;
   if (!identity) {
@@ -103,16 +68,7 @@ function RouteComponent() {
   const bugs = data?.repository?.bugs;
   const totalPages = Math.max(1, Math.ceil((bugs?.totalCount ?? 0) / PAGE_SIZE));
   const hasNext = bugs?.pageInfo.hasNextPage ?? false;
-  const hasPrev = page > 0;
-
-  function goNext() {
-    const cursor = bugs?.pageInfo.endCursor;
-    if (cursor) setCursors((prev) => [...prev, cursor]);
-  }
-
-  function goPrev() {
-    setCursors((prev) => prev.slice(0, -1));
-  }
+  const hasPrev = !!after;
 
   return (
     <div>
@@ -132,7 +88,6 @@ function RouteComponent() {
         <div className="pt-1">
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold">{identity.displayName}</h1>
-            {/* isProtected means this identity has been cryptographically signed */}
             {identity.isProtected && (
               <span title="Protected identity">
                 <ShieldCheck className="text-muted-foreground size-4" />
@@ -145,7 +100,6 @@ function RouteComponent() {
             <p className="font-mono text-xs">#{identity.humanId}</p>
           </div>
 
-          {/* Aggregate stats — always visible, independent of selected tab */}
           <div className="mt-3 flex items-center gap-4 text-sm">
             <span className="text-muted-foreground flex items-center gap-1">
               <CircleDot className="size-3.5 text-green-600 dark:text-green-400" />
@@ -161,10 +115,12 @@ function RouteComponent() {
 
       {/* ── Issue list ─────────────────────────────────────────────────── */}
       <div className="border-border rounded-md border">
-        {/* Open / Closed toggle — mirrors BugListPage style */}
+        {/* Open / Closed toggle */}
         <div className="border-border flex items-center gap-1 border-b px-4 py-2">
-          <button
-            onClick={() => switchStatus("open")}
+          <Link
+            to="/$repo/user/$id"
+            params={{ repo, id }}
+            search={{ status: "open", after: "" }}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
               statusFilter === "open"
@@ -182,10 +138,12 @@ function RouteComponent() {
             <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {openCount}
             </span>
-          </button>
+          </Link>
 
-          <button
-            onClick={() => switchStatus("closed")}
+          <Link
+            to="/$repo/user/$id"
+            params={{ repo, id }}
+            search={{ status: "closed", after: "" }}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
               statusFilter === "closed"
@@ -203,7 +161,7 @@ function RouteComponent() {
             <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none">
               {closedCount}
             </span>
-          </button>
+          </Link>
         </div>
 
         {bugs?.nodes.length === 0 && (
@@ -232,7 +190,7 @@ function RouteComponent() {
                 <div className="flex flex-wrap items-baseline gap-2">
                   <Link
                     to="/$repo/issues/$id"
-                    params={{ repo: repo, id: bug.humanId }}
+                    params={{ repo, id: bug.humanId }}
                     className="text-foreground hover:text-primary font-medium hover:underline"
                   >
                     {bug.title}
@@ -256,32 +214,35 @@ function RouteComponent() {
           );
         })}
 
-        {/* Pagination footer — only shown when there is more than one page */}
         {totalPages > 1 && (
           <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
-            <Button
+            <ButtonLink
+              to="/$repo/user/$id"
+              params={{ repo, id }}
+              search={{ status: statusFilter, after: "" }}
               variant="ghost"
               size="sm"
-              onClick={goPrev}
-              disabled={!hasPrev || loading}
+              disabled={!hasPrev}
               className="text-muted-foreground gap-1"
             >
               <ChevronLeft className="size-4" />
               Previous
-            </Button>
+            </ButtonLink>
             <span className="text-muted-foreground text-sm">
-              Page {page + 1} of {totalPages}
+              Page {after ? 2 : 1} of {totalPages}
             </span>
-            <Button
+            <ButtonLink
+              to="/$repo/user/$id"
+              params={{ repo, id }}
+              search={{ status: statusFilter, after: bugs?.pageInfo.endCursor ?? "" }}
               variant="ghost"
               size="sm"
-              onClick={goNext}
-              disabled={!hasNext || loading}
+              disabled={!hasNext}
               className="text-muted-foreground gap-1"
             >
               Next
               <ChevronRight className="size-4" />
-            </Button>
+            </ButtonLink>
           </div>
         )}
       </div>
@@ -297,13 +258,24 @@ function ProfileSkeleton() {
         <div className="space-y-2 pt-1">
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-3 w-16" />
         </div>
       </div>
-      <div className="space-y-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Skeleton key={i} className="h-14 w-full" />
-        ))}
+      <div className="border-border rounded-md border">
+        <div className="border-border border-b px-4 py-2">
+          <Skeleton className="h-8 w-48" />
+        </div>
+        <div className="divide-border divide-y">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex items-start gap-3 px-4 py-3">
+              <Skeleton className="mt-0.5 size-4 rounded-full" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/3" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

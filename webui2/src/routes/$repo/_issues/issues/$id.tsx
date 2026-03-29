@@ -57,6 +57,7 @@ function RouteComponent() {
           <Link
             to="/$repo/user/$id"
             params={{ repo: repo, id: bug.author.humanId }}
+            search={{ status: "open" as const, after: "" }}
             className="text-foreground font-medium hover:underline"
           >
             {bug.author.displayName}
@@ -96,6 +97,7 @@ function RouteComponent() {
                     key={p.id}
                     to="/$repo/user/$id"
                     params={{ repo: repo, id: p.humanId }}
+                    search={{ status: "open" as const, after: "" }}
                     title={p.displayName}
                   >
                     <Avatar className="size-6">

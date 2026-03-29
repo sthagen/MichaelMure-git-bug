@@ -80,7 +80,11 @@ export function Header() {
                 <Plus className="size-4" />
                 New issue
               </ButtonLink>
-              <Link to="/$repo/user/$id" params={{ repo: effectiveRepo, id: user.humanId }}>
+              <Link
+                to="/$repo/user/$id"
+                params={{ repo: effectiveRepo, id: user.humanId }}
+                search={{ status: "open" as const, after: "" }}
+              >
                 <Avatar className="size-7">
                   <AvatarImage src={user.avatarUrl ?? undefined} alt={user.displayName} />
                   <AvatarFallback className="text-xs">

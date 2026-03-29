@@ -107,6 +107,7 @@ function CommentItem({
           <Link
             to="/$repo/user/$id"
             params={{ repo: repo!, id: item.author.humanId }}
+            search={{ status: "open" as const, after: "" }}
             className="text-foreground font-medium hover:underline"
           >
             {item.author.displayName}
@@ -186,6 +187,7 @@ function LabelChangeItem({ item, repo }: { item: LabelChangeItem; repo: string |
         <Link
           to="/$repo/user/$id"
           params={{ repo: repo!, id: item.author.humanId }}
+          search={{ status: "open" as const, after: "" }}
           className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
@@ -228,6 +230,7 @@ function StatusChangeItem({ item, repo }: { item: StatusChangeItem; repo: string
         <Link
           to="/$repo/user/$id"
           params={{ repo: repo!, id: item.author.humanId }}
+          search={{ status: "open" as const, after: "" }}
           className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
@@ -246,6 +249,7 @@ function TitleChangeItem({ item, repo }: { item: TitleChangeItem; repo: string |
         <Link
           to="/$repo/user/$id"
           params={{ repo: repo!, id: item.author.humanId }}
+          search={{ status: "open" as const, after: "" }}
           className="text-foreground font-medium hover:underline"
         >
           {item.author.displayName}
