@@ -289,7 +289,7 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
   // targeting the CSS module's scoped class.
   const highlightStyle = (() => {
     if (!selectedRange) return null;
-    const scope = `.${styles["code_content"]}`;
+    const scope = `.${styles["code-content"]}`;
     const selectors: string[] = [];
     for (let i = selectedRange.start; i <= selectedRange.end; i++) {
       selectors.push(`${scope} code > .line:nth-child(${i})`);
@@ -300,7 +300,7 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
 
   return (
     <div
-      className={styles["code_block"]}
+      className={styles["code-block"]}
       onClick={(e) => {
         const target = e.target as HTMLElement;
         const lineEl = target.closest("[data-line-number]");
@@ -312,7 +312,7 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
       }}
     >
       {highlightStyle}
-      <div className={styles["code_content"]}>
+      <div className={styles["code-content"]}>
         {children}
       </div>
     </div>

@@ -1,35 +1,35 @@
-.code_block {
+.code-block {
   overflow-x: auto;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   line-height: 1.25rem;
 }
 
-.code_content pre {
+.code-content pre {
   margin: 0 !important;
   padding: 0 !important;
 }
 
-.code_content code {
+.code-content code {
   display: block;
 }
 
-.code_content code > .line {
+.code-content code > .line {
   display: block;
   min-width: 100%;
   padding-right: 1rem;
 }
 
-.code_content code > .line:first-child {
+.code-content code > .line:first-child {
   padding-top: 0.5rem;
 }
 
-.code_content code > .line:last-child {
+.code-content code > .line:last-child {
   padding-bottom: 0.5rem;
 }
 
 /* Line numbers via ::before pseudo-element */
-.code_content code > .line::before {
+.code-content code > .line::before {
   content: attr(data-line-number);
   display: inline-block;
   width: 3rem;
@@ -41,10 +41,10 @@
 }
 
 /* Line highlighting */
-.code_content code > .line.highlighted {
+.code-content code > .line.highlighted {
   background-color: rgba(255, 235, 59, 0.3);
 }
 
-:global(.dark) .code_content code > .line.highlighted {
+:global(.dark) .code-content code > .line.highlighted {
   background-color: rgba(255, 235, 59, 0.15);
 }
