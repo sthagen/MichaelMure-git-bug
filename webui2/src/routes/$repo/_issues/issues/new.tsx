@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import * as WritePreview from "@/components/ui/write-preview";
+import * as WritePreview from "@/components/shared/write-preview";
 
 export const Route = createFileRoute("/$repo/_issues/issues/new")({
   component: RouteComponent,

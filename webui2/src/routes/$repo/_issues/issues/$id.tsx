@@ -5,13 +5,13 @@ import { formatDistanceToNow } from "date-fns";
 import { type BugDetailQuery, BugDetailDocument } from "@/__generated__/graphql";
 import { CommentBox } from "@/components/bugs/CommentBox";
 import { LabelEditor } from "@/components/bugs/LabelEditor";
-import { StatusBadge } from "@/components/bugs/StatusBadge";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Timeline } from "@/components/bugs/Timeline";
 import { TitleEditor } from "@/components/bugs/TitleEditor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
-import { EmptyState } from "@/components/ui/empty-state";
-import { SectionHeading } from "@/components/ui/section-heading";
+import { EmptyState } from "@/components/shared/empty-state";
+import { SectionHeading } from "@/components/shared/section-heading";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 

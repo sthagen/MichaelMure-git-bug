@@ -1,7 +1,7 @@
 import type { IdentitySummaryFragment } from "@/__generated__/graphql";
 import { cn } from "@/lib/utils";
 
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface RootProps {
   children: React.ReactNode;

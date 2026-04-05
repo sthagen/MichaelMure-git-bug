@@ -14,12 +14,12 @@ import {
 import * as v from "valibot";
 
 import { type UserProfileQuery, UserProfileDocument } from "@/__generated__/graphql";
-import * as IssueRow from "@/components/bugs/IssueRow";
-import { LabelBadge } from "@/components/bugs/LabelBadge";
+import * as IssueRow from "@/components/shared/IssueRow";
+import { LabelBadge } from "@/components/shared/LabelBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
-import { EmptyState } from "@/components/ui/empty-state";
-import * as Pagination from "@/components/ui/pagination";
+import { EmptyState } from "@/components/shared/empty-state";
+import * as Pagination from "@/components/shared/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 

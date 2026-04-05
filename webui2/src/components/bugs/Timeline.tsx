@@ -11,11 +11,11 @@ import {
 } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";
 import { Button } from "@/components/ui/button";
-import * as CommentCard from "@/components/ui/comment-card";
+import * as CommentCard from "@/components/shared/comment-card";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
-import { LabelBadge } from "./LabelBadge";
+import { LabelBadge } from "@/components/shared/LabelBadge";
 
 type TimelineNode = NonNullable<
   NonNullable<NonNullable<BugDetailQuery["repository"]>["bug"]>["timeline"]["nodes"][number]

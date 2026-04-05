@@ -11,9 +11,9 @@ import {
 } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";
 import { Button } from "@/components/ui/button";
-import * as CommentCard from "@/components/ui/comment-card";
+import * as CommentCard from "@/components/shared/comment-card";
 import { Textarea } from "@/components/ui/textarea";
-import * as WritePreview from "@/components/ui/write-preview";
+import * as WritePreview from "@/components/shared/write-preview";
 import { useAuth } from "@/lib/auth";
 
 interface CommentBoxProps {

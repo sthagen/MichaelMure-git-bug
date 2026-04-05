@@ -2,10 +2,10 @@ import { Settings2 } from "lucide-react";
 
 import { useBugChangeLabelsMutation, BugDetailDocument } from "@/__generated__/graphql";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { SectionHeading } from "@/components/ui/section-heading";
+import { SectionHeading } from "@/components/shared/section-heading";
 import { useAuth } from "@/lib/auth";
 
-import { LabelBadge } from "./LabelBadge";
+import { LabelBadge } from "@/components/shared/LabelBadge";
 
 interface LabelEditorProps {
   bugPrefix: string;
