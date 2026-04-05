@@ -28,9 +28,8 @@
   padding-bottom: 0.5rem;
 }
 
-/* Line numbers via ::before pseudo-element */
-.line::before {
-  content: attr(data-line-number);
+/* Line number gutter — injected as a <span> by the Shiki transformer */
+.line-number {
   display: inline-block;
   width: 3rem;
   margin-right: 1rem;
@@ -38,4 +37,8 @@
   opacity: 0.4;
   user-select: none;
   cursor: pointer;
+}
+
+.line-number:hover {
+  opacity: 0.8;
 }

@@ -96,7 +96,16 @@ function lineNumberTransformer(): ShikiTransformer {
     line(node, line) {
       // Replace Shiki's "line" class with our CSS module class
       node.properties["className"] = [styles["line"]!];
-      node.properties["dataLineNumber"] = line;
+      // Prepend a gutter <span> for the line number — clickable target
+      node.children.unshift({
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: [styles["line-number"]!],
+          dataLineNumber: line,
+        },
+        children: [{ type: "text", value: String(line) }],
+      });
       // Append a \n text node so copy-paste preserves newlines
       // (we strip the inter-element whitespace nodes in code() below).
       node.children.push({ type: "text", value: "\n" });
