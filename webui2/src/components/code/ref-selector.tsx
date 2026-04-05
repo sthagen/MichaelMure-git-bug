@@ -25,12 +25,10 @@ export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2 font-mono text-xs">
-          <GitBranch className="size-3.5" />
-          {currentRef}
-          <ChevronsUpDown className="text-muted-foreground size-3" />
-        </Button>
+      <PopoverTrigger render={<Button variant="outline" size="sm" className="gap-2 font-mono text-xs" />}>
+        <GitBranch className="size-3.5" />
+        {currentRef}
+        <ChevronsUpDown className="text-muted-foreground size-3" />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-64 p-2">
         <p className="text-muted-foreground mb-2 px-1 text-xs font-semibold">Switch branch / tag</p>

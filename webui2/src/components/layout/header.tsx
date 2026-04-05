@@ -67,11 +67,9 @@ export function Header() {
           {mode === "external" &&
             !user &&
             loginProviders.map((p) => (
-              <Button key={p} asChild size="sm">
-                <a href={`/auth/login?provider=${p}`}>
+              <Button key={p} render={<a href={`/auth/login?provider=${p}`} />} size="sm">
                   <LogIn className="size-4" />
                   Sign in with {providerLabel(p)}
-                </a>
               </Button>
             ))}
 

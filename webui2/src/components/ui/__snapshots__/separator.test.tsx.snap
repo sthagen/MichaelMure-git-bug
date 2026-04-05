@@ -11,9 +11,11 @@ exports[`Separator/Horizontal matches snapshot 1`] = `
       Above
     </p>
     <div
-      class="shrink-0 bg-border h-[1px] w-full"
+      aria-orientation="horizontal"
+      class="shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch"
       data-orientation="horizontal"
-      role="none"
+      data-slot="separator"
+      role="separator"
     />
     <p
       class="text-sm"
@@ -35,9 +37,11 @@ exports[`Separator/Vertical matches snapshot 1`] = `
       Left
     </span>
     <div
-      class="shrink-0 bg-border h-full w-[1px]"
+      aria-orientation="vertical"
+      class="shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch"
       data-orientation="vertical"
-      role="none"
+      data-slot="separator"
+      role="separator"
     />
     <span
       class="text-sm"

@@ -3,10 +3,13 @@
 exports[`Avatar/Large matches snapshot 1`] = `
 <div>
   <span
-    class="relative flex shrink-0 overflow-hidden rounded-full size-16"
+    class="group/avatar relative flex shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten size-16"
+    data-size="default"
+    data-slot="avatar"
   >
     <span
-      class="flex h-full w-full items-center justify-center rounded-full bg-muted text-xs font-medium"
+      class="flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs"
+      data-slot="avatar-fallback"
     >
       CN
     </span>
@@ -17,10 +20,13 @@ exports[`Avatar/Large matches snapshot 1`] = `
 exports[`Avatar/Small matches snapshot 1`] = `
 <div>
   <span
-    class="relative flex shrink-0 overflow-hidden rounded-full size-6"
+    class="group/avatar relative flex shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten size-6"
+    data-size="default"
+    data-slot="avatar"
   >
     <span
-      class="flex h-full w-full items-center justify-center rounded-full bg-muted font-medium text-[8px]"
+      class="flex size-full items-center justify-center rounded-full bg-muted text-muted-foreground group-data-[size=sm]/avatar:text-xs text-[8px]"
+      data-slot="avatar-fallback"
     >
       AB
     </span>
@@ -31,10 +37,13 @@ exports[`Avatar/Small matches snapshot 1`] = `
 exports[`Avatar/WithFallback matches snapshot 1`] = `
 <div>
   <span
-    class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
+    class="group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten"
+    data-size="default"
+    data-slot="avatar"
   >
     <span
-      class="flex h-full w-full items-center justify-center rounded-full bg-muted text-xs font-medium"
+      class="flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs"
+      data-slot="avatar-fallback"
     >
       JD
     </span>
@@ -45,10 +54,13 @@ exports[`Avatar/WithFallback matches snapshot 1`] = `
 exports[`Avatar/WithImage matches snapshot 1`] = `
 <div>
   <span
-    class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
+    class="group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten"
+    data-size="default"
+    data-slot="avatar"
   >
     <span
-      class="flex h-full w-full items-center justify-center rounded-full bg-muted text-xs font-medium"
+      class="flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs"
+      data-slot="avatar-fallback"
     >
       CN
     </span>

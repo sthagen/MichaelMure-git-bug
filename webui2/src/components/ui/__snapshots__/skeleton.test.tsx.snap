@@ -6,16 +6,19 @@ exports[`Skeleton/Card matches snapshot 1`] = `
     class="flex items-center gap-4"
   >
     <div
-      class="animate-pulse bg-primary/10 size-12 rounded-full"
+      class="animate-pulse bg-muted size-12 rounded-full"
+      data-slot="skeleton"
     />
     <div
       class="space-y-2"
     >
       <div
-        class="animate-pulse rounded-md bg-primary/10 h-4 w-48"
+        class="animate-pulse rounded-md bg-muted h-4 w-48"
+        data-slot="skeleton"
       />
       <div
-        class="animate-pulse rounded-md bg-primary/10 h-4 w-32"
+        class="animate-pulse rounded-md bg-muted h-4 w-32"
+        data-slot="skeleton"
       />
     </div>
   </div>
@@ -25,7 +28,8 @@ exports[`Skeleton/Card matches snapshot 1`] = `
 exports[`Skeleton/Circle matches snapshot 1`] = `
 <div>
   <div
-    class="animate-pulse bg-primary/10 size-10 rounded-full"
+    class="animate-pulse bg-muted size-10 rounded-full"
+    data-slot="skeleton"
   />
 </div>
 `;
@@ -33,7 +37,8 @@ exports[`Skeleton/Circle matches snapshot 1`] = `
 exports[`Skeleton/Default matches snapshot 1`] = `
 <div>
   <div
-    class="animate-pulse rounded-md bg-primary/10 h-4 w-48"
+    class="animate-pulse rounded-md bg-muted h-4 w-48"
+    data-slot="skeleton"
   />
 </div>
 `;

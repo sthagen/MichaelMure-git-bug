@@ -180,8 +180,7 @@ export function IssueFilters({
           if (!open) setLabelSearch("");
         }}
       >
-        <PopoverTrigger asChild>
-          <button
+        <PopoverTrigger
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
               selectedLabels.length > 0
@@ -197,7 +196,6 @@ export function IssueFilters({
               </span>
             )}
             <ChevronDown className="size-3" />
-          </button>
         </PopoverTrigger>
         <PopoverContent align="end" className="bg-popover w-56 p-0 shadow-lg">
           {/* Search */}
@@ -256,8 +254,7 @@ export function IssueFilters({
           if (!open) setAuthorSearch("");
         }}
       >
-        <PopoverTrigger asChild>
-          <button
+        <PopoverTrigger
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
               selectedAuthorId
@@ -285,7 +282,6 @@ export function IssueFilters({
               </>
             )}
             <ChevronDown className="size-3" />
-          </button>
         </PopoverTrigger>
         <PopoverContent align="end" className="bg-popover w-56 p-0 shadow-lg">
           {/* Search */}
@@ -358,8 +354,7 @@ export function IssueFilters({
 
       {/* Sort */}
       <Popover>
-        <PopoverTrigger asChild>
-          <button
+        <PopoverTrigger
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap",
               sort !== "creation-desc"
@@ -370,7 +365,6 @@ export function IssueFilters({
             <ArrowUpDown className="size-3.5" />
             {SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "Sort"}
             <ChevronDown className="size-3" />
-          </button>
         </PopoverTrigger>
         <PopoverContent align="end" className="bg-popover w-56 p-1 shadow-lg">
           {SORT_OPTIONS.map((opt) => (

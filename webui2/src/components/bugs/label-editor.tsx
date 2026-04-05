@@ -46,10 +46,8 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
         <SectionHeading className="mb-0">Labels</SectionHeading>
         {user && validLabels.length > 0 && (
           <Popover>
-            <PopoverTrigger asChild>
-              <button className="text-muted-foreground hover:text-foreground">
-                <Settings2 className="size-3.5" />
-              </button>
+            <PopoverTrigger className="text-muted-foreground hover:text-foreground">
+              <Settings2 className="size-3.5" />
             </PopoverTrigger>
             <PopoverContent align="end" className="w-56 p-2">
               <p className="text-muted-foreground mb-2 px-2 text-xs font-medium">Apply labels</p>
