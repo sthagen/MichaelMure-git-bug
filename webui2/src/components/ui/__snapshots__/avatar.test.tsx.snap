@@ -1,0 +1,57 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Avatar/Large matches snapshot 1`] = `
+<div>
+  <span
+    class="relative flex shrink-0 overflow-hidden rounded-full size-16"
+  >
+    <span
+      class="flex h-full w-full items-center justify-center rounded-full bg-muted text-xs font-medium"
+    >
+      CN
+    </span>
+  </span>
+</div>
+`;
+
+exports[`Avatar/Small matches snapshot 1`] = `
+<div>
+  <span
+    class="relative flex shrink-0 overflow-hidden rounded-full size-6"
+  >
+    <span
+      class="flex h-full w-full items-center justify-center rounded-full bg-muted font-medium text-[8px]"
+    >
+      AB
+    </span>
+  </span>
+</div>
+`;
+
+exports[`Avatar/WithFallback matches snapshot 1`] = `
+<div>
+  <span
+    class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
+  >
+    <span
+      class="flex h-full w-full items-center justify-center rounded-full bg-muted text-xs font-medium"
+    >
+      JD
+    </span>
+  </span>
+</div>
+`;
+
+exports[`Avatar/WithImage matches snapshot 1`] = `
+<div>
+  <span
+    class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full"
+  >
+    <span
+      class="flex h-full w-full items-center justify-center rounded-full bg-muted text-xs font-medium"
+    >
+      CN
+    </span>
+  </span>
+</div>
+`;

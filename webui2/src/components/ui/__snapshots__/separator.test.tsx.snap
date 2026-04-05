@@ -1,0 +1,49 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Separator/Horizontal matches snapshot 1`] = `
+<div>
+  <div
+    class="w-64 space-y-2"
+  >
+    <p
+      class="text-sm"
+    >
+      Above
+    </p>
+    <div
+      class="shrink-0 bg-border h-[1px] w-full"
+      data-orientation="horizontal"
+      role="none"
+    />
+    <p
+      class="text-sm"
+    >
+      Below
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Separator/Vertical matches snapshot 1`] = `
+<div>
+  <div
+    class="flex h-8 items-center gap-2"
+  >
+    <span
+      class="text-sm"
+    >
+      Left
+    </span>
+    <div
+      class="shrink-0 bg-border h-full w-[1px]"
+      data-orientation="vertical"
+      role="none"
+    />
+    <span
+      class="text-sm"
+    >
+      Right
+    </span>
+  </div>
+</div>
+`;

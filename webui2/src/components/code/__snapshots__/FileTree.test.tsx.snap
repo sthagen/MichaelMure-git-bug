@@ -1,0 +1,423 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FileTree/RootDirectory matches snapshot 1`] = `
+<div>
+  <div
+    class="border-border overflow-hidden rounded-md border"
+  >
+    <table
+      class="w-full text-sm"
+    >
+      <tbody
+        class="divide-border divide-y"
+      >
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            class="w-6 py-2 pl-4"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-folder size-4 text-blue-500 dark:text-blue-400"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+              />
+            </svg>
+          </td>
+          <td
+            class="px-3 py-2"
+          >
+            <a
+              class="font-mono font-medium hover:underline"
+              href="/my-repo/tree/main/docs"
+            >
+              docs
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell"
+          >
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/my-repo/commit/def2"
+            >
+              docs: update getting started guide
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell"
+          >
+            2 days ago
+          </td>
+        </tr>
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            class="w-6 py-2 pl-4"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-folder size-4 text-blue-500 dark:text-blue-400"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+              />
+            </svg>
+          </td>
+          <td
+            class="px-3 py-2"
+          >
+            <a
+              class="font-mono font-medium hover:underline"
+              href="/my-repo/tree/main/src"
+            >
+              src
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell"
+          >
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/my-repo/commit/def1"
+            >
+              refactor: restructure source directory
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell"
+          >
+            1 day ago
+          </td>
+        </tr>
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            class="w-6 py-2 pl-4"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-file text-muted-foreground size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+              />
+              <path
+                d="M14 2v5a1 1 0 0 0 1 1h5"
+              />
+            </svg>
+          </td>
+          <td
+            class="px-3 py-2"
+          >
+            <a
+              class="font-mono  hover:underline"
+              href="/my-repo/blob/main/.gitignore"
+            >
+              .gitignore
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell"
+          />
+          <td
+            class="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell"
+          />
+        </tr>
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            class="w-6 py-2 pl-4"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-file text-muted-foreground size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+              />
+              <path
+                d="M14 2v5a1 1 0 0 0 1 1h5"
+              />
+            </svg>
+          </td>
+          <td
+            class="px-3 py-2"
+          >
+            <a
+              class="font-mono  hover:underline"
+              href="/my-repo/blob/main/package.json"
+            >
+              package.json
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell"
+          >
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/my-repo/commit/def4"
+            >
+              chore: bump dependencies
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell"
+          >
+            about 2 hours ago
+          </td>
+        </tr>
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            class="w-6 py-2 pl-4"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-file text-muted-foreground size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+              />
+              <path
+                d="M14 2v5a1 1 0 0 0 1 1h5"
+              />
+            </svg>
+          </td>
+          <td
+            class="px-3 py-2"
+          >
+            <a
+              class="font-mono  hover:underline"
+              href="/my-repo/blob/main/README.md"
+            >
+              README.md
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell"
+          >
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/my-repo/commit/def3"
+            >
+              docs: add badges to README
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell"
+          >
+            about 1 hour ago
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;
+
+exports[`FileTree/SubDirectory matches snapshot 1`] = `
+<div>
+  <div
+    class="border-border overflow-hidden rounded-md border"
+  >
+    <table
+      class="w-full text-sm"
+    >
+      <tbody
+        class="divide-border divide-y"
+      >
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            colspan="4"
+          >
+            <a
+              class="flex items-center gap-3 py-2 pl-4"
+              href="/my-repo/tree/main"
+            >
+              <svg
+                aria-hidden="true"
+                class="lucide lucide-folder size-4 text-blue-500 dark:text-blue-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+                />
+              </svg>
+              <span
+                class="text-muted-foreground font-mono"
+              >
+                ..
+              </span>
+            </a>
+          </td>
+        </tr>
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            class="w-6 py-2 pl-4"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-folder size-4 text-blue-500 dark:text-blue-400"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"
+              />
+            </svg>
+          </td>
+          <td
+            class="px-3 py-2"
+          >
+            <a
+              class="font-mono font-medium hover:underline"
+              href="/my-repo/tree/main/src/components"
+            >
+              components
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell"
+          >
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/my-repo/commit/def5"
+            >
+              feat: add button component
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell"
+          >
+            about 1 hour ago
+          </td>
+        </tr>
+        <tr
+          class="hover:bg-muted/40"
+        >
+          <td
+            class="w-6 py-2 pl-4"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-file text-muted-foreground size-4"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+              />
+              <path
+                d="M14 2v5a1 1 0 0 0 1 1h5"
+              />
+            </svg>
+          </td>
+          <td
+            class="px-3 py-2"
+          >
+            <a
+              class="font-mono  hover:underline"
+              href="/my-repo/blob/main/src/index.ts"
+            >
+              index.ts
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden max-w-xs truncate px-3 py-2 md:table-cell"
+          >
+            <a
+              class="hover:text-foreground hover:underline"
+              href="/my-repo/commit/def6"
+            >
+              fix: correct export paths
+            </a>
+          </td>
+          <td
+            class="text-muted-foreground hidden px-4 py-2 text-right text-xs whitespace-nowrap md:table-cell"
+          >
+            about 2 hours ago
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;

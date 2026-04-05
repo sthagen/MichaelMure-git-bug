@@ -1,0 +1,90 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LabelBadge/AllColors matches snapshot 1`] = `
+<div>
+  <div
+    class="flex flex-wrap gap-2"
+  >
+    <span
+      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+      style="background-color: rgb(252, 41, 41); color: rgba(255, 255, 255, 0.9);"
+    >
+      bug
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+      style="background-color: rgb(163, 230, 53); color: rgba(0, 0, 0, 0.75);"
+    >
+      enhancement
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+      style="background-color: rgb(30, 80, 160); color: rgba(255, 255, 255, 0.9);"
+    >
+      documentation
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+      style="background-color: rgb(0, 150, 136); color: rgba(255, 255, 255, 0.9);"
+    >
+      help wanted
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+      style="background-color: rgb(200, 200, 200); color: rgba(0, 0, 0, 0.75);"
+    >
+      wontfix
+    </span>
+    <span
+      class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+      style="background-color: rgb(255, 152, 0); color: rgba(0, 0, 0, 0.75);"
+    >
+      priority
+    </span>
+  </div>
+</div>
+`;
+
+exports[`LabelBadge/Clickable matches snapshot 1`] = `
+<div>
+  <span
+    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+    style="background-color: rgb(100, 200, 150); color: rgba(0, 0, 0, 0.75);"
+  >
+    feature
+  </span>
+</div>
+`;
+
+exports[`LabelBadge/DarkBackground matches snapshot 1`] = `
+<div>
+  <span
+    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+    style="background-color: rgb(30, 80, 160); color: rgba(255, 255, 255, 0.9);"
+  >
+    documentation
+  </span>
+</div>
+`;
+
+exports[`LabelBadge/Default matches snapshot 1`] = `
+<div>
+  <span
+    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+    style="background-color: rgb(252, 41, 41); color: rgba(255, 255, 255, 0.9);"
+  >
+    bug
+  </span>
+</div>
+`;
+
+exports[`LabelBadge/LightBackground matches snapshot 1`] = `
+<div>
+  <span
+    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+    style="background-color: rgb(163, 230, 53); color: rgba(0, 0, 0, 0.75);"
+  >
+    enhancement
+  </span>
+</div>
+`;

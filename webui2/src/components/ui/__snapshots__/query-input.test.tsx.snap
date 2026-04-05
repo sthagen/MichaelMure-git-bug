@@ -1,0 +1,266 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`QueryInput/AsyncCompletions matches snapshot 1`] = `
+<div>
+  <div
+    class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+  >
+    <div
+      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-search"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m21 21-4.34-4.34"
+        />
+        <circle
+          cx="11"
+          cy="11"
+          r="8"
+        />
+      </svg>
+    </div>
+    <div
+      aria-hidden="true"
+      class="text-foreground pointer-events-none absolute inset-0 flex items-center overflow-hidden pr-3 pl-9 font-mono text-sm whitespace-pre"
+    />
+    <input
+      autocomplete="off"
+      class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
+      placeholder="Type label: to see async loading…"
+      spellcheck="false"
+      type="text"
+      value=""
+    />
+  </div>
+</div>
+`;
+
+exports[`QueryInput/Default matches snapshot 1`] = `
+<div>
+  <div
+    class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+  >
+    <div
+      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-search"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m21 21-4.34-4.34"
+        />
+        <circle
+          cx="11"
+          cy="11"
+          r="8"
+        />
+      </svg>
+    </div>
+    <div
+      aria-hidden="true"
+      class="text-foreground pointer-events-none absolute inset-0 flex items-center overflow-hidden pr-3 pl-9 font-mono text-sm whitespace-pre"
+    >
+      <span>
+        <span
+          class="text-green-600 dark:text-green-400"
+        >
+          status:
+        </span>
+        <span>
+          open
+        </span>
+      </span>
+    </div>
+    <input
+      autocomplete="off"
+      class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
+      placeholder="status:open author:… label:…"
+      spellcheck="false"
+      type="text"
+      value="status:open"
+    />
+  </div>
+</div>
+`;
+
+exports[`QueryInput/SyntaxOnly matches snapshot 1`] = `
+<div>
+  <div
+    class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+  >
+    <div
+      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-search"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m21 21-4.34-4.34"
+        />
+        <circle
+          cx="11"
+          cy="11"
+          r="8"
+        />
+      </svg>
+    </div>
+    <div
+      aria-hidden="true"
+      class="text-foreground pointer-events-none absolute inset-0 flex items-center overflow-hidden pr-3 pl-9 font-mono text-sm whitespace-pre"
+    >
+      <span>
+        <span
+          class="text-green-600 dark:text-green-400"
+        >
+          status:
+        </span>
+        <span>
+          open
+        </span>
+      </span>
+      <span>
+         
+      </span>
+      <span>
+        label:bug
+      </span>
+    </div>
+    <input
+      autocomplete="off"
+      class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
+      placeholder="Search…"
+      spellcheck="false"
+      type="text"
+      value="status:open label:bug"
+    />
+  </div>
+</div>
+`;
+
+exports[`QueryInput/WithFilters matches snapshot 1`] = `
+<div>
+  <div
+    class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+  >
+    <div
+      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-search"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m21 21-4.34-4.34"
+        />
+        <circle
+          cx="11"
+          cy="11"
+          r="8"
+        />
+      </svg>
+    </div>
+    <div
+      aria-hidden="true"
+      class="text-foreground pointer-events-none absolute inset-0 flex items-center overflow-hidden pr-3 pl-9 font-mono text-sm whitespace-pre"
+    >
+      <span>
+        <span
+          class="text-green-600 dark:text-green-400"
+        >
+          status:
+        </span>
+        <span>
+          open
+        </span>
+      </span>
+      <span>
+         
+      </span>
+      <span>
+        <span
+          class="text-yellow-600 dark:text-yellow-500"
+        >
+          label:
+        </span>
+        <span>
+          bug
+        </span>
+      </span>
+      <span>
+         
+      </span>
+      <span>
+        <span
+          class="text-blue-600 dark:text-blue-400"
+        >
+          author:
+        </span>
+        <span>
+          janedoe
+        </span>
+      </span>
+      <span>
+         
+      </span>
+      <span>
+        fix
+      </span>
+      <span>
+         
+      </span>
+      <span>
+        login
+      </span>
+    </div>
+    <input
+      autocomplete="off"
+      class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
+      placeholder="status:open author:… label:…"
+      spellcheck="false"
+      type="text"
+      value="status:open label:bug author:janedoe fix login"
+    />
+  </div>
+</div>
+`;

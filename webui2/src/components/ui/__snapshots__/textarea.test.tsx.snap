@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Textarea/Default matches snapshot 1`] = `
+<div>
+  <textarea
+    class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+    placeholder="Write a comment…"
+  />
+</div>
+`;
+
+exports[`Textarea/Disabled matches snapshot 1`] = `
+<div>
+  <textarea
+    class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+    disabled=""
+    placeholder="Disabled"
+  />
+</div>
+`;
+
+exports[`Textarea/WithValue matches snapshot 1`] = `
+<div>
+  <textarea
+    class="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+  >
+    This is some content in the textarea.
+  </textarea>
+</div>
+`;

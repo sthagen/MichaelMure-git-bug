@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Skeleton/Card matches snapshot 1`] = `
+<div>
+  <div
+    class="flex items-center gap-4"
+  >
+    <div
+      class="animate-pulse bg-primary/10 size-12 rounded-full"
+    />
+    <div
+      class="space-y-2"
+    >
+      <div
+        class="animate-pulse rounded-md bg-primary/10 h-4 w-48"
+      />
+      <div
+        class="animate-pulse rounded-md bg-primary/10 h-4 w-32"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Skeleton/Circle matches snapshot 1`] = `
+<div>
+  <div
+    class="animate-pulse bg-primary/10 size-10 rounded-full"
+  />
+</div>
+`;
+
+exports[`Skeleton/Default matches snapshot 1`] = `
+<div>
+  <div
+    class="animate-pulse rounded-md bg-primary/10 h-4 w-48"
+  />
+</div>
+`;

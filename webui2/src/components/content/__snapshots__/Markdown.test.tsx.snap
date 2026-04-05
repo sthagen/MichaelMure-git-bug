@@ -1,0 +1,413 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Markdown/BasicFormatting matches snapshot 1`] = `
+<div>
+  <div
+    class="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-muted prose-pre:text-foreground prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-img:inline prose-img:my-0"
+  >
+    <h1
+      id="heading-1"
+    >
+      Heading 1
+      <a
+        aria-hidden="true"
+        href="#heading-1"
+        tabindex="-1"
+      >
+        <span
+          class="icon icon-link"
+        />
+      </a>
+    </h1>
+    
+
+    <h2
+      id="heading-2"
+    >
+      Heading 2
+      <a
+        aria-hidden="true"
+        href="#heading-2"
+        tabindex="-1"
+      >
+        <span
+          class="icon icon-link"
+        />
+      </a>
+    </h2>
+    
+
+    <h3
+      id="heading-3"
+    >
+      Heading 3
+      <a
+        aria-hidden="true"
+        href="#heading-3"
+        tabindex="-1"
+      >
+        <span
+          class="icon icon-link"
+        />
+      </a>
+    </h3>
+    
+
+    <p>
+      This is a paragraph with 
+      <strong>
+        bold
+      </strong>
+      , 
+      <em>
+        italic
+      </em>
+      , and 
+      <code>
+        inline code
+      </code>
+      .
+    </p>
+    
+
+    <ul>
+      
+
+      <li>
+        Unordered list item 1
+      </li>
+      
+
+      <li>
+        Unordered list item 2
+
+        <ul>
+          
+
+          <li>
+            Nested item
+          </li>
+          
+
+        </ul>
+        
+
+      </li>
+      
+
+    </ul>
+    
+
+    <ol>
+      
+
+      <li>
+        Ordered list item 1
+      </li>
+      
+
+      <li>
+        Ordered list item 2
+      </li>
+      
+
+    </ol>
+    
+
+    <blockquote>
+      
+
+      <p>
+        This is a blockquote.
+      </p>
+      
+
+    </blockquote>
+    
+
+    <hr />
+    
+
+    <p>
+      <a
+        href="https://example.com"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        A link
+      </a>
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Markdown/CodeBlock matches snapshot 1`] = `
+<div>
+  <div
+    class="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-muted prose-pre:text-foreground prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-img:inline prose-img:my-0"
+  >
+    <p>
+      Here is a code block:
+    </p>
+    
+
+    <pre>
+      <code
+        class="language-typescript"
+      >
+        interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+function greet(user: User): string {
+  return \`Hello, \${user.name}!\`;
+}
+
+      </code>
+    </pre>
+  </div>
+</div>
+`;
+
+exports[`Markdown/Comment matches snapshot 1`] = `
+<div>
+  <div
+    class="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-muted prose-pre:text-foreground prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-img:inline prose-img:my-0"
+  >
+    <p>
+      Fixed the issue by updating the query builder.
+    </p>
+    
+
+    <p>
+      The problem was that 
+      <code>
+        buildQuery()
+      </code>
+       wasn't escaping special characters in label names containing spaces.
+    </p>
+    
+
+    <pre>
+      <code
+        class="language-diff"
+      >
+        - const q = \`label:\${name}\`;
++ const q = \`label:"\${name}"\`;
+
+      </code>
+    </pre>
+    
+
+    <p>
+      Closes #42.
+    </p>
+  </div>
+</div>
+`;
+
+exports[`Markdown/GithubFlavored matches snapshot 1`] = `
+<div>
+  <div
+    class="prose prose-sm dark:prose-invert max-w-none prose-pre:bg-muted prose-pre:text-foreground prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-img:inline prose-img:my-0"
+  >
+    <h2
+      id="task-list"
+    >
+      Task list
+      <a
+        aria-hidden="true"
+        href="#task-list"
+        tabindex="-1"
+      >
+        <span
+          class="icon icon-link"
+        />
+      </a>
+    </h2>
+    
+
+    <ul
+      class="contains-task-list"
+    >
+      
+
+      <li
+        class="task-list-item"
+      >
+        <input
+          checked=""
+          disabled=""
+          type="checkbox"
+        />
+         Completed task
+      </li>
+      
+
+      <li
+        class="task-list-item"
+      >
+        <input
+          disabled=""
+          type="checkbox"
+        />
+         Incomplete task
+      </li>
+      
+
+      <li
+        class="task-list-item"
+      >
+        <input
+          disabled=""
+          type="checkbox"
+        />
+         Another task
+      </li>
+      
+
+    </ul>
+    
+
+    <h2
+      id="table"
+    >
+      Table
+      <a
+        aria-hidden="true"
+        href="#table"
+        tabindex="-1"
+      >
+        <span
+          class="icon icon-link"
+        />
+      </a>
+    </h2>
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Feature
+          </th>
+          <th>
+            Status
+          </th>
+          <th>
+            Priority
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Auth
+          </td>
+          <td>
+            Done
+          </td>
+          <td>
+            High
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Search
+          </td>
+          <td>
+            WIP
+          </td>
+          <td>
+            Medium
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Export
+          </td>
+          <td>
+            Todo
+          </td>
+          <td>
+            Low
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+
+    <h2
+      id="strikethrough"
+    >
+      Strikethrough
+      <a
+        aria-hidden="true"
+        href="#strikethrough"
+        tabindex="-1"
+      >
+        <span
+          class="icon icon-link"
+        />
+      </a>
+    </h2>
+    
+
+    <p>
+      This is 
+      <del>
+        deleted
+      </del>
+       text.
+    </p>
+    
+
+    <h2
+      id="emoji"
+    >
+      Emoji
+      <a
+        aria-hidden="true"
+        href="#emoji"
+        tabindex="-1"
+      >
+        <span
+          class="icon icon-link"
+        />
+      </a>
+    </h2>
+    
+
+    <p>
+      🚀 🐛 ✨
+    </p>
+  </div>
+</div>
+`;
