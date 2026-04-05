@@ -95,6 +95,9 @@ function lineNumberTransformer(): ShikiTransformer {
   return {
     line(node, line) {
       node.properties["dataLineNumber"] = line;
+      // Append a \n text node inside each .line so copy-paste preserves newlines
+      // (we strip the inter-element whitespace nodes in code() below).
+      node.children.push({ type: "text", value: "\n" });
     },
     // Remove whitespace text nodes between .line spans — they create
     // empty anonymous table rows when using display: table-row.
