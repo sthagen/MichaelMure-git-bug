@@ -26,7 +26,7 @@ Node 22 is required. If you use asdf, `.tool-versions` pins the right version au
 | `/`                            | Repo picker — auto-redirects for single repo   |
 | `/$repo/tree/$ref/...path`     | Code browser — directory listing               |
 | `/$repo/blob/$ref/...path`     | Code browser — file viewer                     |
-| `/$repo/commits/$ref`          | Commit history                                 |
+| `/$repo/commits/$ref?path=...` | Commit history (optionally scoped to a path)   |
 | `/$repo/commit/$hash`          | Commit detail with collapsible file diffs       |
 | `/$repo/issues`                | Issue list with search, filters, pagination     |
 | `/$repo/issues/new`            | New issue form                                 |
@@ -71,7 +71,7 @@ src/
 
 Components are organized in three layers:
 
-- **`ui/`** — Generic primitives managed by shadcn CLI (`npx shadcn add`). No domain knowledge. Examples: button, input, avatar, badge, popover, separator, skeleton, textarea.
+- **`ui/`** — Generic primitives managed by shadcn CLI (`npx shadcn add`) or hand-written. No domain knowledge. Examples: button, input, avatar, badge, listbox (presentational compound components for dropdown menus), popover, separator, skeleton, textarea. Interactive dropdowns use `@floating-ui/react` hooks wired per-consumer with `Listbox.*` presentational primitives.
 
 - **`shared/`** — App-level reusable components. These know about the domain (bug status, labels, identities) but contain no data fetching. They use **composition APIs** (compound components) and are typed against **colocated GraphQL fragments**. Examples: issue-row, label-badge, status-badge, status-tabs, comment-card, pagination, query-input, write-preview, empty-state, section-heading, issue-filters.
 

@@ -54,7 +54,7 @@ function CodeLayout() {
   function handleRefSelect(newRef: GitRef) {
     const refName = newRef.shortName;
     if (viewMode === "commits") {
-      void navigate({ to: "/$repo/commits/$ref", params: { repo, ref: refName } });
+      void navigate({ to: "/$repo/commits/$ref", params: { repo, ref: refName }, search: { path: currentPath || undefined } });
     } else if (viewMode === "blob") {
       void navigate({
         to: "/$repo/blob/$ref/$",
@@ -92,6 +92,7 @@ function CodeLayout() {
             <ButtonLink
               to="/$repo/commits/$ref"
               params={{ repo, ref: currentRef }}
+              search={{ path: currentPath || undefined }}
               variant="outline"
               size="sm"
             >
