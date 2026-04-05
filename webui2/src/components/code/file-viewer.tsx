@@ -2,7 +2,6 @@
 // Uses Shiki codeToHast → hast-util-to-jsx-runtime for native React rendering.
 // Line selection syncs with the URL hash (e.g. #L12 or #L12:25).
 
-import type { Element } from "hast";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { Copy } from "lucide-react";
 import { useState, useEffect, useCallback, Fragment, type ReactNode } from "react";
@@ -225,13 +224,7 @@ export function FileViewer({ blob }: FileViewerProps) {
       });
 
       const node = toJsxRuntime(hast, { Fragment, jsx, jsxs });
-
-      // Count lines from the hast tree (number of .line spans in <code>)
-      const pre = hast.children[0] as Element;
-      const code = pre.children[0] as Element;
-      const lineCount = code.children.filter(
-        (c) => c.type === "element" && (c.properties?.className as string[] | undefined)?.includes("line"),
-      ).length;
+      const lineCount = blob.text!.split("\n").length;
 
       setHighlighted({ node, lineCount });
     })();
@@ -299,7 +292,7 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
       selectors.push(`.code-lines code > .line:nth-child(${i})`);
     }
     return (
-      <style>{`${selectors.join(",")}{background-color:color-mix(in srgb, var(--color-accent) 50%, transparent)}`}</style>
+      <style>{`${selectors.join(",")}{background-color:rgba(255,235,59,0.25)}`}</style>
     );
   })();
 
@@ -322,11 +315,9 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
         className={cn(
           "[&_.shiki]:!bg-transparent",
           "[&_pre]:!m-0 [&_pre]:!p-0",
-          // Each .line is a table-row with line number + code
           "[&_code]:block [&_code]:py-2",
-          "[&_code>.line]:table-row",
-          "[&_code>.line::before]:table-cell [&_code>.line::before]:w-12 [&_code>.line::before]:pr-4 [&_code>.line::before]:pl-4 [&_code>.line::before]:text-right [&_code>.line::before]:text-muted-foreground/50 [&_code>.line::before]:select-none [&_code>.line::before]:cursor-pointer [&_code>.line::before]:content-[attr(data-line-number)]",
-          "[&_code>.line]:pr-4",
+          "[&_code>.line]:block [&_code>.line]:min-w-full [&_code>.line]:pr-4",
+          "[&_code>.line::before]:inline-block [&_code>.line::before]:w-12 [&_code>.line::before]:mr-4 [&_code>.line::before]:text-right [&_code>.line::before]:text-muted-foreground/50 [&_code>.line::before]:select-none [&_code>.line::before]:cursor-pointer [&_code>.line::before]:content-[attr(data-line-number)]",
         )}
       >
         {children}
