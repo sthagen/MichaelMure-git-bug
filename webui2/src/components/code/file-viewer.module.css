@@ -37,6 +37,7 @@
   opacity: 0.4;
   user-select: none;
   cursor: pointer;
+  background: transparent !important;
 }
 
 .line-number:hover {
