@@ -14,22 +14,22 @@
   display: block;
 }
 
-.code-content code > :global(.line) {
+.line {
   display: block;
   min-width: 100%;
   padding-right: 1rem;
 }
 
-.code-content code > :global(.line):first-child {
+.line:first-child {
   padding-top: 0.5rem;
 }
 
-.code-content code > :global(.line):last-child {
+.line:last-child {
   padding-bottom: 0.5rem;
 }
 
 /* Line numbers via ::before pseudo-element */
-.code-content code > :global(.line)::before {
+.line::before {
   content: attr(data-line-number);
   display: inline-block;
   width: 3rem;

@@ -94,13 +94,15 @@ function getLangEntry(path: string): LangEntry | undefined {
 function lineNumberTransformer(): ShikiTransformer {
   return {
     line(node, line) {
+      // Replace Shiki's "line" class with our CSS module class
+      node.properties["className"] = [styles["line"]!];
       node.properties["dataLineNumber"] = line;
-      // Append a \n text node inside each .line so copy-paste preserves newlines
+      // Append a \n text node so copy-paste preserves newlines
       // (we strip the inter-element whitespace nodes in code() below).
       node.children.push({ type: "text", value: "\n" });
     },
     // Remove whitespace text nodes between .line spans — they create
-    // empty anonymous table rows when using display: table-row.
+    // empty anonymous rows when using display: block.
     code(node) {
       node.children = node.children.filter(
         (c) => !(c.type === "text" && c.value.trim() === ""),
@@ -289,10 +291,10 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
   // targeting the CSS module's scoped class.
   const highlightStyle = (() => {
     if (!selectedRange) return null;
-    const scope = `.${styles["code-content"]}`;
+    const lineClass = styles["line"];
     const selectors: string[] = [];
     for (let i = selectedRange.start; i <= selectedRange.end; i++) {
-      selectors.push(`${scope} code > .line:nth-child(${i})`);
+      selectors.push(`.${lineClass}:nth-child(${i})`);
     }
     const rule = selectors.join(",");
     return <style>{`${rule}{background-color:rgba(255,235,59,0.3)}:root.dark ${rule}{background-color:rgba(255,235,59,0.15)}`}</style>;
