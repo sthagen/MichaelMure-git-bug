@@ -378,7 +378,7 @@ interface IconProps {
 
 export function Icon({ children }: IconProps) {
   return (
-    <div className="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0">
+    <div className="text-muted-foreground pointer-events-none absolute left-3 flex size-4 shrink-0 items-center justify-center [&>svg]:size-4">
       {children}
     </div>
   );
