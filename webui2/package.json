@@ -50,6 +50,7 @@
     "@storybook/react-vite": "^10.3.4",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.2",
+    "@tanstack/eslint-plugin-router": "^1.161.6",
     "@tanstack/router-plugin": "^1.167.9",
     "@tsconfig/strictest": "^2.0.8",
     "@tsconfig/vite-react": "^7.0.2",
