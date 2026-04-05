@@ -53,17 +53,57 @@ src/
 │   │   └── commit/     # commit/$hash
 │   └── auth/           # select-identity
 ├── components/
-│   ├── bugs/           # Issue components (BugRow, Timeline, ...)
-│   ├── code/           # Code browser (FileTree, FileViewer, ...)
-│   ├── content/        # Markdown renderer with repo-aware links
-│   ├── layout/         # Header + Shell
-│   └── ui/             # shadcn/ui + ButtonLink, BackLink
-├── graphql/            # .graphql source files — edit these, then run codegen
+│   ├── ui/             # shadcn/ui primitives (button, input, avatar, ...)
+│   ├── shared/         # Reusable app components with composition APIs
+│   ├── bugs/           # Bug-feature components with data fetching
+│   ├── code/           # Code browser components
+│   ├── content/        # Markdown renderer
+│   └── layout/         # Header + Shell
+├── graphql/            # .graphql query files — edit these, then run codegen
 ├── __generated__/      # Generated typed hooks — do not edit
 ├── assets/             # Logo SVG
-├── lib/                # apollo.ts, auth.tsx, theme.tsx, utils.ts
+├── lib/                # apollo.ts, auth.tsx, theme.tsx, utils.ts, query-utils.ts
 ├── routeTree.gen.ts    # Auto-generated route tree — do not edit
 └── App.tsx             # Router instance + context
+```
+
+### Component layers
+
+Components are organized in three layers:
+
+- **`ui/`** — Generic primitives managed by shadcn CLI (`npx shadcn add`). No domain knowledge. Examples: button, input, avatar, badge, popover, separator, skeleton, textarea.
+
+- **`shared/`** — App-level reusable components. These know about the domain (bug status, labels, identities) but contain no data fetching. They use **composition APIs** (compound components) and are typed against **colocated GraphQL fragments**. Examples: issue-row, label-badge, status-badge, status-tabs, comment-card, pagination, query-input, write-preview, empty-state, section-heading, issue-filters.
+
+- **`bugs/`**, **`code/`** — Feature components with GraphQL mutations, `useAuth`, and other side effects. These compose `shared/` and `ui/` components.
+
+### GraphQL fragments
+
+Fragments are colocated with the components that consume them in `.graphql` files:
+
+```
+src/components/shared/
+├── identity-summary.graphql   → IdentitySummaryFragment
+├── label-badge.graphql        → LabelFieldsFragment
+├── issue-row.graphql          → BugSummaryFragment (composes above)
+src/components/bugs/
+└── timeline.graphql           → timeline event fragments
+```
+
+Components are typed against their fragments:
+
+```tsx
+import type { LabelFieldsFragment } from "@/__generated__/graphql";
+import { LabelBadge } from "@/components/shared/label-badge";
+
+// Spread fragment data directly onto the component
+<LabelBadge {...label} />
+```
+
+After changing any `.graphql` file, regenerate typed hooks:
+
+```bash
+pnpm codegen
 ```
 
 ## Routing
@@ -80,6 +120,9 @@ The router context provides:
 Custom link components:
 - `ButtonLink` — `createLink()`-wrapped anchor with button styling and preload-on-intent
 - `BackLink` — uses `router.history.back()` when possible, falls back to a typed Link
+- `LabelBadgeLink` — `createLink()`-wrapped label badge for filter navigation
+- `StatusTabs.Tab` — `createLink()`-wrapped status toggle tab
+- `Pagination.Previous/Next` — `createLink()`-wrapped pagination buttons
 
 ## Data loading
 
@@ -100,18 +143,73 @@ The router waits for `toPromise()` before transitioning, then the component read
 
 Search params that affect data loading use `loaderDeps` so the loader re-runs when they change (e.g. issue filters, pagination cursors).
 
-After changing any `.graphql` file, regenerate typed hooks:
+## Storybook
+
+[Storybook 10](https://storybook.js.org/) is set up for component development and testing:
 
 ```bash
-pnpm codegen
+pnpm storybook        # Dev server on http://localhost:6006
+pnpm build-storybook  # Production build
+```
+
+Every presentational component has stories. Stories use the CSF3 format with `satisfies Meta<typeof Component>` for full type inference. Mock data is typed against GraphQL fragment types.
+
+## Testing
+
+Tests run via [Vitest 4](https://vitest.dev/) with two projects:
+
+| Project | Environment | What it does |
+| --- | --- | --- |
+| **storybook** | Chromium (Playwright) | Smoke tests every story + a11y checks (axe-core) + play function interaction tests |
+| **snapshot** | happy-dom | DOM snapshot tests via portable stories API |
+
+```bash
+pnpm test                          # Run all tests
+pnpm test -- --project=storybook   # Storybook tests only
+pnpm test -- --project=snapshot    # Snapshot tests only
+pnpm test -- -u                    # Update snapshots
+```
+
+### Adding tests
+
+Every story automatically becomes a smoke test and an a11y test. For snapshot tests, add a `*.test.tsx` file next to the story:
+
+```tsx
+import { composeStories } from "@storybook/react-vite";
+import { expect, test } from "vitest";
+import * as stories from "./my-component.stories";
+
+const composed = composeStories(stories);
+
+for (const [name, Story] of Object.entries(composed)) {
+  test(`MyComponent/${name} matches snapshot`, async () => {
+    await Story.run();
+    expect(document.body.firstChild).toMatchSnapshot();
+  });
+}
+```
+
+For interaction tests, add `play` functions to stories:
+
+```tsx
+export const MyInteraction: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button"));
+    await expect(canvas.getByText("Result")).toBeVisible();
+  },
+};
 ```
 
 ## Tooling
 
 | Tool | Purpose |
 | --- | --- |
-| [oxlint](https://oxc.rs) | Linter with type-aware rules (replaces ESLint) |
+| [oxlint](https://oxc.rs) | Linter with type-aware rules + storybook/router plugins |
 | [oxfmt](https://oxc.rs) | Formatter with import + Tailwind class sorting |
+| [Storybook 10](https://storybook.js.org) | Component development + visual testing |
+| [Vitest 4](https://vitest.dev) | Test runner (browser + happy-dom) |
+| [@storybook/addon-a11y](https://storybook.js.org/addons/@storybook/addon-a11y) | Accessibility testing via axe-core |
 | [valibot](https://valibot.dev) | Runtime validation for search params and fetch responses |
 | [@tsconfig/bases](https://github.com/tsconfig/bases) | Shared tsconfig presets (vite-react + strictest) |
 
@@ -121,6 +219,9 @@ pnpm lint:fix    # oxlint with auto-fix
 pnpm fmt         # oxfmt format
 pnpm fmt:check   # oxfmt check only
 pnpm check       # lint + format check
+pnpm test        # vitest (all projects)
+pnpm storybook   # storybook dev server
+pnpm codegen     # regenerate GraphQL types
 ```
 
 ## Auth
