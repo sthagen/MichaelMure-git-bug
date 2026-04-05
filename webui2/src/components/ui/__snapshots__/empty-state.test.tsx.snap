@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`EmptyState/Default matches snapshot 1`] = `
+<div>
+  <p
+    class="text-muted-foreground px-4 py-8 text-center text-sm"
+  >
+    No open issues found.
+  </p>
+</div>
+`;
+
+exports[`EmptyState/NotFound matches snapshot 1`] = `
+<div>
+  <p
+    class="text-muted-foreground px-4 py-8 text-center text-sm"
+  >
+    Issue not found.
+  </p>
+</div>
+`;

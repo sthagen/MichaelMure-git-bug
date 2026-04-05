@@ -1,0 +1,146 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CommentCard/Default matches snapshot 1`] = `
+<div>
+  <div
+    class="flex gap-3"
+  >
+    <span
+      class="relative flex overflow-hidden rounded-full mt-1 size-8 shrink-0"
+    >
+      <span
+        class="flex h-full w-full items-center justify-center rounded-full bg-muted font-medium text-xs"
+      >
+        JA
+      </span>
+    </span>
+    <div
+      class="border-border min-w-0 flex-1 rounded-md border"
+    >
+      <div
+        class="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm"
+      >
+        <span
+          class="text-foreground font-medium"
+        >
+          Jane Doe
+        </span>
+        <span
+          class="text-muted-foreground"
+        >
+          2 hours ago
+        </span>
+      </div>
+      <div
+        class="px-4 py-3"
+      >
+        <p
+          class="text-sm"
+        >
+          This is a comment body with some text content.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CommentCard/EmptyBody matches snapshot 1`] = `
+<div>
+  <div
+    class="flex gap-3"
+  >
+    <span
+      class="relative flex overflow-hidden rounded-full mt-1 size-8 shrink-0"
+    >
+      <span
+        class="flex h-full w-full items-center justify-center rounded-full bg-muted font-medium text-xs"
+      >
+        AL
+      </span>
+    </span>
+    <div
+      class="border-border min-w-0 flex-1 rounded-md border"
+    >
+      <div
+        class="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm"
+      >
+        <span
+          class="text-foreground font-medium"
+        >
+          Alice Wu
+        </span>
+        <span
+          class="text-muted-foreground"
+        >
+          just now
+        </span>
+      </div>
+      <div
+        class="px-4 py-3"
+      >
+        <p
+          class="text-muted-foreground text-sm italic"
+        >
+          No description provided.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CommentCard/WithEditButton matches snapshot 1`] = `
+<div>
+  <div
+    class="flex gap-3"
+  >
+    <span
+      class="relative flex overflow-hidden rounded-full mt-1 size-8 shrink-0"
+    >
+      <span
+        class="flex h-full w-full items-center justify-center rounded-full bg-muted font-medium text-xs"
+      >
+        BO
+      </span>
+    </span>
+    <div
+      class="border-border min-w-0 flex-1 rounded-md border"
+    >
+      <div
+        class="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm"
+      >
+        <span
+          class="text-foreground font-medium"
+        >
+          Bob Smith
+        </span>
+        <span
+          class="text-muted-foreground"
+        >
+          1 day ago
+        </span>
+        <span
+          class="text-muted-foreground text-xs"
+        >
+          edited
+        </span>
+        <button
+          class="text-muted-foreground hover:bg-muted ml-auto rounded-sm px-1.5 py-0.5 text-xs"
+        >
+          Edit
+        </button>
+      </div>
+      <div
+        class="px-4 py-3"
+      >
+        <p
+          class="text-sm"
+        >
+          Updated the configuration to fix the build issue.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
