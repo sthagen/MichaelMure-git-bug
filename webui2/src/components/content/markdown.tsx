@@ -178,8 +178,9 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
     <div
       className={cn(
         "prose prose-sm dark:prose-invert max-w-none",
-        // Code blocks: subtle border, rounded corners — background comes from Shiki's theme
-        "prose-pre:rounded-md prose-pre:border prose-pre:border-border prose-pre:text-sm prose-pre:overflow-x-auto",
+        // Code blocks: border, rounded corners, fallback bg for non-highlighted blocks.
+        // Shiki adds .shiki class which overrides the background via CSS in index.css.
+        "prose-pre:rounded-md prose-pre:border prose-pre:border-border prose-pre:bg-muted prose-pre:text-sm prose-pre:overflow-x-auto",
         // Inline code: muted background pill
         "prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
         // Reset inline code styles inside highlighted code blocks
