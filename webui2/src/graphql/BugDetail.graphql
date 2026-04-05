@@ -1,32 +1,11 @@
 query BugDetail($ref: String, $prefix: String!) {
   repository(ref: $ref) {
     bug(prefix: $prefix) {
-      id
-      humanId
-      status
-      title
-      labels {
-        name
-        color {
-          R
-          G
-          B
-        }
-      }
-      author {
-        id
-        humanId
-        displayName
-        avatarUrl
-      }
-      createdAt
+      ...BugSummary
       lastEdit
       participants(first: 20) {
         nodes {
-          id
-          humanId
-          displayName
-          avatarUrl
+          ...IdentitySummary
         }
       }
       timeline(first: 250) {
@@ -34,68 +13,19 @@ query BugDetail($ref: String, $prefix: String!) {
           __typename
           id
           ... on BugCreateTimelineItem {
-            author {
-              id
-              humanId
-              displayName
-              avatarUrl
-            }
-            message
-            createdAt
-            lastEdit
-            edited
+            ...BugCreateCommentFields
           }
           ... on BugAddCommentTimelineItem {
-            author {
-              id
-              humanId
-              displayName
-              avatarUrl
-            }
-            message
-            createdAt
-            lastEdit
-            edited
+            ...BugAddCommentFields
           }
           ... on BugLabelChangeTimelineItem {
-            author {
-              humanId
-              displayName
-            }
-            date
-            added {
-              name
-              color {
-                R
-                G
-                B
-              }
-            }
-            removed {
-              name
-              color {
-                R
-                G
-                B
-              }
-            }
+            ...LabelChangeFields
           }
           ... on BugSetStatusTimelineItem {
-            author {
-              humanId
-              displayName
-            }
-            date
-            status
+            ...StatusChangeFields
           }
           ... on BugSetTitleTimelineItem {
-            author {
-              humanId
-              displayName
-            }
-            date
-            title
-            was
+            ...TitleChangeFields
           }
         }
       }

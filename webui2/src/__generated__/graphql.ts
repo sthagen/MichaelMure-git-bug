@@ -1162,6 +1162,22 @@ export type SubscriptionIdentityEventsArgs = {
   repoRef?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type IdentitySummaryFragment = { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null };
+
+export type BugSummaryFragment = { __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } };
+
+export type LabelFieldsFragment = { __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } };
+
+export type BugCreateCommentFieldsFragment = { __typename?: 'BugCreateTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } };
+
+export type BugAddCommentFieldsFragment = { __typename?: 'BugAddCommentTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } };
+
+export type LabelChangeFieldsFragment = { __typename?: 'BugLabelChangeTimelineItem', date: string, author: { __typename?: 'Identity', humanId: string, displayName: string }, added: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, removed: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> };
+
+export type StatusChangeFieldsFragment = { __typename?: 'BugSetStatusTimelineItem', date: string, status: Status, author: { __typename?: 'Identity', humanId: string, displayName: string } };
+
+export type TitleChangeFieldsFragment = { __typename?: 'BugSetTitleTimelineItem', date: string, title: string, was: string, author: { __typename?: 'Identity', humanId: string, displayName: string } };
+
 export type AllIdentitiesQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -1175,13 +1191,13 @@ export type BugDetailQueryVariables = Exact<{
 }>;
 
 
-export type BugDetailQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', bug?: { __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, lastEdit: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, participants: { __typename?: 'IdentityConnection', nodes: Array<{ __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }> }, timeline: { __typename?: 'BugTimelineItemConnection', nodes: Array<
-          | { __typename: 'BugAddCommentTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, id: string, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } }
-          | { __typename: 'BugCreateTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, id: string, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } }
-          | { __typename: 'BugLabelChangeTimelineItem', date: string, id: string, author: { __typename?: 'Identity', humanId: string, displayName: string }, added: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, removed: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> }
-          | { __typename: 'BugSetStatusTimelineItem', date: string, status: Status, id: string, author: { __typename?: 'Identity', humanId: string, displayName: string } }
-          | { __typename: 'BugSetTitleTimelineItem', date: string, title: string, was: string, id: string, author: { __typename?: 'Identity', humanId: string, displayName: string } }
-        > } } | null } | null };
+export type BugDetailQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', bug?: { __typename?: 'Bug', lastEdit: string, id: string, humanId: string, status: Status, title: string, createdAt: string, participants: { __typename?: 'IdentityConnection', nodes: Array<{ __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }> }, timeline: { __typename?: 'BugTimelineItemConnection', nodes: Array<
+          | { __typename: 'BugAddCommentTimelineItem', id: string, message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } }
+          | { __typename: 'BugCreateTimelineItem', id: string, message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } }
+          | { __typename: 'BugLabelChangeTimelineItem', id: string, date: string, author: { __typename?: 'Identity', humanId: string, displayName: string }, added: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, removed: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> }
+          | { __typename: 'BugSetStatusTimelineItem', id: string, date: string, status: Status, author: { __typename?: 'Identity', humanId: string, displayName: string } }
+          | { __typename: 'BugSetTitleTimelineItem', id: string, date: string, title: string, was: string, author: { __typename?: 'Identity', humanId: string, displayName: string } }
+        > }, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } } | null } | null };
 
 export type BugListQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
@@ -1278,7 +1294,7 @@ export type UserProfileQueryVariables = Exact<{
 }>;
 
 
-export type UserProfileQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', identity?: { __typename?: 'Identity', id: string, humanId: string, name?: string | null, email?: string | null, login?: string | null, displayName: string, avatarUrl?: string | null, isProtected: boolean } | null, openCount: { __typename?: 'BugConnection', totalCount: number }, closedCount: { __typename?: 'BugConnection', totalCount: number }, bugs: { __typename?: 'BugConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, comments: { __typename?: 'BugCommentConnection', totalCount: number } }> } } | null };
+export type UserProfileQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', identity?: { __typename?: 'Identity', id: string, humanId: string, name?: string | null, email?: string | null, login?: string | null, displayName: string, avatarUrl?: string | null, isProtected: boolean } | null, openCount: { __typename?: 'BugConnection', totalCount: number }, closedCount: { __typename?: 'BugConnection', totalCount: number }, bugs: { __typename?: 'BugConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } }> } } | null };
 
 export type ValidLabelsQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
@@ -1287,7 +1303,101 @@ export type ValidLabelsQueryVariables = Exact<{
 
 export type ValidLabelsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', validLabels: { __typename?: 'LabelConnection', nodes: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> } } | null };
 
-
+export const LabelFieldsFragmentDoc = gql`
+    fragment LabelFields on Label {
+  name
+  color {
+    R
+    G
+    B
+  }
+}
+    `;
+export const IdentitySummaryFragmentDoc = gql`
+    fragment IdentitySummary on Identity {
+  id
+  humanId
+  displayName
+  avatarUrl
+}
+    `;
+export const BugSummaryFragmentDoc = gql`
+    fragment BugSummary on Bug {
+  id
+  humanId
+  status
+  title
+  labels {
+    ...LabelFields
+  }
+  author {
+    ...IdentitySummary
+  }
+  createdAt
+  comments {
+    totalCount
+  }
+}
+    ${LabelFieldsFragmentDoc}
+${IdentitySummaryFragmentDoc}`;
+export const BugCreateCommentFieldsFragmentDoc = gql`
+    fragment BugCreateCommentFields on BugCreateTimelineItem {
+  author {
+    ...IdentitySummary
+  }
+  message
+  createdAt
+  lastEdit
+  edited
+}
+    ${IdentitySummaryFragmentDoc}`;
+export const BugAddCommentFieldsFragmentDoc = gql`
+    fragment BugAddCommentFields on BugAddCommentTimelineItem {
+  author {
+    ...IdentitySummary
+  }
+  message
+  createdAt
+  lastEdit
+  edited
+}
+    ${IdentitySummaryFragmentDoc}`;
+export const LabelChangeFieldsFragmentDoc = gql`
+    fragment LabelChangeFields on BugLabelChangeTimelineItem {
+  author {
+    humanId
+    displayName
+  }
+  date
+  added {
+    ...LabelFields
+  }
+  removed {
+    ...LabelFields
+  }
+}
+    ${LabelFieldsFragmentDoc}`;
+export const StatusChangeFieldsFragmentDoc = gql`
+    fragment StatusChangeFields on BugSetStatusTimelineItem {
+  author {
+    humanId
+    displayName
+  }
+  date
+  status
+}
+    `;
+export const TitleChangeFieldsFragmentDoc = gql`
+    fragment TitleChangeFields on BugSetTitleTimelineItem {
+  author {
+    humanId
+    displayName
+  }
+  date
+  title
+  was
+}
+    `;
 export const AllIdentitiesDocument = gql`
     query AllIdentities($ref: String) {
   repository(ref: $ref) {
@@ -1345,32 +1455,11 @@ export const BugDetailDocument = gql`
     query BugDetail($ref: String, $prefix: String!) {
   repository(ref: $ref) {
     bug(prefix: $prefix) {
-      id
-      humanId
-      status
-      title
-      labels {
-        name
-        color {
-          R
-          G
-          B
-        }
-      }
-      author {
-        id
-        humanId
-        displayName
-        avatarUrl
-      }
-      createdAt
+      ...BugSummary
       lastEdit
       participants(first: 20) {
         nodes {
-          id
-          humanId
-          displayName
-          avatarUrl
+          ...IdentitySummary
         }
       }
       timeline(first: 250) {
@@ -1378,75 +1467,32 @@ export const BugDetailDocument = gql`
           __typename
           id
           ... on BugCreateTimelineItem {
-            author {
-              id
-              humanId
-              displayName
-              avatarUrl
-            }
-            message
-            createdAt
-            lastEdit
-            edited
+            ...BugCreateCommentFields
           }
           ... on BugAddCommentTimelineItem {
-            author {
-              id
-              humanId
-              displayName
-              avatarUrl
-            }
-            message
-            createdAt
-            lastEdit
-            edited
+            ...BugAddCommentFields
           }
           ... on BugLabelChangeTimelineItem {
-            author {
-              humanId
-              displayName
-            }
-            date
-            added {
-              name
-              color {
-                R
-                G
-                B
-              }
-            }
-            removed {
-              name
-              color {
-                R
-                G
-                B
-              }
-            }
+            ...LabelChangeFields
           }
           ... on BugSetStatusTimelineItem {
-            author {
-              humanId
-              displayName
-            }
-            date
-            status
+            ...StatusChangeFields
           }
           ... on BugSetTitleTimelineItem {
-            author {
-              humanId
-              displayName
-            }
-            date
-            title
-            was
+            ...TitleChangeFields
           }
         }
       }
     }
   }
 }
-    `;
+    ${BugSummaryFragmentDoc}
+${IdentitySummaryFragmentDoc}
+${BugCreateCommentFieldsFragmentDoc}
+${BugAddCommentFieldsFragmentDoc}
+${LabelChangeFieldsFragmentDoc}
+${StatusChangeFieldsFragmentDoc}
+${TitleChangeFieldsFragmentDoc}`;
 
 /**
  * __useBugDetailQuery__
@@ -1500,33 +1546,12 @@ export const BugListDocument = gql`
         endCursor
       }
       nodes {
-        id
-        humanId
-        status
-        title
-        labels {
-          name
-          color {
-            R
-            G
-            B
-          }
-        }
-        author {
-          id
-          humanId
-          displayName
-          avatarUrl
-        }
-        createdAt
-        comments {
-          totalCount
-        }
+        ...BugSummary
       }
     }
   }
 }
-    `;
+    ${BugSummaryFragmentDoc}`;
 
 /**
  * __useBugListQuery__
@@ -2009,27 +2034,12 @@ export const UserProfileDocument = gql`
         endCursor
       }
       nodes {
-        id
-        humanId
-        status
-        title
-        labels {
-          name
-          color {
-            R
-            G
-            B
-          }
-        }
-        createdAt
-        comments {
-          totalCount
-        }
+        ...BugSummary
       }
     }
   }
 }
-    `;
+    ${BugSummaryFragmentDoc}`;
 
 /**
  * __useUserProfileQuery__

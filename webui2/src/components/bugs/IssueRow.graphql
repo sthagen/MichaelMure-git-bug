@@ -1,0 +1,16 @@
+fragment BugSummary on Bug {
+  id
+  humanId
+  status
+  title
+  labels {
+    ...LabelFields
+  }
+  author {
+    ...IdentitySummary
+  }
+  createdAt
+  comments {
+    totalCount
+  }
+}

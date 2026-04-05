@@ -1,0 +1,6 @@
+fragment IdentitySummary on Identity {
+  id
+  humanId
+  displayName
+  avatarUrl
+}

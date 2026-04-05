@@ -35,22 +35,7 @@ query UserProfile(
         endCursor
       }
       nodes {
-        id
-        humanId
-        status
-        title
-        labels {
-          name
-          color {
-            R
-            G
-            B
-          }
-        }
-        createdAt
-        comments {
-          totalCount
-        }
+        ...BugSummary
       }
     }
   }

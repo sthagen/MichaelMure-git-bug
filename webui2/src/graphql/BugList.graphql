@@ -23,28 +23,7 @@ query BugList(
         endCursor
       }
       nodes {
-        id
-        humanId
-        status
-        title
-        labels {
-          name
-          color {
-            R
-            G
-            B
-          }
-        }
-        author {
-          id
-          humanId
-          displayName
-          avatarUrl
-        }
-        createdAt
-        comments {
-          totalCount
-        }
+        ...BugSummary
       }
     }
   }

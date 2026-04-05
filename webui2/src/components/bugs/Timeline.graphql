@@ -1,0 +1,52 @@
+fragment BugCreateCommentFields on BugCreateTimelineItem {
+  author {
+    ...IdentitySummary
+  }
+  message
+  createdAt
+  lastEdit
+  edited
+}
+
+fragment BugAddCommentFields on BugAddCommentTimelineItem {
+  author {
+    ...IdentitySummary
+  }
+  message
+  createdAt
+  lastEdit
+  edited
+}
+
+fragment LabelChangeFields on BugLabelChangeTimelineItem {
+  author {
+    humanId
+    displayName
+  }
+  date
+  added {
+    ...LabelFields
+  }
+  removed {
+    ...LabelFields
+  }
+}
+
+fragment StatusChangeFields on BugSetStatusTimelineItem {
+  author {
+    humanId
+    displayName
+  }
+  date
+  status
+}
+
+fragment TitleChangeFields on BugSetTitleTimelineItem {
+  author {
+    humanId
+    displayName
+  }
+  date
+  title
+  was
+}
