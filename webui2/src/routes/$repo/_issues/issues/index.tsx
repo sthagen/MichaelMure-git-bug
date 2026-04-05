@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import * as v from "valibot";
 
 import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
-import { IssueFilters } from "@/components/bugs/issue-filters";
+import { IssueFilters } from "@/components/shared/issue-filters";
 import * as IssueRow from "@/components/shared/issue-row";
 import { LabelBadgeLink } from "@/components/shared/label-badge";
 import { EmptyState } from "@/components/shared/empty-state";
