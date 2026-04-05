@@ -223,6 +223,7 @@ export function FileViewer({ blob }: FileViewerProps) {
       const hast = highlighter.codeToHast(blob.text!, {
         lang,
         themes: { light: "github-light", dark: "github-dark" },
+        defaultColor: false,
         transformers: [lineNumberTransformer()],
       });
 
