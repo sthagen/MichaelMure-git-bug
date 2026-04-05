@@ -2,11 +2,12 @@
 // Uses Shiki codeToHast → hast-util-to-jsx-runtime for native React rendering.
 // Line selection syncs with the URL hash (e.g. #L12 or #L12:25).
 
+import type { Element } from "hast";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { Copy } from "lucide-react";
-import { useState, useEffect, useCallback, useMemo, Fragment, type ReactNode } from "react";
+import { useState, useEffect, useCallback, Fragment, type ReactNode } from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
-import { createHighlighterCore, type HighlighterCore } from "shiki/core";
+import { createHighlighterCore, type HighlighterCore, type ShikiTransformer } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
 import type { GitBlob } from "@/__generated__/graphql";
@@ -86,6 +87,25 @@ function getLangEntry(path: string): LangEntry | undefined {
   return LANG_MAP[ext] ?? LANG_MAP[filename];
 }
 
+// ── Shiki transformer: inject line number data attributes ─────────────────────
+
+// Adds data-line-number to each .line span so we can render line numbers
+// and handle selection purely from the hast tree — no separate gutter needed.
+function lineNumberTransformer(): ShikiTransformer {
+  return {
+    line(node, line) {
+      node.properties["dataLineNumber"] = line;
+    },
+    // Remove whitespace text nodes between .line spans — they create
+    // empty anonymous table rows when using display: table-row.
+    code(node) {
+      node.children = node.children.filter(
+        (c) => !(c.type === "text" && c.value.trim() === ""),
+      );
+    },
+  };
+}
+
 // ── Line selection from URL hash ──────────────────────────────────────────────
 
 interface LineRange {
@@ -103,11 +123,6 @@ function parseHash(hash: string): LineRange | null {
 
 function buildHash(range: LineRange): string {
   return range.start === range.end ? `#L${range.start}` : `#L${range.start}:${range.end}`;
-}
-
-function isLineSelected(line: number, range: LineRange | null): boolean {
-  if (!range) return false;
-  return line >= range.start && line <= range.end;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -152,14 +167,13 @@ export function FileViewer({ blob }: FileViewerProps) {
       const el = document.getElementById(`L${selectedRange.start}`);
       el?.scrollIntoView({ block: "center" });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- only scroll on first render
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only scroll on first render
   }, [highlighted]);
 
   const handleLineClick = useCallback(
     (lineNumber: number, shiftKey: boolean) => {
       let newRange: LineRange;
       if (shiftKey && selectedRange) {
-        // Extend from the existing anchor
         const anchor = selectedRange.start;
         newRange = {
           start: Math.min(anchor, lineNumber),
@@ -204,18 +218,19 @@ export function FileViewer({ blob }: FileViewerProps) {
       const hast = highlighter.codeToHast(blob.text!, {
         lang,
         themes: { light: "github-light", dark: "github-dark" },
+        transformers: [lineNumberTransformer()],
       });
 
-      const node = toJsxRuntime(hast, {
-        Fragment,
-        jsx,
-        jsxs,
-      });
+      const node = toJsxRuntime(hast, { Fragment, jsx, jsxs });
 
-      setHighlighted({
-        node,
-        lineCount: blob.text!.split("\n").length,
-      });
+      // Count lines from the hast tree (number of .line spans in <code>)
+      const pre = hast.children[0] as Element;
+      const code = pre.children[0] as Element;
+      const lineCount = code.children.filter(
+        (c) => c.type === "element" && (c.properties?.className as string[] | undefined)?.includes("line"),
+      ).length;
+
+      setHighlighted({ node, lineCount });
     })();
 
     return () => {
@@ -253,105 +268,66 @@ export function FileViewer({ blob }: FileViewerProps) {
           Binary file — {formatBytes(blob.size)}
         </div>
       ) : (
-        <CodeWithLineNumbers
-          lineCount={lineCount}
+        <CodeBlock
           selectedRange={selectedRange}
           onLineClick={handleLineClick}
         >
           {highlighted.node}
-        </CodeWithLineNumbers>
+        </CodeBlock>
       )}
     </div>
   );
 }
 
-// ── Line numbers + highlighting ───────────────────────────────────────────────
+// ── Code block with integrated line numbers ───────────────────────────────────
 
-interface CodeWithLineNumbersProps {
-  lineCount: number;
+interface CodeBlockProps {
   selectedRange: LineRange | null;
   onLineClick: (line: number, shiftKey: boolean) => void;
   children: ReactNode;
 }
 
-function CodeWithLineNumbers({
-  lineCount,
-  selectedRange,
-  onLineClick,
-  children,
-}: CodeWithLineNumbersProps) {
-  return (
-    <div className="flex overflow-x-auto font-mono text-xs leading-5">
-      {/* Line number gutter */}
-      <div
-        className="bg-muted/20 border-border sticky left-0 border-r py-4 text-right select-none"
-        aria-hidden
-      >
-        {Array.from({ length: lineCount }, (_, i) => {
-          const line = i + 1;
-          const selected = isLineSelected(line, selectedRange);
-          return (
-            <a
-              key={line}
-              id={`L${line}`}
-              href={`#L${line}`}
-              className={cn(
-                "block px-4 text-muted-foreground/50 hover:text-muted-foreground",
-                selected && "bg-accent/40 text-accent-foreground",
-              )}
-              onClick={(e) => {
-                e.preventDefault();
-                onLineClick(line, e.shiftKey);
-              }}
-            >
-              {line}
-            </a>
-          );
-        })}
-      </div>
+function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
+  // Build CSS for highlighted lines via nth-child selectors
+  const highlightStyle = (() => {
+    if (!selectedRange) return null;
+    const selectors: string[] = [];
+    for (let i = selectedRange.start; i <= selectedRange.end; i++) {
+      selectors.push(`.code-lines code > .line:nth-child(${i})`);
+    }
+    return (
+      <style>{`${selectors.join(",")}{background-color:color-mix(in srgb, var(--color-accent) 50%, transparent)}`}</style>
+    );
+  })();
 
-      {/* Code content — Shiki renders <pre><code><span class="line">... */}
+  return (
+    <div
+      className="code-lines overflow-x-auto font-mono text-xs leading-5"
+      onClick={(e) => {
+        // Handle clicks on line number elements (data-line-number)
+        const target = e.target as HTMLElement;
+        const lineEl = target.closest("[data-line-number]");
+        if (lineEl) {
+          e.preventDefault();
+          const lineNum = parseInt(lineEl.getAttribute("data-line-number")!, 10);
+          onLineClick(lineNum, e.shiftKey);
+        }
+      }}
+    >
+      {highlightStyle}
       <div
         className={cn(
-          "flex-1 py-4 [&_.shiki]:!bg-transparent [&_pre]:!m-0 [&_pre]:!p-0 [&_code_.line]:block [&_code_.line]:px-4",
-          selectedRange && "[&_code_.line.highlighted]:bg-accent/40",
+          "[&_.shiki]:!bg-transparent",
+          "[&_pre]:!m-0 [&_pre]:!p-0",
+          // Each .line is a table-row with line number + code
+          "[&_code]:block [&_code]:py-2",
+          "[&_code>.line]:table-row",
+          "[&_code>.line::before]:table-cell [&_code>.line::before]:w-12 [&_code>.line::before]:pr-4 [&_code>.line::before]:pl-4 [&_code>.line::before]:text-right [&_code>.line::before]:text-muted-foreground/50 [&_code>.line::before]:select-none [&_code>.line::before]:cursor-pointer [&_code>.line::before]:content-[attr(data-line-number)]",
+          "[&_code>.line]:pr-4",
         )}
       >
-        <LineHighlighter selectedRange={selectedRange} lineCount={lineCount}>
-          {children}
-        </LineHighlighter>
+        {children}
       </div>
-    </div>
-  );
-}
-
-// Wraps Shiki output and adds "highlighted" class to selected .line spans via CSS
-function LineHighlighter({
-  selectedRange,
-  lineCount,
-  children,
-}: {
-  selectedRange: LineRange | null;
-  lineCount: number;
-  children: ReactNode;
-}) {
-  // Generate a CSS rule that highlights the selected lines via :nth-child
-  const style = useMemo(() => {
-    if (!selectedRange) return undefined;
-    const selectors: string[] = [];
-    for (let i = selectedRange.start; i <= selectedRange.end && i <= lineCount; i++) {
-      selectors.push(`.line-highlight-scope code > .line:nth-child(${i})`);
-    }
-    if (selectors.length === 0) return undefined;
-    return (
-      <style>{`${selectors.join(",")}{background:var(--color-accent);opacity:0.4;background:color-mix(in srgb, var(--color-accent) 40%, transparent)}`}</style>
-    );
-  }, [selectedRange, lineCount]);
-
-  return (
-    <div className="line-highlight-scope">
-      {style}
-      {children}
     </div>
   );
 }
