@@ -291,8 +291,9 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
     for (let i = selectedRange.start; i <= selectedRange.end; i++) {
       selectors.push(`.code-lines code > .line:nth-child(${i})`);
     }
+    // GitHub uses a yellow tint — adapt for light/dark
     return (
-      <style>{`${selectors.join(",")}{background-color:rgba(255,235,59,0.25)}`}</style>
+      <style>{`${selectors.join(",")}{background-color:rgba(255,235,59,0.3)}.dark ${selectors.join(",.dark ")}{background-color:rgba(255,235,59,0.15)}`}</style>
     );
   })();
 
@@ -313,11 +314,12 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
       {highlightStyle}
       <div
         className={cn(
-          "[&_.shiki]:!bg-transparent",
           "[&_pre]:!m-0 [&_pre]:!p-0",
-          "[&_code]:block [&_code]:py-2",
+          "[&_code]:block",
           "[&_code>.line]:block [&_code>.line]:min-w-full [&_code>.line]:pr-4",
-          "[&_code>.line::before]:inline-block [&_code>.line::before]:w-12 [&_code>.line::before]:mr-4 [&_code>.line::before]:text-right [&_code>.line::before]:text-muted-foreground/50 [&_code>.line::before]:select-none [&_code>.line::before]:cursor-pointer [&_code>.line::before]:content-[attr(data-line-number)]",
+          "[&_code>.line:first-child]:pt-2 [&_code>.line:last-child]:pb-2",
+          "[&_code>.line::before]:inline-block [&_code>.line::before]:w-12 [&_code>.line::before]:mr-4 [&_code>.line::before]:text-right [&_code>.line::before]:select-none [&_code>.line::before]:cursor-pointer [&_code>.line::before]:content-[attr(data-line-number)]",
+          "[&_code>.line::before]:opacity-40",
         )}
       >
         {children}
