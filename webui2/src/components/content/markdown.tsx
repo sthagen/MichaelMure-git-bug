@@ -178,10 +178,12 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
     <div
       className={cn(
         "prose prose-sm dark:prose-invert max-w-none",
-        "prose-pre:rounded-md prose-pre:text-sm",
+        // Code blocks: subtle border, tinted background, rounded corners
+        "prose-pre:rounded-md prose-pre:border prose-pre:border-border prose-pre:bg-muted/40 prose-pre:text-sm prose-pre:overflow-x-auto",
+        // Inline code: muted background pill
         "prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
-        // Don't style inline code inside Shiki-highlighted pre blocks
-        "prose-pre:prose-code:bg-transparent prose-pre:prose-code:p-0",
+        // Reset inline code styles inside highlighted code blocks
+        "prose-pre:prose-code:bg-transparent prose-pre:prose-code:p-0 prose-pre:prose-code:text-inherit",
         "prose-img:inline prose-img:my-0",
         className,
       )}
