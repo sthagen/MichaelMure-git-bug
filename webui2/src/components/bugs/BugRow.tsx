@@ -16,11 +16,11 @@ interface BugRowProps {
   createdAt: string;
   commentCount: number;
   repo: string;
-  onLabelClick?: (name: string) => void;
 }
 
 // Single row in the issue list. Shows status icon, title, labels, author and
-// comment count. Labels are clickable to filter the list by that label.
+// comment count.
+/** @deprecated Use IssueRow composition components instead. */
 export function BugRow({
   humanId,
   status,
@@ -30,7 +30,6 @@ export function BugRow({
   createdAt,
   commentCount,
   repo,
-  onLabelClick,
 }: BugRowProps) {
   const isOpen = status === Status.Open;
   const StatusIcon = isOpen ? CircleDot : CircleCheck;
@@ -59,7 +58,6 @@ export function BugRow({
               key={label.name}
               name={label.name}
               color={label.color}
-              onClick={onLabelClick}
             />
           ))}
         </div>

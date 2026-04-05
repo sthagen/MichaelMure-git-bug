@@ -1,12 +1,14 @@
 import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { formatDistanceToNow } from "date-fns";
 import { CircleDot, CircleCheck, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import * as v from "valibot";
 
 import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
-import { BugRow } from "@/components/bugs/BugRow";
 import { IssueFilters } from "@/components/bugs/IssueFilters";
+import * as IssueRow from "@/components/bugs/IssueRow";
+import { LabelBadgeLink } from "@/components/bugs/LabelBadge";
 import type { SortValue } from "@/components/bugs/IssueFilters";
 import { QueryInput } from "@/components/bugs/QueryInput";
 import { Button } from "@/components/ui/button";
@@ -204,28 +206,55 @@ function RouteComponent() {
         )}
 
         {bugs?.nodes.map((bug) => (
-          <BugRow
-            key={bug.id}
-            id={bug.id}
-            humanId={bug.humanId}
-            status={bug.status}
-            title={bug.title}
-            labels={bug.labels}
-            author={bug.author}
-            createdAt={bug.createdAt}
-            commentCount={bug.comments.totalCount}
-            repo={repo}
-            onLabelClick={(name) => {
-              if (!selectedLabels.includes(name)) {
-                applyFilters(
-                  statusFilter,
-                  [...selectedLabels, name],
-                  selectedAuthorQuery,
-                  parsed.freeText,
-                );
-              }
-            }}
-          />
+          <IssueRow.Root key={bug.id} className="hover:bg-muted/30">
+            <IssueRow.StatusIcon status={bug.status} />
+            <div className="min-w-0 flex-1">
+              <IssueRow.TitleArea>
+                <Link
+                  to="/$repo/issues/$id"
+                  params={{ repo, id: bug.humanId }}
+                  className="text-foreground hover:text-primary font-medium hover:underline"
+                >
+                  {bug.title}
+                </Link>
+                {bug.labels.map((label) => (
+                  <LabelBadgeLink
+                    key={label.name}
+                    name={label.name}
+                    color={label.color}
+                    to="/$repo/issues"
+                    params={{ repo }}
+                    search={{
+                      q: buildQueryString(
+                        statusFilter,
+                        selectedLabels.includes(label.name)
+                          ? selectedLabels
+                          : [...selectedLabels, label.name],
+                        selectedAuthorQuery,
+                        parsed.freeText,
+                        sort,
+                      ),
+                      after: "",
+                    }}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                  />
+                ))}
+              </IssueRow.TitleArea>
+              <IssueRow.Meta>
+                #{bug.humanId} opened{" "}
+                {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })} by{" "}
+                <Link
+                  to="/$repo/user/$id"
+                  params={{ repo, id: bug.author.humanId }}
+                  search={{ status: "open" as const, after: "" }}
+                  className="hover:underline"
+                >
+                  {bug.author.displayName}
+                </Link>
+              </IssueRow.Meta>
+            </div>
+            <IssueRow.CommentCount count={bug.comments.totalCount} />
+          </IssueRow.Root>
         ))}
 
         {totalPages > 1 && (
