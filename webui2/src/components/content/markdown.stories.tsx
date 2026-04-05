@@ -93,3 +93,17 @@ The problem was that \`buildQuery()\` wasn't escaping special characters in labe
 Closes #42.`,
   },
 };
+
+export const UnlabeledCodeBlock: Story = {
+  args: {
+    content: `Here is a code block without a language:
+
+\`\`\`
+# Please enter the title and comment message. The first non-empty line will be
+# used as the title. Lines starting with '#' will be ignored.
+# An empty title aborts the operation.
+\`\`\`
+
+And some text after.`,
+  },
+};
