@@ -20,6 +20,7 @@
   "dependencies": {
     "@apollo/client": "^4.1.6",
     "@shikijs/langs": "^4.0.2",
+    "@shikijs/rehype": "^4.0.2",
     "@shikijs/themes": "^4.0.2",
     "@tanstack/react-router": "^1.168.8",
     "class-variance-authority": "^0.7.1",

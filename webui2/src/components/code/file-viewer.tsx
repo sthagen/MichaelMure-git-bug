@@ -6,32 +6,14 @@ import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import { Copy } from "lucide-react";
 import { useState, useEffect, useCallback, Fragment, type ReactNode } from "react";
 import { jsx, jsxs } from "react/jsx-runtime";
-import { createHighlighterCore, type HighlighterCore, type ShikiTransformer } from "shiki/core";
-import { createOnigurumaEngine } from "shiki/engine/oniguruma";
+import type { ShikiTransformer } from "shiki/core";
 
 import type { GitBlob } from "@/__generated__/graphql";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getHighlighter, SHIKI_THEMES } from "@/lib/shiki";
 
 import styles from "./file-viewer.module.css";
-
-// ── Shiki highlighter (lazy singleton) ────────────────────────────────────────
-
-let highlighterPromise: Promise<HighlighterCore> | null = null;
-
-function getHighlighter(): Promise<HighlighterCore> {
-  if (!highlighterPromise) {
-    highlighterPromise = createHighlighterCore({
-      themes: [
-        import("@shikijs/themes/github-light"),
-        import("@shikijs/themes/github-dark"),
-      ],
-      langs: [],
-      engine: createOnigurumaEngine(import("shiki/wasm")),
-    });
-  }
-  return highlighterPromise;
-}
 
 interface LangEntry {
   id: string;
@@ -231,7 +213,7 @@ export function FileViewer({ blob }: FileViewerProps) {
 
       const hast = highlighter.codeToHast(blob.text!, {
         lang,
-        themes: { light: "github-light", dark: "github-dark" },
+        themes: SHIKI_THEMES,
         defaultColor: false,
         transformers: [lineNumberTransformer()],
       });

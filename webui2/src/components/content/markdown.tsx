@@ -1,6 +1,8 @@
+import rehypeShikiFromHighlighter from "@shikijs/rehype/core";
 import { Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import type { PluggableList } from "unified";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeRaw from "rehype-raw";
@@ -8,7 +10,9 @@ import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeSlug from "rehype-slug";
 import remarkEmoji from "remark-emoji";
 import remarkGfm from "remark-gfm";
+import type { HighlighterCore } from "shiki/core";
 
+import { getHighlighter, SHIKI_THEMES } from "@/lib/shiki";
 import { cn } from "@/lib/utils";
 
 // Sanitization schema: start from the safe default and allow a small set of
@@ -19,6 +23,10 @@ const sanitizeSchema = {
   attributes: {
     ...defaultSchema.attributes,
     a: [...(defaultSchema.attributes?.a ?? []), "aria-hidden", "class"],
+    // Allow Shiki's style attribute (CSS variables for theme colors) and class on code/spans
+    pre: [...(defaultSchema.attributes?.pre ?? []), "class", "style", "tabIndex"],
+    code: [...(defaultSchema.attributes?.code ?? []), "class", "style"],
+    span: [...(defaultSchema.attributes?.span ?? []), "class", "style"],
     "*": [...(defaultSchema.attributes?.["*"] ?? []), "id"],
   },
 };
@@ -72,7 +80,21 @@ function isImagePath(path: string): boolean {
 
 // Renders a Markdown string with GitHub-flavoured extensions (tables, task
 // lists, strikethrough). Used in Timeline comments and code browser READMEs.
+function useShikiHighlighter(): HighlighterCore | null {
+  const [highlighter, setHighlighter] = useState<HighlighterCore | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void getHighlighter().then((h) => {
+      if (!cancelled) setHighlighter(h);
+    });
+    return () => { cancelled = true; };
+  }, []);
+  return highlighter;
+}
+
 export function Markdown({ content, className, repoContext }: MarkdownProps) {
+  const highlighter = useShikiHighlighter();
+
   // Rewrite image src to /gitraw for raw content serving.
   // Links are handled by the custom `a` component below.
   const urlTransform = useMemo(() => {
@@ -156,8 +178,10 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
     <div
       className={cn(
         "prose prose-sm dark:prose-invert max-w-none",
-        "prose-pre:bg-muted prose-pre:text-foreground",
+        "prose-pre:rounded-md prose-pre:text-sm",
         "prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none",
+        // Don't style inline code inside Shiki-highlighted pre blocks
+        "prose-pre:prose-code:bg-transparent prose-pre:prose-code:p-0",
         "prose-img:inline prose-img:my-0",
         className,
       )}
@@ -167,6 +191,9 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
         rehypePlugins={[
           rehypeRaw,
           [rehypeSanitize, sanitizeSchema],
+          ...(highlighter
+            ? [[rehypeShikiFromHighlighter, highlighter, { themes: SHIKI_THEMES, defaultColor: false }] as PluggableList[number]]
+            : []),
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "append" }],
           [rehypeExternalLinks, { target: "_blank", rel: ["noopener", "noreferrer"] }],
