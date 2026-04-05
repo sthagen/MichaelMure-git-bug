@@ -99,7 +99,7 @@ function CodeLayout() {
               History
             </ButtonLink>
           )}
-          <RefSelector refs={refs} currentRef={currentRef} onSelect={handleRefSelect} />
+          <RefSelector gitRefs={refs} currentRef={currentRef} onSelect={handleRefSelect} />
         </div>
       </div>
 

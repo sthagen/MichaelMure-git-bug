@@ -6,6 +6,16 @@
 //      is visible but the text itself is hidden in favour of the backdrop.
 
 import {
+  useFloating,
+  useDismiss,
+  useListNavigation,
+  useInteractions,
+  offset,
+  flip,
+  size,
+  FloatingPortal,
+} from "@floating-ui/react";
+import {
   createContext,
   useContext,
   useState,
@@ -16,9 +26,10 @@ import {
   type ReactNode,
 } from "react";
 
+import * as Listbox from "@/components/ui/listbox";
 import { cn } from "@/lib/utils";
 
-// ── Public types ──────────────────────────────────────────────────────────────
+// ── Public types ────────��──────────────────────��──────────────────────────────
 
 export interface Suggestion {
   /** What gets inserted into the input (already quoted if needed). */
@@ -48,7 +59,7 @@ export interface SyntaxRule {
   highlightClass: string;
 }
 
-// ── Defaults ──────────────────────────────────────────────────────────────────
+// ── Defaults ────���────────────────────────────���────────────────────────────────
 
 const DEFAULT_SYNTAX_RULES: SyntaxRule[] = [
   { match: "status:open", highlightClass: "text-green-600 dark:text-green-400" },
@@ -56,7 +67,7 @@ const DEFAULT_SYNTAX_RULES: SyntaxRule[] = [
   { match: (t) => t.startsWith("sort:"), highlightClass: "text-orange-600 dark:text-orange-400" },
 ];
 
-// ── Segment parsing ───────────────────────────────────────────────────────────
+// ── Segment parsing ────────���──────────────────────────────��───────────────────
 
 interface Segment {
   text: string;
@@ -189,20 +200,26 @@ function getTokenEnd(value: string, tokenStart: number): number {
   return value.length;
 }
 
-// ── Context ───────────────────────────────────────────────────────────────────
+// ── Context ───────��───────────────────────────────────���───────────────────────
 
 interface QueryInputContextValue {
   value: string;
   segments: Segment[];
   inputRef: React.RefObject<HTMLInputElement | null>;
   suggestions: Suggestion[];
-  activeIndex: number;
+  activeIndex: number | null;
   showDropdown: boolean;
   loading: boolean;
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   handleSelect: (e: React.SyntheticEvent<HTMLInputElement>) => void;
   selectSuggestion: (index: number) => void;
+  // floating-ui
+  floatingRef: (node: HTMLElement | null) => void;
+  floatingStyles: React.CSSProperties;
+  getFloatingProps: () => Record<string, unknown>;
+  getItemProps: (userProps?: Record<string, unknown>) => Record<string, unknown>;
+  elementsRef: React.MutableRefObject<(HTMLElement | null)[]>;
 }
 
 const QueryInputContext = createContext<QueryInputContextValue | null>(null);
@@ -213,7 +230,7 @@ function useQueryInput() {
   return ctx;
 }
 
-// ── Components ────────────────────────────────────────────────────────────────
+// ── Components ───────────���─────────────────────────────��──────────────────────
 
 interface RootProps {
   value: string;
@@ -236,14 +253,56 @@ export function Root({
 }: RootProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [completion, setCompletion] = useState<CompletionInfo | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const elementsRef = useRef<(HTMLElement | null)[]>([]);
+
+  const showDropdown = suggestions.length > 0;
 
   const segments = useMemo(
     () => parseSegments(value, providers, syntaxRules),
     [value, providers, syntaxRules],
   );
+
+  // floating-ui for dropdown positioning
+  const { refs, floatingStyles, context } = useFloating({
+    open: showDropdown || loading,
+    onOpenChange(nextOpen) {
+      if (!nextOpen) {
+        setCompletion(null);
+        setSuggestions([]);
+      }
+    },
+    placement: "bottom-start",
+    middleware: [
+      offset(4),
+      flip(),
+      size({
+        apply({ rects, elements }) {
+          Object.assign(elements.floating.style, {
+            minWidth: `${rects.reference.width}px`,
+          });
+        },
+      }),
+    ],
+  });
+
+  const dismiss = useDismiss(context, { escapeKey: true, outsidePress: true });
+  const listNav = useListNavigation(context, {
+    listRef: elementsRef,
+    activeIndex,
+    onNavigate: setActiveIndex,
+    loop: true,
+    virtual: true,
+    focusItemOnOpen: false,
+  });
+
+  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
+    dismiss,
+    listNav,
+  ]);
 
   // Fetch suggestions when completion changes
   useEffect(() => {
@@ -261,11 +320,13 @@ export function Root({
       void result.then((items) => {
         if (!cancelled) {
           setSuggestions(items);
+          setActiveIndex(items.length > 0 ? 0 : null);
           setLoading(false);
         }
       });
     } else {
       setSuggestions(result);
+      setActiveIndex(result.length > 0 ? 0 : null);
       setLoading(false);
     }
 
@@ -277,7 +338,7 @@ export function Root({
   function updateCompletion(newValue: string, cursor: number) {
     const info = getCompletionInfo(newValue, cursor, providers);
     setCompletion(info);
-    setActiveIndex(0);
+    setActiveIndex(null);
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
@@ -317,30 +378,22 @@ export function Root({
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Enter" && !completion) {
-      e.preventDefault();
-      onSubmit();
+    if (e.key === "Enter") {
+      if (activeIndex != null && suggestions.length > 0) {
+        e.preventDefault();
+        selectSuggestion(activeIndex);
+      } else if (!completion) {
+        e.preventDefault();
+        onSubmit();
+      }
       return;
     }
 
-    if (!completion || suggestions.length === 0) return;
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveIndex((i) => (i + 1) % suggestions.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((i) => (i - 1 + suggestions.length) % suggestions.length);
-    } else if (e.key === "Enter" || e.key === "Tab") {
+    if (e.key === "Tab" && activeIndex != null && suggestions.length > 0) {
       e.preventDefault();
       selectSuggestion(activeIndex);
-    } else if (e.key === "Escape") {
-      setCompletion(null);
-      setSuggestions([]);
     }
   }
-
-  const showDropdown = suggestions.length > 0;
 
   const ctx: QueryInputContextValue = {
     value,
@@ -354,17 +407,24 @@ export function Root({
     handleKeyDown,
     handleSelect,
     selectSuggestion,
+    floatingRef: refs.setFloating,
+    floatingStyles,
+    getFloatingProps,
+    getItemProps,
+    elementsRef,
   };
 
   return (
     <QueryInputContext value={ctx}>
       <div
+        ref={refs.setReference}
         className={cn(
           "relative flex flex-1 items-center rounded-md border border-input bg-background",
           "ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
           className,
         )}
         onClick={() => inputRef.current?.focus()}
+        {...getReferenceProps()}
       >
         {children}
       </div>
@@ -390,7 +450,8 @@ interface InputProps {
 }
 
 export function Input({ placeholder, className }: InputProps) {
-  const { value, segments, inputRef, handleChange, handleKeyDown, handleSelect } = useQueryInput();
+  const { value, segments, inputRef, handleChange, handleKeyDown, handleSelect, activeIndex, suggestions } =
+    useQueryInput();
 
   return (
     <>
@@ -411,6 +472,11 @@ export function Input({ placeholder, className }: InputProps) {
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onSelect={handleSelect}
+        role="combobox"
+        aria-expanded={suggestions.length > 0}
+        aria-activedescendant={
+          activeIndex != null ? `query-option-${activeIndex}` : undefined
+        }
         className={cn(
           "caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans",
           className,
@@ -423,34 +489,53 @@ export function Input({ placeholder, className }: InputProps) {
 }
 
 export function Completions() {
-  const { suggestions, activeIndex, showDropdown, loading, selectSuggestion } = useQueryInput();
+  const {
+    suggestions,
+    activeIndex,
+    showDropdown,
+    loading,
+    selectSuggestion,
+    floatingRef,
+    floatingStyles,
+    getFloatingProps,
+    getItemProps,
+    elementsRef,
+  } = useQueryInput();
 
   if (!showDropdown && !loading) return null;
 
   return (
-    <div className="border-border bg-popover absolute top-full right-0 left-0 z-50 mt-1 overflow-hidden rounded-md border shadow-md">
-      {loading && suggestions.length === 0 && (
-        <div className="text-muted-foreground px-3 py-2 text-sm">Loading…</div>
-      )}
-      {suggestions.map((s, i) => (
-        <button
-          key={`${s.value}-${s.label}`}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            selectSuggestion(i);
-          }}
-          className={cn(
-            "flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm",
-            i === activeIndex ? "bg-accent text-accent-foreground" : "hover:bg-muted",
-          )}
-        >
-          {s.icon}
-          <span className="font-mono">{s.label}</span>
-          {s.description && (
-            <span className="text-muted-foreground ml-auto text-xs">{s.description}</span>
-          )}
-        </button>
-      ))}
-    </div>
+    <FloatingPortal>
+      <Listbox.Content
+        ref={floatingRef}
+        style={floatingStyles}
+        {...getFloatingProps()}
+      >
+        {loading && suggestions.length === 0 && (
+          <div className="text-muted-foreground px-3 py-2 text-sm">Loading…</div>
+        )}
+        {suggestions.map((s, i) => (
+          <Listbox.Item
+            key={`${s.value}-${s.label}`}
+            id={`query-option-${i}`}
+            ref={(el) => {
+              elementsRef.current[i] = el;
+            }}
+            active={activeIndex === i}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              selectSuggestion(i);
+            }}
+            {...getItemProps()}
+          >
+            {s.icon}
+            <span className="font-mono">{s.label}</span>
+            {s.description && (
+              <span className="text-muted-foreground ml-auto text-xs">{s.description}</span>
+            )}
+          </Listbox.Item>
+        ))}
+      </Listbox.Content>
+    </FloatingPortal>
   );
 }

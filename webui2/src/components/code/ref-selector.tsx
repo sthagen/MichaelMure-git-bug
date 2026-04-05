@@ -1,104 +1,223 @@
-import { GitBranch, Tag, Check, ChevronsUpDown } from "lucide-react";
-import { useState } from "react";
+import {
+  useFloating,
+  useClick,
+  useDismiss,
+  useRole,
+  useListNavigation,
+  useInteractions,
+  offset,
+  flip,
+  FloatingPortal,
+  FloatingFocusManager,
+} from "@floating-ui/react";
+import { GitBranch, Tag } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { GitRefType, type GitRef } from "@/__generated__/graphql";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import * as Listbox from "@/components/ui/listbox";
 import { cn } from "@/lib/utils";
 
 interface RefSelectorProps {
-  refs: GitRef[];
+  gitRefs: GitRef[];
   currentRef: string;
   onSelect: (ref: GitRef) => void;
 }
 
 // Branch / tag selector dropdown for the code browser. Shown in two groups
 // (branches, tags) with an inline search filter.
-export function RefSelector({ refs, currentRef, onSelect }: RefSelectorProps) {
+export function RefSelector({ gitRefs, currentRef, onSelect }: RefSelectorProps) {
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("");
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  const filtered = refs.filter((r) => r.shortName.toLowerCase().includes(filter.toLowerCase()));
+  const elementsRef = useRef<(HTMLElement | null)[]>([]);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  const { refs, floatingStyles, context } = useFloating({
+    open,
+    onOpenChange(nextOpen) {
+      setOpen(nextOpen);
+      if (!nextOpen) setFilter("");
+    },
+    placement: "bottom-start",
+    middleware: [offset(4), flip()],
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+  const role = useRole(context, { role: "listbox" });
+  const listNav = useListNavigation(context, {
+    listRef: elementsRef,
+    activeIndex,
+    onNavigate: setActiveIndex,
+    loop: true,
+    virtual: true,
+    focusItemOnOpen: false,
+  });
+
+  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
+    click,
+    dismiss,
+    role,
+    listNav,
+  ]);
+
+  const filtered = gitRefs.filter((r) =>
+    r.shortName.toLowerCase().includes(filter.toLowerCase()),
+  );
   const branches = filtered.filter((r) => r.type === GitRefType.Branch);
   const tags = filtered.filter((r) => r.type === GitRefType.Tag);
 
+  // Build a flat list for indexing (branches first, then tags)
+  const flatItems = [...branches, ...tags];
+
+  // Reset active index when filtered list changes
+  useEffect(() => {
+    setActiveIndex(flatItems.length > 0 ? 0 : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset on filter change
+  }, [filter]);
+
+  function handleSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" && activeIndex != null) {
+      e.preventDefault();
+      const ref = flatItems[activeIndex];
+      if (ref) {
+        onSelect(ref);
+        setOpen(false);
+        setFilter("");
+      }
+    }
+  }
+
+  let itemIndex = 0;
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger render={<Button variant="outline" size="sm" className="gap-2 font-mono text-xs" />}>
+    <>
+      <Button
+        ref={refs.setReference}
+        variant="outline"
+        size="sm"
+        className="gap-2 font-mono text-xs"
+        {...getReferenceProps()}
+      >
         <GitBranch className="size-3.5" />
         {currentRef}
-        <ChevronsUpDown className="text-muted-foreground size-3" />
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-64 p-2">
-        <p className="text-muted-foreground mb-2 px-1 text-xs font-semibold">Switch branch / tag</p>
-        <Input
-          placeholder="Filter…"
-          className="mb-2 h-7 text-xs"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          autoFocus
-        />
-        <div className="max-h-64 overflow-y-auto">
-          {branches.length > 0 && (
-            <div className="mb-1">
-              <p className="text-muted-foreground px-2 py-1 text-xs">Branches</p>
-              {branches.map((ref) => (
-                <RefItem
-                  key={ref.name}
-                  ref_={ref}
-                  active={ref.shortName === currentRef}
-                  onSelect={() => {
-                    onSelect(ref);
-                    setOpen(false);
-                    setFilter("");
-                  }}
-                />
-              ))}
-            </div>
-          )}
-          {tags.length > 0 && (
-            <div>
-              <p className="text-muted-foreground px-2 py-1 text-xs">Tags</p>
-              {tags.map((ref) => (
-                <RefItem
-                  key={ref.name}
-                  ref_={ref}
-                  active={ref.shortName === currentRef}
-                  onSelect={() => {
-                    onSelect(ref);
-                    setOpen(false);
-                    setFilter("");
-                  }}
-                />
-              ))}
-            </div>
-          )}
-          {filtered.length === 0 && (
-            <p className="text-muted-foreground px-2 py-2 text-xs">No results</p>
-          )}
-        </div>
-      </PopoverContent>
-    </Popover>
+      </Button>
+
+      {open && (
+        <FloatingPortal>
+          <FloatingFocusManager context={context} modal={false} initialFocus={searchRef}>
+            <Listbox.Content
+              ref={refs.setFloating}
+              style={floatingStyles}
+              className="w-64"
+              {...getFloatingProps()}
+            >
+              <div className="text-muted-foreground px-3 pt-2 pb-1 text-xs font-semibold">
+                Switch branch / tag
+              </div>
+              <Listbox.Search
+                ref={searchRef}
+                placeholder="Filter…"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                className="text-xs"
+                aria-activedescendant={
+                  activeIndex != null ? `ref-option-${activeIndex}` : undefined
+                }
+              />
+              <Listbox.ScrollArea>
+                {branches.length > 0 && (
+                  <Listbox.Group>
+                    <Listbox.GroupLabel>Branches</Listbox.GroupLabel>
+                    {branches.map((ref) => {
+                      const i = itemIndex++;
+                      return (
+                        <RefItem
+                          key={ref.name}
+                          id={`ref-option-${i}`}
+                          ref_={ref}
+                          index={i}
+                          active={activeIndex === i}
+                          selected={ref.shortName === currentRef}
+                          elementsRef={elementsRef}
+                          getItemProps={getItemProps}
+                          onSelect={() => {
+                            onSelect(ref);
+                            setOpen(false);
+                            setFilter("");
+                          }}
+                        />
+                      );
+                    })}
+                  </Listbox.Group>
+                )}
+                {tags.length > 0 && (
+                  <Listbox.Group>
+                    <Listbox.GroupLabel>Tags</Listbox.GroupLabel>
+                    {tags.map((ref) => {
+                      const i = itemIndex++;
+                      return (
+                        <RefItem
+                          key={ref.name}
+                          id={`ref-option-${i}`}
+                          ref_={ref}
+                          index={i}
+                          active={activeIndex === i}
+                          selected={ref.shortName === currentRef}
+                          elementsRef={elementsRef}
+                          getItemProps={getItemProps}
+                          onSelect={() => {
+                            onSelect(ref);
+                            setOpen(false);
+                            setFilter("");
+                          }}
+                        />
+                      );
+                    })}
+                  </Listbox.Group>
+                )}
+                {filtered.length === 0 && <Listbox.Empty />}
+              </Listbox.ScrollArea>
+            </Listbox.Content>
+          </FloatingFocusManager>
+        </FloatingPortal>
+      )}
+    </>
   );
 }
 
 function RefItem({
+  id,
   ref_,
+  index,
   active,
+  selected,
+  elementsRef,
+  getItemProps,
   onSelect,
 }: {
+  id: string;
   ref_: GitRef;
+  index: number;
   active: boolean;
+  selected: boolean;
+  elementsRef: React.MutableRefObject<(HTMLElement | null)[]>;
+  getItemProps: (props?: Record<string, unknown>) => Record<string, unknown>;
   onSelect: () => void;
 }) {
   return (
-    <button
-      onClick={onSelect}
-      className={cn(
-        "flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left text-xs hover:bg-muted",
-        active && "font-medium",
-      )}
+    <Listbox.Item
+      id={id}
+      ref={(el) => {
+        elementsRef.current[index] = el;
+      }}
+      active={active}
+      selected={selected}
+      className={cn("text-xs", selected && "font-medium")}
+      {...getItemProps({ onClick: onSelect })}
     >
       {ref_.type === GitRefType.Branch ? (
         <GitBranch className="text-muted-foreground size-3 shrink-0" />
@@ -106,7 +225,6 @@ function RefItem({
         <Tag className="text-muted-foreground size-3 shrink-0" />
       )}
       <span className="flex-1 truncate font-mono">{ref_.shortName}</span>
-      {active && <Check className="text-muted-foreground size-3" />}
-    </button>
+    </Listbox.Item>
   );
 }

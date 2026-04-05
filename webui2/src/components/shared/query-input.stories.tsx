@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Search } from "lucide-react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, screen, userEvent, within } from "storybook/test";
 import { useState } from "react";
 
 import type { CompletionProvider } from "./query-input";
@@ -169,12 +169,12 @@ export const AutocompleteInteraction: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const input = canvas.getByRole("textbox");
+    const input = canvas.getByRole("combobox");
 
     // Type "label:" to trigger suggestions
     await userEvent.type(input, "label:");
-    // Suggestions dropdown should appear
-    const bugOption = await canvas.findByText("bug");
+    // Suggestions dropdown appears in a portal outside the canvas
+    const bugOption = await screen.findByText("bug");
     await expect(bugOption).toBeVisible();
 
     // First suggestion is already highlighted — press Enter to select

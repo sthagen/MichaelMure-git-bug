@@ -24,7 +24,7 @@ const sampleRefs = [
 
 export const Default: Story = {
   args: {
-    refs: sampleRefs,
+    gitRefs: sampleRefs,
     currentRef: "main",
     onSelect: fn(),
   },
@@ -32,7 +32,7 @@ export const Default: Story = {
 
 export const OnTag: Story = {
   args: {
-    refs: sampleRefs,
+    gitRefs: sampleRefs,
     currentRef: "v1.1.0",
     onSelect: fn(),
   },
@@ -40,7 +40,7 @@ export const OnTag: Story = {
 
 export const BranchesOnly: Story = {
   args: {
-    refs: sampleRefs.filter((r) => r.type === GitRefType.Branch),
+    gitRefs: sampleRefs.filter((r) => r.type === GitRefType.Branch),
     currentRef: "develop",
     onSelect: fn(),
   },

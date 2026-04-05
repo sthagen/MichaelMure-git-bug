@@ -1,3 +1,9 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+
+import { LabelBadge } from "@/components/shared/label-badge";
+import { SectionHeading } from "@/components/shared/section-heading";
+import * as Listbox from "@/components/ui/listbox";
 import {
   useFloating,
   useClick,
@@ -11,49 +17,37 @@ import {
   FloatingFocusManager,
 } from "@floating-ui/react";
 import { Settings2 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
-import { useBugChangeLabelsMutation, BugDetailDocument } from "@/__generated__/graphql";
-import * as Listbox from "@/components/ui/listbox";
-import { SectionHeading } from "@/components/shared/section-heading";
-import { useAuth } from "@/lib/auth";
+// The real LabelEditor depends on GraphQL mutations. For stories, we build a
+// self-contained version with the same UI but local state instead of mutations.
 
-import { LabelBadge } from "@/components/shared/label-badge";
+const allLabels = [
+  { name: "bug", color: { R: 252, G: 41, B: 41 } },
+  { name: "enhancement", color: { R: 0, G: 150, B: 255 } },
+  { name: "documentation", color: { R: 0, G: 180, B: 80 } },
+  { name: "help wanted", color: { R: 255, G: 152, B: 0 } },
+  { name: "good first issue", color: { R: 124, G: 58, B: 237 } },
+];
 
-interface LabelEditorProps {
-  bugPrefix: string;
-  currentLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>;
-  /** Current repo slug, passed as `ref` in refetch query variables. */
-  ref_?: string | null;
-  /** Pre-fetched valid labels for the repository. */
-  validLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>;
-}
+type LabelColor = { R: number; G: number; B: number };
 
-// Gear-icon popover in the BugDetailPage sidebar for adding/removing labels.
-// Loads all valid labels from the repo and toggles them via bugChangeLabels.
-// Hidden in read-only mode.
-export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: LabelEditorProps) {
-  const { user } = useAuth();
-  const [changeLabels] = useBugChangeLabelsMutation({
-    refetchQueries: [{ query: BugDetailDocument, variables: { ref: ref_, prefix: bugPrefix } }],
-  });
+function LabelEditorDemo() {
+  const [current, setCurrent] = useState<Array<{ name: string; color: LabelColor }>>([
+    allLabels[0]!,
+    allLabels[2]!,
+  ]);
 
-  const currentNames = new Set(currentLabels.map((l) => l.name));
+  const currentNames = new Set(current.map((l) => l.name));
 
-  async function toggleLabel(name: string) {
-    const isSet = currentNames.has(name);
-    await changeLabels({
-      variables: {
-        input: {
-          prefix: bugPrefix,
-          added: isSet ? [] : [name],
-          Removed: isSet ? [name] : [],
-        },
-      },
-    });
+  function toggleLabel(label: { name: string; color: LabelColor }) {
+    if (currentNames.has(label.name)) {
+      setCurrent((prev) => prev.filter((l) => l.name !== label.name));
+    } else {
+      setCurrent((prev) => [...prev, label]);
+    }
   }
 
-  // floating-ui state
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const elementsRef = useRef<(HTMLElement | null)[]>([]);
@@ -76,25 +70,20 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
-    click,
-    dismiss,
-    role,
-    listNav,
+    click, dismiss, role, listNav,
   ]);
 
   return (
-    <div>
+    <div className="w-64">
       <div className="mb-2 flex items-center justify-between">
         <SectionHeading className="mb-0">Labels</SectionHeading>
-        {user && validLabels.length > 0 && (
-          <button
-            ref={refs.setReference}
-            className="text-muted-foreground hover:text-foreground"
-            {...getReferenceProps()}
-          >
-            <Settings2 className="size-3.5" />
-          </button>
-        )}
+        <button
+          ref={refs.setReference}
+          className="text-muted-foreground hover:text-foreground"
+          {...getReferenceProps()}
+        >
+          <Settings2 className="size-3.5" />
+        </button>
       </div>
 
       {open && (
@@ -110,34 +99,24 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
                 Apply labels
               </div>
               <Listbox.ScrollArea>
-                {validLabels.map((label, i) => {
+                {allLabels.map((label, i) => {
                   const active = currentNames.has(label.name);
                   return (
                     <Listbox.Item
                       key={label.name}
-                      ref={(el) => {
-                        elementsRef.current[i] = el;
-                      }}
+                      ref={(el) => { elementsRef.current[i] = el; }}
                       active={activeIndex === i}
                       selected={active}
                       tabIndex={activeIndex === i ? 0 : -1}
-                      {...getItemProps({
-                        onClick: () => {
-                          void toggleLabel(label.name);
-                        },
-                      })}
+                      {...getItemProps({ onClick: () => toggleLabel(label) })}
                     >
                       <span
                         className={`size-2 rounded-full border-2 transition-colors ${
-                          active
-                            ? "border-transparent"
-                            : "border-muted-foreground/40 bg-transparent"
+                          active ? "border-transparent" : "border-muted-foreground/40 bg-transparent"
                         }`}
                         style={
                           active
-                            ? {
-                                backgroundColor: `rgb(${label.color.R},${label.color.G},${label.color.B})`,
-                              }
+                            ? { backgroundColor: `rgb(${label.color.R},${label.color.G},${label.color.B})` }
                             : {}
                         }
                       />
@@ -151,11 +130,11 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
         </FloatingPortal>
       )}
 
-      {currentLabels.length === 0 ? (
+      {current.length === 0 ? (
         <p className="text-muted-foreground text-sm">None yet</p>
       ) : (
         <div className="flex flex-wrap gap-1">
-          {currentLabels.map((label) => (
+          {current.map((label) => (
             <LabelBadge key={label.name} name={label.name} color={label.color} />
           ))}
         </div>
@@ -163,3 +142,15 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
     </div>
   );
 }
+
+const meta = {
+  title: "bugs/LabelEditor",
+  parameters: { layout: "centered" },
+} satisfies Meta;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  render: () => <LabelEditorDemo />,
+};

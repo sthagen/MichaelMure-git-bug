@@ -36,9 +36,11 @@ exports[`QueryInput/AsyncCompletions matches snapshot 1`] = `
       class="text-foreground pointer-events-none absolute inset-0 flex items-center overflow-hidden pr-3 pl-9 font-mono text-sm whitespace-pre"
     />
     <input
+      aria-expanded="false"
       autocomplete="off"
       class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
       placeholder="Type label: to see async loading…"
+      role="combobox"
       spellcheck="false"
       type="text"
       value=""
@@ -97,9 +99,11 @@ exports[`QueryInput/AutocompleteInteraction matches snapshot 1`] = `
       </span>
     </div>
     <input
+      aria-expanded="false"
       autocomplete="off"
       class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
       placeholder="Type label: to test autocomplete…"
+      role="combobox"
       spellcheck="false"
       type="text"
       value="label:bug "
@@ -155,9 +159,11 @@ exports[`QueryInput/Default matches snapshot 1`] = `
       </span>
     </div>
     <input
+      aria-expanded="false"
       autocomplete="off"
       class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
       placeholder="status:open author:… label:…"
+      role="combobox"
       spellcheck="false"
       type="text"
       value="status:open"
@@ -219,9 +225,11 @@ exports[`QueryInput/SyntaxOnly matches snapshot 1`] = `
       </span>
     </div>
     <input
+      aria-expanded="false"
       autocomplete="off"
       class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
       placeholder="Search…"
+      role="combobox"
       spellcheck="false"
       type="text"
       value="status:open label:bug"
@@ -315,9 +323,11 @@ exports[`QueryInput/WithFilters matches snapshot 1`] = `
       </span>
     </div>
     <input
+      aria-expanded="false"
       autocomplete="off"
       class="caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans"
       placeholder="status:open author:… label:…"
+      role="combobox"
       spellcheck="false"
       type="text"
       value="status:open label:bug author:janedoe fix login"
