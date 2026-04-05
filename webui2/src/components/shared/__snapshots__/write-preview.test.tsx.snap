@@ -56,6 +56,35 @@ exports[`WritePreview/Empty matches snapshot 1`] = `
 </div>
 `;
 
+exports[`WritePreview/TabSwitching matches snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="flex gap-2 mb-2"
+    >
+      <button
+        class="rounded-sm px-2 py-0.5 text-sm transition-colors bg-muted font-medium"
+        type="button"
+      >
+        Write
+      </button>
+      <button
+        class="rounded-sm px-2 py-0.5 text-sm font-medium transition-colors disabled:opacity-40 text-muted-foreground hover:text-foreground"
+        type="button"
+      >
+        Preview
+      </button>
+    </div>
+    <textarea
+      class="flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-[120px]"
+      placeholder="Type something…"
+    >
+      Some **content** to preview.
+    </textarea>
+  </div>
+</div>
+`;
+
 exports[`WritePreview/Uncontrolled matches snapshot 1`] = `
 <div>
   <div>

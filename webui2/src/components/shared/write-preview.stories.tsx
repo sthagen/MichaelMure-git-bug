@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { useState } from "react";
 
 import { Markdown } from "@/components/content/markdown";
@@ -79,4 +80,51 @@ export const Empty: Story = {
       </WritePreview.PreviewSlot>
     </WritePreview.Root>
   ),
+};
+
+export const TabSwitching: Story = {
+  args: { children: null },
+  render: () => {
+    const [message, setMessage] = useState("Some **content** to preview.");
+    return (
+      <WritePreview.Root hasContent={!!message.trim()}>
+        <WritePreview.Tabs className="mb-2" />
+        <WritePreview.WriteSlot>
+          <Textarea
+            placeholder="Type something…"
+            className="min-h-[120px]"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </WritePreview.WriteSlot>
+        <WritePreview.PreviewSlot>
+          <div className="border-input min-h-[120px] rounded-md border px-3 py-2">
+            <Markdown content={message} />
+          </div>
+        </WritePreview.PreviewSlot>
+      </WritePreview.Root>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Initially on Write tab — textarea visible
+    const textarea = canvas.getByRole("textbox");
+    await expect(textarea).toBeVisible();
+
+    // Click Preview tab
+    const previewBtn = canvas.getByRole("button", { name: "Preview" });
+    await userEvent.click(previewBtn);
+
+    // Textarea should be gone, preview content visible
+    await expect(canvas.queryByRole("textbox")).toBeNull();
+    await expect(canvas.getByText("content")).toBeVisible();
+
+    // Click Write tab to switch back
+    const writeBtn = canvas.getByRole("button", { name: "Write" });
+    await userEvent.click(writeBtn);
+
+    // Textarea visible again
+    await expect(canvas.getByRole("textbox")).toBeVisible();
+  },
 };

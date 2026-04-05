@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Search } from "lucide-react";
+import { expect, userEvent, within } from "storybook/test";
 import { useState } from "react";
 
 import type { CompletionProvider } from "./query-input";
@@ -146,5 +147,40 @@ export const AsyncCompletions: Story = {
         <QueryInput.Completions />
       </QueryInput.Root>
     );
+  },
+};
+
+export const AutocompleteInteraction: Story = {
+  args: { children: null, value: "", onChange: () => {}, onSubmit: () => {} },
+  render: () => {
+    const [value, setValue] = useState("");
+    return (
+      <QueryInput.Root
+        value={value}
+        onChange={setValue}
+        onSubmit={() => {}}
+        providers={providers}
+      >
+        <QueryInput.Icon><Search /></QueryInput.Icon>
+        <QueryInput.Input placeholder="Type label: to test autocomplete…" />
+        <QueryInput.Completions />
+      </QueryInput.Root>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("textbox");
+
+    // Type "label:" to trigger suggestions
+    await userEvent.type(input, "label:");
+    // Suggestions dropdown should appear
+    const bugOption = await canvas.findByText("bug");
+    await expect(bugOption).toBeVisible();
+
+    // First suggestion is already highlighted — press Enter to select
+    await userEvent.keyboard("{Enter}");
+
+    // Input should now contain the selected label
+    await expect(input).toHaveValue("label:bug ");
   },
 };
