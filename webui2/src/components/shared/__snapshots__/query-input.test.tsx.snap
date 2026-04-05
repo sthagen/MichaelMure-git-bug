@@ -6,7 +6,7 @@ exports[`QueryInput/AsyncCompletions matches snapshot 1`] = `
     class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
   >
     <div
-      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+      class="text-muted-foreground pointer-events-none absolute left-3 flex size-4 shrink-0 items-center justify-center [&>svg]:size-4"
     >
       <svg
         aria-hidden="true"
@@ -53,7 +53,7 @@ exports[`QueryInput/AutocompleteInteraction matches snapshot 1`] = `
     class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
   >
     <div
-      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+      class="text-muted-foreground pointer-events-none absolute left-3 flex size-4 shrink-0 items-center justify-center [&>svg]:size-4"
     >
       <svg
         aria-hidden="true"
@@ -114,7 +114,7 @@ exports[`QueryInput/Default matches snapshot 1`] = `
     class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
   >
     <div
-      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+      class="text-muted-foreground pointer-events-none absolute left-3 flex size-4 shrink-0 items-center justify-center [&>svg]:size-4"
     >
       <svg
         aria-hidden="true"
@@ -172,7 +172,7 @@ exports[`QueryInput/SyntaxOnly matches snapshot 1`] = `
     class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
   >
     <div
-      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+      class="text-muted-foreground pointer-events-none absolute left-3 flex size-4 shrink-0 items-center justify-center [&>svg]:size-4"
     >
       <svg
         aria-hidden="true"
@@ -236,7 +236,7 @@ exports[`QueryInput/WithFilters matches snapshot 1`] = `
     class="relative flex flex-1 items-center rounded-md border border-input bg-background ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
   >
     <div
-      class="text-muted-foreground pointer-events-none absolute left-3 size-4 shrink-0"
+      class="text-muted-foreground pointer-events-none absolute left-3 flex size-4 shrink-0 items-center justify-center [&>svg]:size-4"
     >
       <svg
         aria-hidden="true"

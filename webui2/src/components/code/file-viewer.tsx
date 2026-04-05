@@ -1,12 +1,98 @@
 // Syntax-highlighted file viewer with line numbers and copy button.
-// highlight.js is loaded lazily so it doesn't bloat the initial bundle.
+// Uses Shiki (VS Code's grammar engine) for accurate highlighting.
+// The highlighter is created lazily on first use and cached.
 
 import { Copy } from "lucide-react";
 import { useState, useEffect } from "react";
+import { createHighlighterCore, type HighlighterCore } from "shiki/core";
+import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
 import type { GitBlob } from "@/__generated__/graphql";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy singleton — created once, reused across all FileViewer instances.
+let highlighterPromise: Promise<HighlighterCore> | null = null;
+
+function getHighlighter(): Promise<HighlighterCore> {
+  if (!highlighterPromise) {
+    highlighterPromise = createHighlighterCore({
+      themes: [
+        import("@shikijs/themes/github-light"),
+        import("@shikijs/themes/github-dark"),
+      ],
+      langs: [],
+      engine: createOnigurumaEngine(import("shiki/wasm")),
+    });
+  }
+  return highlighterPromise;
+}
+
+// Map file extensions / filenames → [shiki lang ID, lazy import].
+// Languages are loaded on demand — only the ones actually viewed get fetched.
+interface LangEntry {
+  id: string;
+  load: () => Promise<unknown>;
+}
+
+const LANG_MAP: Record<string, LangEntry> = {
+  // JavaScript / TypeScript
+  js: { id: "javascript", load: () => import("@shikijs/langs/javascript") },
+  mjs: { id: "javascript", load: () => import("@shikijs/langs/javascript") },
+  cjs: { id: "javascript", load: () => import("@shikijs/langs/javascript") },
+  jsx: { id: "jsx", load: () => import("@shikijs/langs/jsx") },
+  ts: { id: "typescript", load: () => import("@shikijs/langs/typescript") },
+  mts: { id: "typescript", load: () => import("@shikijs/langs/typescript") },
+  cts: { id: "typescript", load: () => import("@shikijs/langs/typescript") },
+  tsx: { id: "tsx", load: () => import("@shikijs/langs/tsx") },
+  // Web
+  html: { id: "html", load: () => import("@shikijs/langs/html") },
+  css: { id: "css", load: () => import("@shikijs/langs/css") },
+  scss: { id: "scss", load: () => import("@shikijs/langs/scss") },
+  // Data
+  json: { id: "json", load: () => import("@shikijs/langs/json") },
+  jsonc: { id: "jsonc", load: () => import("@shikijs/langs/jsonc") },
+  yaml: { id: "yaml", load: () => import("@shikijs/langs/yaml") },
+  yml: { id: "yaml", load: () => import("@shikijs/langs/yaml") },
+  toml: { id: "toml", load: () => import("@shikijs/langs/toml") },
+  xml: { id: "xml", load: () => import("@shikijs/langs/xml") },
+  svg: { id: "xml", load: () => import("@shikijs/langs/xml") },
+  graphql: { id: "graphql", load: () => import("@shikijs/langs/graphql") },
+  sql: { id: "sql", load: () => import("@shikijs/langs/sql") },
+  // Docs
+  md: { id: "markdown", load: () => import("@shikijs/langs/markdown") },
+  mdx: { id: "mdx", load: () => import("@shikijs/langs/mdx") },
+  // Shell
+  sh: { id: "bash", load: () => import("@shikijs/langs/bash") },
+  bash: { id: "bash", load: () => import("@shikijs/langs/bash") },
+  zsh: { id: "bash", load: () => import("@shikijs/langs/bash") },
+  // Systems
+  go: { id: "go", load: () => import("@shikijs/langs/go") },
+  rs: { id: "rust", load: () => import("@shikijs/langs/rust") },
+  c: { id: "c", load: () => import("@shikijs/langs/c") },
+  h: { id: "c", load: () => import("@shikijs/langs/c") },
+  cpp: { id: "cpp", load: () => import("@shikijs/langs/cpp") },
+  hpp: { id: "cpp", load: () => import("@shikijs/langs/cpp") },
+  // Scripting
+  py: { id: "python", load: () => import("@shikijs/langs/python") },
+  rb: { id: "ruby", load: () => import("@shikijs/langs/ruby") },
+  lua: { id: "lua", load: () => import("@shikijs/langs/lua") },
+  // JVM / Mobile
+  java: { id: "java", load: () => import("@shikijs/langs/java") },
+  kt: { id: "kotlin", load: () => import("@shikijs/langs/kotlin") },
+  swift: { id: "swift", load: () => import("@shikijs/langs/swift") },
+  // Infra
+  nix: { id: "nix", load: () => import("@shikijs/langs/nix") },
+  // Filenames
+  Dockerfile: { id: "dockerfile", load: () => import("@shikijs/langs/dockerfile") },
+  Makefile: { id: "makefile", load: () => import("@shikijs/langs/makefile") },
+};
+
+function getLangEntry(path: string): LangEntry | undefined {
+  const filename = path.split("/").pop() ?? "";
+  const ext = filename.split(".").pop() ?? "";
+  return LANG_MAP[ext] ?? LANG_MAP[filename];
+}
 
 interface FileViewerProps {
   blob: GitBlob | null;
@@ -34,17 +120,35 @@ export function FileViewer({ blob }: FileViewerProps) {
     }
     setHighlighted(null);
     let cancelled = false;
-    void import("highlight.js").then(({ default: hljs }) => {
+
+    void (async () => {
+      const highlighter = await getHighlighter();
+      const entry = getLangEntry(blob.path);
+
+      let lang = "text";
+      if (entry) {
+        try {
+          const langModule = await entry.load();
+          await highlighter.loadLanguage(langModule as Parameters<typeof highlighter.loadLanguage>[0]);
+          lang = entry.id;
+        } catch {
+          // Language not available — fall back to plain text
+        }
+      }
+
       if (cancelled) return;
-      const ext = blob.path.split(".").pop() ?? "";
-      const result = hljs.getLanguage(ext)
-        ? hljs.highlight(blob.text!, { language: ext })
-        : hljs.highlightAuto(blob.text!);
+
+      const html = highlighter.codeToHtml(blob.text!, {
+        lang,
+        themes: { light: "github-light", dark: "github-dark" },
+      });
+
       setHighlighted({
-        html: result.value,
+        html,
         lineCount: blob.text!.split("\n").length,
       });
-    });
+    })();
+
     return () => {
       cancelled = true;
     };
@@ -80,22 +184,10 @@ export function FileViewer({ blob }: FileViewerProps) {
           Binary file — {formatBytes(blob.size)}
         </div>
       ) : (
-        <div className="flex overflow-x-auto font-mono text-xs leading-5">
-          <div
-            className="border-border bg-muted/20 text-muted-foreground/50 border-r px-4 py-4 text-right select-none"
-            aria-hidden
-          >
-            {Array.from({ length: lineCount }, (_, i) => (
-              <div key={i}>{i + 1}</div>
-            ))}
-          </div>
-          <pre className="flex-1 overflow-visible px-4 py-4">
-            <code
-              className="hljs !bg-transparent !p-0"
-              dangerouslySetInnerHTML={{ __html: html }}
-            />
-          </pre>
-        </div>
+        <div
+          className="overflow-x-auto font-mono text-xs leading-5 [&_.shiki]:!bg-transparent [&_pre]:px-4 [&_pre]:py-4"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
       )}
     </div>
   );

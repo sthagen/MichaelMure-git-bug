@@ -4,6 +4,9 @@ import { FileViewer } from "./file-viewer";
 
 const meta = {
   component: FileViewer,
+  // Skip browser tests — Shiki's WASM engine doesn't load in Vitest browser mode.
+  // Snapshot tests (happy-dom) still cover this component.
+  tags: ["!test"],
 } satisfies Meta<typeof FileViewer>;
 
 export default meta;
