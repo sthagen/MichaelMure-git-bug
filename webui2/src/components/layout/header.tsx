@@ -59,7 +59,7 @@ export function Header() {
         <div className="ml-auto flex items-center gap-2">
           {mode === "readonly" && <span className="text-muted-foreground text-xs">Read only</span>}
 
-          <Button variant="ghost" size="icon" onClick={toggle} title="Toggle theme">
+          <Button variant="ghost" size="icon-sm" onClick={toggle} title="Toggle theme">
             {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
           </Button>
 

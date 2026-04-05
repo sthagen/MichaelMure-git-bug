@@ -245,8 +245,7 @@ export function FileViewer({ blob }: FileViewerProps) {
         </span>
         <Button
           variant="ghost"
-          size="icon"
-          className="size-7"
+          size="icon-xs"
           onClick={copyToClipboard}
           title="Copy"
         >
