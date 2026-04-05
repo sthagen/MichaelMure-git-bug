@@ -1,18 +1,19 @@
 import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { CircleDot, CircleCheck, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { CircleDot, CircleCheck, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import * as v from "valibot";
 
 import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
 import { IssueFilters } from "@/components/bugs/IssueFilters";
+import type { SortValue } from "@/components/bugs/IssueFilters";
 import * as IssueRow from "@/components/bugs/IssueRow";
 import { LabelBadgeLink } from "@/components/bugs/LabelBadge";
-import type { SortValue } from "@/components/bugs/IssueFilters";
-import { QueryInput } from "@/components/bugs/QueryInput";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
+import * as QueryInput from "@/components/ui/query-input";
+import type { CompletionProvider } from "@/components/ui/query-input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -75,8 +76,58 @@ function RouteComponent() {
   const openCount = data?.repository?.openCount.totalCount ?? 0;
   const closedCount = data?.repository?.closedCount.totalCount ?? 0;
   const bugs = data?.repository?.bugs;
-  const validLabels = labelsData?.repository?.validLabels.nodes ?? [];
-  const allIdentities = identitiesData?.repository?.allIdentities.nodes ?? [];
+  const validLabels = labelsData?.repository?.validLabels.nodes;
+  const allIdentities = identitiesData?.repository?.allIdentities.nodes;
+
+  const completionProviders: CompletionProvider[] = useMemo(
+    () => [
+      {
+        prefix: "label:",
+        highlightClass: "text-yellow-600 dark:text-yellow-500",
+        getSuggestions: (query: string) =>
+          (validLabels ?? [])
+            .filter((l) => query === "" || l.name.toLowerCase().includes(query.toLowerCase()))
+            .slice(0, 8)
+            .map((l) => ({
+              value: l.name.includes(" ") ? `"${l.name}"` : l.name,
+              label: l.name,
+              icon: (
+                <span
+                  className="size-2 shrink-0 rounded-full"
+                  style={{
+                    backgroundColor: `rgb(${l.color.R},${l.color.G},${l.color.B})`,
+                  }}
+                />
+              ),
+            })),
+      },
+      {
+        prefix: "author:",
+        highlightClass: "text-blue-600 dark:text-blue-400",
+        getSuggestions: (query: string) =>
+          (allIdentities ?? [])
+            .filter(
+              (a) =>
+                query === "" ||
+                a.displayName.toLowerCase().includes(query.toLowerCase()) ||
+                (a.login ?? "").toLowerCase().includes(query.toLowerCase()) ||
+                (a.name ?? "").toLowerCase().includes(query.toLowerCase()),
+            )
+            .slice(0, 8)
+            .map((a) => {
+              const qv = a.login || a.name || a.humanId;
+              return {
+                value: qv.includes(" ") ? `"${qv}"` : qv,
+                label: a.displayName,
+                description:
+                  a.login && a.login !== a.displayName ? `@${a.login}` : undefined,
+              };
+            }),
+      },
+    ],
+    [validLabels, allIdentities],
+  );
+
   const totalCount = bugs?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasNext = bugs?.pageInfo.hasNextPage ?? false;
@@ -114,14 +165,16 @@ function RouteComponent() {
     <div>
       {/* Search bar */}
       <form onSubmit={handleSearch} className="mb-4 flex gap-2">
-        <QueryInput
+        <QueryInput.Root
           value={draft}
           onChange={setDraft}
           onSubmit={handleSearch}
-          placeholder="status:open author:… label:…"
-          labels={validLabels}
-          identities={allIdentities}
-        />
+          providers={completionProviders}
+        >
+          <QueryInput.Icon><Search /></QueryInput.Icon>
+          <QueryInput.Input placeholder="status:open author:… label:…" />
+          <QueryInput.Completions />
+        </QueryInput.Root>
         <Button type="submit">Search</Button>
       </form>
 
@@ -179,8 +232,8 @@ function RouteComponent() {
 
           <div className="ml-auto">
             <IssueFilters
-              labels={validLabels}
-              identities={allIdentities}
+              labels={validLabels ?? []}
+              identities={allIdentities ?? []}
               selectedLabels={selectedLabels}
               onLabelsChange={(labels) =>
                 applyFilters(statusFilter, labels, selectedAuthorQuery, parsed.freeText)
