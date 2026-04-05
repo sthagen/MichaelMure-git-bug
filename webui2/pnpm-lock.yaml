@@ -32,6 +32,9 @@ importers:
       graphql:
         specifier: ^16.9.0
         version: 16.13.2
+      hast-util-to-jsx-runtime:
+        specifier: ^2.3.6
+        version: 2.3.6
       lucide-react:
         specifier: ^1.7.0
         version: 1.7.0(react@19.2.4)
