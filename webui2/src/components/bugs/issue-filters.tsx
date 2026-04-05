@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/lib/auth";
+import { SORT_OPTIONS, type SortValue } from "@/lib/query-utils";
 import { cn } from "@/lib/utils";
 
 import { LabelBadge } from "@/components/shared/label-badge";
@@ -30,14 +31,7 @@ function authorQueryValue(i: {
   return i.login || i.name || i.humanId;
 }
 
-export type SortValue = "creation-desc" | "creation-asc" | "edit-desc" | "edit-asc";
-
-const SORT_OPTIONS: { value: SortValue; label: string }[] = [
-  { value: "creation-desc", label: "Newest" },
-  { value: "creation-asc", label: "Oldest" },
-  { value: "edit-desc", label: "Recently updated" },
-  { value: "edit-asc", label: "Least recently updated" },
-];
+export type { SortValue } from "@/lib/query-utils";
 
 export interface LabelItem {
   name: string;
