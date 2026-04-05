@@ -121,7 +121,7 @@ function FileViewerSkeleton() {
         </div>
         <div className="flex-1 space-y-1.5">
           {Array.from({ length: 20 }).map((_, i) => (
-            <Skeleton key={i} className="h-3.5" style={{ width: `${30 + Math.random() * 60}%` }} />
+            <Skeleton key={i} className="h-3.5" style={{ width: `${30 + ((i * 47) % 60)}%` }} />
           ))}
         </div>
       </div>
