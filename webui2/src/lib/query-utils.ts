@@ -41,13 +41,13 @@ export function tokenizeQuery(input: string): string[] {
 
 // Parse a query string back into structured filter state.
 export function parseQueryString(input: string): {
-  status: StatusFilter;
+  status: StatusFilter | null;
   labels: string[];
   author: string | null;
   freeText: string;
   sort: SortValue;
 } {
-  let status: StatusFilter = "open";
+  let status: StatusFilter | null = null;
   const labels: string[] = [];
   let author: string | null = null;
   let sort: SortValue = "creation-desc";
@@ -83,13 +83,14 @@ export function buildBaseQuery(labels: string[], author: string | null, freeText
 
 // Build the structured query string sent to the GraphQL allBugs(query:) argument.
 export function buildQueryString(
-  status: StatusFilter,
+  status: StatusFilter | null,
   labels: string[],
   author: string | null,
   freeText: string,
   sort: SortValue = "creation-desc",
 ): string {
-  const parts = [`status:${status}`];
+  const parts: string[] = [];
+  if (status) parts.push(`status:${status}`);
   const base = buildBaseQuery(labels, author, freeText);
   if (base) parts.push(base);
   if (sort !== "creation-desc") parts.push(`sort:${sort}`);

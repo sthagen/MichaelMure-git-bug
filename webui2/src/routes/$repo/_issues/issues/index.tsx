@@ -2,7 +2,7 @@ import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as v from "valibot";
 
 import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
@@ -61,11 +61,13 @@ function RouteComponent() {
     author: selectedAuthorQuery,
     sort,
   } = parsed;
-  // We don't have the humanId from URL — the dropdown will match by query value
-  const selectedAuthorId: string | null = null;
-
   // Draft is the text input value — starts from URL, only committed on submit
   const [draft, setDraft] = useState(q);
+
+  // Sync draft when URL query changes (e.g. tab clicks, filter changes)
+  useEffect(() => {
+    setDraft(q);
+  }, [q]);
 
   const { bugListRef } = Route.useLoaderData();
   const { labelsRef, identitiesRef } = Route.useRouteContext();
@@ -78,6 +80,18 @@ function RouteComponent() {
   const bugs = data?.repository?.bugs;
   const validLabels = labelsData?.repository?.validLabels.nodes;
   const allIdentities = identitiesData?.repository?.allIdentities.nodes;
+
+  // Resolve the author query value (login/name) back to a humanId for the filter UI
+  const selectedAuthorId = useMemo(() => {
+    if (!selectedAuthorQuery || !allIdentities) return null;
+    const match = allIdentities.find(
+      (i) =>
+        i.login === selectedAuthorQuery ||
+        i.name === selectedAuthorQuery ||
+        i.humanId === selectedAuthorQuery,
+    );
+    return match?.humanId ?? null;
+  }, [selectedAuthorQuery, allIdentities]);
 
   const completionProviders: CompletionProvider[] = useMemo(
     () => [
@@ -228,7 +242,7 @@ function RouteComponent() {
 
         {/* Bug rows */}
         {bugs?.nodes.length === 0 && (
-          <EmptyState>No {statusFilter} issues found.</EmptyState>
+          <EmptyState>No {statusFilter ?? ""} issues found.</EmptyState>
         )}
 
         {bugs?.nodes.map((bug) => (
