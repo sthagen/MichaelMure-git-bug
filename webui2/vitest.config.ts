@@ -19,6 +19,7 @@ export default mergeConfig(
           plugins: [
             storybookTest({
               configDir: path.join(dirname, ".storybook"),
+              storybookScript: "pnpm storybook --no-open",
             }),
           ],
           test: {
@@ -29,6 +30,7 @@ export default mergeConfig(
               headless: true,
               instances: [{ browser: "chromium" }],
             },
+            setupFiles: ["./.storybook/vitest.setup.ts"],
           },
         },
         // Snapshot tests (happy-dom, fast)
