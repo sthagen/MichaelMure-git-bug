@@ -33,10 +33,7 @@ function CodeLayout() {
   const repoName = refsData?.repository?.name ?? repoRef ?? "default-repo";
 
   // Read child route params (ref and splat path)
-  const allParams = useParams({ strict: false }) as {
-    ref?: string;
-    _splat?: string;
-  };
+  const allParams = useParams({ strict: false });
   const currentRef = allParams.ref ?? "";
   const currentPath = allParams._splat ?? "";
 
