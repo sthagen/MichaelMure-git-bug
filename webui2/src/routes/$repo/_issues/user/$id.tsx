@@ -6,22 +6,18 @@
 import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import {
-  CircleDot,
-  CircleCheck,
-  ShieldCheck,
-} from "lucide-react";
+import { CircleDot, CircleCheck, ShieldCheck } from "lucide-react";
 import * as v from "valibot";
 
 import { type UserProfileQuery, UserProfileDocument } from "@/__generated__/graphql";
 import * as IssueRow from "@/components/shared/issue-row";
 import { LabelBadge } from "@/components/shared/label-badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BackLink } from "@/components/ui/back-link";
 import { EmptyState } from "@/components/shared/empty-state";
 import * as Pagination from "@/components/shared/pagination";
+import * as StatusTabs from "@/components/shared/status-tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BackLink } from "@/components/ui/back-link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
 const profileSearchSchema = v.object({
   status: v.fallback(v.picklist(["open", "closed"]), "open"),
@@ -115,53 +111,28 @@ function RouteComponent() {
       {/* ── Issue list ─────────────────────────────────────────────────── */}
       <div className="border-border rounded-md border">
         {/* Open / Closed toggle */}
-        <div className="border-border flex items-center gap-1 border-b px-4 py-2">
-          <Link
+        <StatusTabs.Root className="border-border border-b px-4 py-2">
+          <StatusTabs.Tab
             to="/$repo/user/$id"
             params={{ repo, id }}
             search={{ status: "open", after: "" }}
-            className={cn(
-              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              statusFilter === "open"
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-            )}
+            className={statusFilter === "open" ? "bg-accent text-accent-foreground" : ""}
           >
-            <CircleDot
-              className={cn(
-                "size-4",
-                statusFilter === "open" && "text-green-600 dark:text-green-400",
-              )}
-            />
+            <StatusTabs.OpenIndicator active={statusFilter === "open"} />
             Open
-            <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none">
-              {openCount}
-            </span>
-          </Link>
-
-          <Link
+            <StatusTabs.Count>{openCount}</StatusTabs.Count>
+          </StatusTabs.Tab>
+          <StatusTabs.Tab
             to="/$repo/user/$id"
             params={{ repo, id }}
             search={{ status: "closed", after: "" }}
-            className={cn(
-              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-              statusFilter === "closed"
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-            )}
+            className={statusFilter === "closed" ? "bg-accent text-accent-foreground" : ""}
           >
-            <CircleCheck
-              className={cn(
-                "size-4",
-                statusFilter === "closed" && "text-purple-600 dark:text-purple-400",
-              )}
-            />
+            <StatusTabs.ClosedIndicator active={statusFilter === "closed"} />
             Closed
-            <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none">
-              {closedCount}
-            </span>
-          </Link>
-        </div>
+            <StatusTabs.Count>{closedCount}</StatusTabs.Count>
+          </StatusTabs.Tab>
+        </StatusTabs.Root>
 
         {bugs?.nodes.length === 0 && (
           <EmptyState>No {statusFilter} issues.</EmptyState>

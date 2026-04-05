@@ -10,7 +10,7 @@ exports[`StatusTabs/Default matches snapshot 1`] = `
     >
       <svg
         aria-hidden="true"
-        class="lucide lucide-circle-dot size-4 group-[.active]:text-green-600 dark:group-[.active]:text-green-400"
+        class="lucide lucide-circle-dot size-4"
         fill="none"
         height="24"
         stroke="currentColor"
@@ -34,7 +34,7 @@ exports[`StatusTabs/Default matches snapshot 1`] = `
       </svg>
       Open
       <span
-        class="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none"
+        class="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums"
       >
         12
       </span>
@@ -44,7 +44,7 @@ exports[`StatusTabs/Default matches snapshot 1`] = `
     >
       <svg
         aria-hidden="true"
-        class="lucide lucide-circle-check size-4 group-[.active]:text-purple-600 dark:group-[.active]:text-purple-400"
+        class="lucide lucide-circle-check size-4"
         fill="none"
         height="24"
         stroke="currentColor"
@@ -66,7 +66,7 @@ exports[`StatusTabs/Default matches snapshot 1`] = `
       </svg>
       Closed
       <span
-        class="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none"
+        class="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums"
       >
         5
       </span>

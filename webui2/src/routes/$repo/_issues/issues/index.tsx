@@ -1,13 +1,14 @@
 import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { CircleDot, CircleCheck, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import * as v from "valibot";
 
 import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
 import { IssueFilters } from "@/components/shared/issue-filters";
 import * as IssueRow from "@/components/shared/issue-row";
+import * as StatusTabs from "@/components/shared/status-tabs";
 import { LabelBadgeLink } from "@/components/shared/label-badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import * as Pagination from "@/components/shared/pagination";
@@ -17,7 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SortValue, StatusFilter } from "@/lib/query-utils";
 import { buildBaseQuery, buildQueryString, parseQueryString } from "@/lib/query-utils";
-import { cn } from "@/lib/utils";
 
 const issuesSearchSchema = v.object({
   q: v.fallback(v.string(), "status:open"),
@@ -182,53 +182,28 @@ function RouteComponent() {
       <div className="border-border rounded-md border">
         {/* Open / Closed toggle + filter dropdowns */}
         <div className="border-border flex items-center gap-2 overflow-x-auto border-b px-4 py-2">
-          <div className="flex shrink-0 items-center gap-1">
-            <Link
+          <StatusTabs.Root className="shrink-0">
+            <StatusTabs.Tab
               to="/$repo/issues"
-              params={{ repo: repo }}
+              params={{ repo }}
               search={{ q: queryWithStatus("open"), after: "" }}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                statusFilter === "open"
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-              )}
+              className={statusFilter === "open" ? "bg-accent text-accent-foreground" : ""}
             >
-              <CircleDot
-                className={cn(
-                  "size-4",
-                  statusFilter === "open" && "text-green-600 dark:text-green-400",
-                )}
-              />
+              <StatusTabs.OpenIndicator active={statusFilter === "open"} />
               Open
-              <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums">
-                {openCount}
-              </span>
-            </Link>
-
-            <Link
+              <StatusTabs.Count>{openCount}</StatusTabs.Count>
+            </StatusTabs.Tab>
+            <StatusTabs.Tab
               to="/$repo/issues"
-              params={{ repo: repo }}
+              params={{ repo }}
               search={{ q: queryWithStatus("closed"), after: "" }}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-                statusFilter === "closed"
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-              )}
+              className={statusFilter === "closed" ? "bg-accent text-accent-foreground" : ""}
             >
-              <CircleCheck
-                className={cn(
-                  "size-4",
-                  statusFilter === "closed" && "text-purple-600 dark:text-purple-400",
-                )}
-              />
+              <StatusTabs.ClosedIndicator active={statusFilter === "closed"} />
               Closed
-              <span className="bg-muted ml-0.5 rounded-full px-1.5 py-0.5 text-xs leading-none tabular-nums">
-                {closedCount}
-              </span>
-            </Link>
-          </div>
+              <StatusTabs.Count>{closedCount}</StatusTabs.Count>
+            </StatusTabs.Tab>
+          </StatusTabs.Root>
 
           <div className="ml-auto">
             <IssueFilters
