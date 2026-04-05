@@ -12,7 +12,8 @@ import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 import type { GitBlob } from "@/__generated__/graphql";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
+
+import styles from "./file-viewer.module.css";
 
 // ── Shiki highlighter (lazy singleton) ────────────────────────────────────────
 
@@ -284,24 +285,23 @@ interface CodeBlockProps {
 }
 
 function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
-  // Build CSS for highlighted lines via nth-child selectors
+  // Build a scoped <style> for highlighted lines using nth-child selectors
+  // targeting the CSS module's scoped class.
   const highlightStyle = (() => {
     if (!selectedRange) return null;
+    const scope = `.${styles["code_content"]}`;
     const selectors: string[] = [];
     for (let i = selectedRange.start; i <= selectedRange.end; i++) {
-      selectors.push(`.code-lines code > .line:nth-child(${i})`);
+      selectors.push(`${scope} code > .line:nth-child(${i})`);
     }
-    // GitHub uses a yellow tint — adapt for light/dark
-    return (
-      <style>{`${selectors.join(",")}{background-color:rgba(255,235,59,0.3)}.dark ${selectors.join(",.dark ")}{background-color:rgba(255,235,59,0.15)}`}</style>
-    );
+    const rule = selectors.join(",");
+    return <style>{`${rule}{background-color:rgba(255,235,59,0.3)}:root.dark ${rule}{background-color:rgba(255,235,59,0.15)}`}</style>;
   })();
 
   return (
     <div
-      className="code-lines overflow-x-auto font-mono text-xs leading-5"
+      className={styles["code_block"]}
       onClick={(e) => {
-        // Handle clicks on line number elements (data-line-number)
         const target = e.target as HTMLElement;
         const lineEl = target.closest("[data-line-number]");
         if (lineEl) {
@@ -312,16 +312,7 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
       }}
     >
       {highlightStyle}
-      <div
-        className={cn(
-          "[&_pre]:!m-0 [&_pre]:!p-0",
-          "[&_code]:block",
-          "[&_code>.line]:block [&_code>.line]:min-w-full [&_code>.line]:pr-4",
-          "[&_code>.line:first-child]:pt-2 [&_code>.line:last-child]:pb-2",
-          "[&_code>.line::before]:inline-block [&_code>.line::before]:w-12 [&_code>.line::before]:mr-4 [&_code>.line::before]:text-right [&_code>.line::before]:select-none [&_code>.line::before]:cursor-pointer [&_code>.line::before]:content-[attr(data-line-number)]",
-          "[&_code>.line::before]:opacity-40",
-        )}
-      >
+      <div className={styles["code_content"]}>
         {children}
       </div>
     </div>
