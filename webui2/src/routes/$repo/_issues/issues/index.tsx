@@ -1,7 +1,7 @@
 import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
-import { CircleDot, CircleCheck, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { CircleDot, CircleCheck, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import * as v from "valibot";
 
@@ -11,7 +11,8 @@ import type { SortValue } from "@/components/bugs/IssueFilters";
 import * as IssueRow from "@/components/bugs/IssueRow";
 import { LabelBadgeLink } from "@/components/bugs/LabelBadge";
 import { Button } from "@/components/ui/button";
-import { ButtonLink } from "@/components/ui/button-link";
+import { EmptyState } from "@/components/ui/empty-state";
+import * as Pagination from "@/components/ui/pagination";
 import * as QueryInput from "@/components/ui/query-input";
 import type { CompletionProvider } from "@/components/ui/query-input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -253,9 +254,7 @@ function RouteComponent() {
 
         {/* Bug rows */}
         {bugs?.nodes.length === 0 && (
-          <p className="text-muted-foreground px-4 py-8 text-center text-sm">
-            No {statusFilter} issues found.
-          </p>
+          <EmptyState>No {statusFilter} issues found.</EmptyState>
         )}
 
         {bugs?.nodes.map((bug) => (
@@ -311,35 +310,21 @@ function RouteComponent() {
         ))}
 
         {totalPages > 1 && (
-          <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
-            <ButtonLink
+          <Pagination.Root>
+            <Pagination.Previous
               to="/$repo/issues"
-              params={{ repo: repo }}
+              params={{ repo }}
               search={{ q, after: "" }}
-              variant="ghost"
-              size="sm"
               disabled={!hasPrev}
-              className="text-muted-foreground gap-1"
-            >
-              <ChevronLeft className="size-4" />
-              Previous
-            </ButtonLink>
-            <span className="text-muted-foreground text-sm">
-              Page {after ? 2 : 1} of {totalPages}
-            </span>
-            <ButtonLink
+            />
+            <Pagination.Info>Page {after ? 2 : 1} of {totalPages}</Pagination.Info>
+            <Pagination.Next
               to="/$repo/issues"
-              params={{ repo: repo }}
+              params={{ repo }}
               search={{ q, after: bugs?.pageInfo.endCursor ?? "" }}
-              variant="ghost"
-              size="sm"
               disabled={!hasNext}
-              className="text-muted-foreground gap-1"
-            >
-              Next
-              <ChevronRight className="size-4" />
-            </ButtonLink>
-          </div>
+            />
+          </Pagination.Root>
         )}
       </div>
     </div>

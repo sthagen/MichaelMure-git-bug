@@ -10,8 +10,8 @@ import {
   BugDetailDocument,
 } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import * as CommentCard from "@/components/ui/comment-card";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
@@ -94,16 +94,10 @@ function CommentItem({
   const canEdit = user !== null && user.id === item.author.id;
 
   return (
-    <div className="flex gap-3">
-      <Avatar className="mt-1 size-8 shrink-0">
-        <AvatarImage src={item.author.avatarUrl ?? undefined} alt={item.author.displayName} />
-        <AvatarFallback className="text-xs">
-          {item.author.displayName.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-
-      <div className="border-border min-w-0 flex-1 rounded-md border">
-        <div className="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm">
+    <CommentCard.Root>
+      <CommentCard.AuthorAvatar src={item.author.avatarUrl} name={item.author.displayName} />
+      <CommentCard.Card>
+        <CommentCard.CardHeader>
           <Link
             to="/$repo/user/$id"
             params={{ repo: repo!, id: item.author.humanId }}
@@ -124,11 +118,10 @@ function CommentItem({
               Edit
             </button>
           )}
-        </div>
+        </CommentCard.CardHeader>
 
         {editing ? (
           <div className="space-y-2 p-3">
-            {/* Ctrl/Cmd+Enter saves; Escape cancels — standard editor shortcuts */}
             <Textarea
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
@@ -152,16 +145,16 @@ function CommentItem({
             </div>
           </div>
         ) : (
-          <div className="px-4 py-3">
+          <CommentCard.CardBody>
             {item.message ? (
               <Markdown content={item.message} />
             ) : (
               <p className="text-muted-foreground text-sm italic">No description provided.</p>
             )}
-          </div>
+          </CommentCard.CardBody>
         )}
-      </div>
-    </div>
+      </CommentCard.Card>
+    </CommentCard.Root>
   );
 }
 

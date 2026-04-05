@@ -10,8 +10,8 @@ import {
   BugDetailDocument,
 } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/Markdown";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import * as CommentCard from "@/components/ui/comment-card";
 import { Textarea } from "@/components/ui/textarea";
 import * as WritePreview from "@/components/ui/write-preview";
 import { useAuth } from "@/lib/auth";
@@ -73,15 +73,9 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
   if (!user) return null;
 
   return (
-    <div className="flex gap-3">
-      <Avatar className="mt-1 size-8 shrink-0">
-        <AvatarImage src={user.avatarUrl ?? undefined} alt={user.displayName} />
-        <AvatarFallback className="text-xs">
-          {user.displayName.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-
-      <div className="border-border min-w-0 flex-1 rounded-md border">
+    <CommentCard.Root>
+      <CommentCard.AuthorAvatar src={user.avatarUrl} name={user.displayName} />
+      <CommentCard.Card>
         <WritePreview.Root hasContent={hasMessage} preview={preview} onPreviewChange={setPreview}>
           <WritePreview.Tabs className="border-border border-b px-4 py-2" />
           <WritePreview.WriteSlot>
@@ -122,7 +116,7 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
             Comment
           </Button>
         </div>
-      </div>
-    </div>
+      </CommentCard.Card>
+    </CommentCard.Root>
   );
 }

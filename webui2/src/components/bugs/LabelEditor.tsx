@@ -2,6 +2,7 @@ import { Settings2 } from "lucide-react";
 
 import { useBugChangeLabelsMutation, BugDetailDocument } from "@/__generated__/graphql";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { useAuth } from "@/lib/auth";
 
 import { LabelBadge } from "./LabelBadge";
@@ -42,9 +43,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
   return (
     <div>
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-          Labels
-        </h3>
+        <SectionHeading className="mb-0">Labels</SectionHeading>
         {user && validLabels.length > 0 && (
           <Popover>
             <PopoverTrigger asChild>

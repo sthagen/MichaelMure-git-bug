@@ -10,8 +10,6 @@ import {
   CircleDot,
   CircleCheck,
   ShieldCheck,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import * as v from "valibot";
 
@@ -20,7 +18,8 @@ import * as IssueRow from "@/components/bugs/IssueRow";
 import { LabelBadge } from "@/components/bugs/LabelBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
-import { ButtonLink } from "@/components/ui/button-link";
+import { EmptyState } from "@/components/ui/empty-state";
+import * as Pagination from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -165,9 +164,7 @@ function RouteComponent() {
         </div>
 
         {bugs?.nodes.length === 0 && (
-          <p className="text-muted-foreground px-4 py-8 text-center text-sm">
-            No {statusFilter} issues.
-          </p>
+          <EmptyState>No {statusFilter} issues.</EmptyState>
         )}
 
         {bugs?.nodes.map((bug) => (
@@ -196,35 +193,21 @@ function RouteComponent() {
         ))}
 
         {totalPages > 1 && (
-          <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
-            <ButtonLink
+          <Pagination.Root>
+            <Pagination.Previous
               to="/$repo/user/$id"
               params={{ repo, id }}
               search={{ status: statusFilter, after: "" }}
-              variant="ghost"
-              size="sm"
               disabled={!hasPrev}
-              className="text-muted-foreground gap-1"
-            >
-              <ChevronLeft className="size-4" />
-              Previous
-            </ButtonLink>
-            <span className="text-muted-foreground text-sm">
-              Page {after ? 2 : 1} of {totalPages}
-            </span>
-            <ButtonLink
+            />
+            <Pagination.Info>Page {after ? 2 : 1} of {totalPages}</Pagination.Info>
+            <Pagination.Next
               to="/$repo/user/$id"
               params={{ repo, id }}
               search={{ status: statusFilter, after: bugs?.pageInfo.endCursor ?? "" }}
-              variant="ghost"
-              size="sm"
               disabled={!hasNext}
-              className="text-muted-foreground gap-1"
-            >
-              Next
-              <ChevronRight className="size-4" />
-            </ButtonLink>
-          </div>
+            />
+          </Pagination.Root>
         )}
       </div>
     </div>

@@ -10,6 +10,8 @@ import { Timeline } from "@/components/bugs/Timeline";
 import { TitleEditor } from "@/components/bugs/TitleEditor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -37,7 +39,7 @@ function RouteComponent() {
 
   const bug = data?.repository?.bug;
   if (!bug) {
-    return <div className="text-muted-foreground py-16 text-center text-sm">Issue not found.</div>;
+    return <EmptyState className="py-16">Issue not found.</EmptyState>;
   }
 
   return (
@@ -87,9 +89,7 @@ function RouteComponent() {
           <Separator />
 
           <div>
-            <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-              Participants
-            </h3>
+            <SectionHeading>Participants</SectionHeading>
             <div className="flex flex-wrap gap-1.5">
               {bug.participants.nodes.map((p) => {
                 return (
