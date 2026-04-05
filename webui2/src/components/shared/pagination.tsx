@@ -36,12 +36,15 @@ export function Info({ children }: InfoProps) {
 const PreviousComponent = React.forwardRef<
   HTMLAnchorElement,
   { className?: string; children?: React.ReactNode; disabled?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, disabled, ...props }, ref) => (
   <a
     ref={ref}
+    aria-disabled={disabled || undefined}
+    tabIndex={disabled ? -1 : undefined}
     className={cn(
       buttonVariants({ variant: "ghost", size: "sm" }),
       "text-muted-foreground gap-1",
+      disabled && "pointer-events-none opacity-50",
       className,
     )}
     {...props}
@@ -60,12 +63,15 @@ export const Previous: LinkComponent<typeof PreviousComponent> = (props) => (
 const NextComponent = React.forwardRef<
   HTMLAnchorElement,
   { className?: string; children?: React.ReactNode; disabled?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, disabled, ...props }, ref) => (
   <a
     ref={ref}
+    aria-disabled={disabled || undefined}
+    tabIndex={disabled ? -1 : undefined}
     className={cn(
       buttonVariants({ variant: "ghost", size: "sm" }),
       "text-muted-foreground gap-1",
+      disabled && "pointer-events-none opacity-50",
       className,
     )}
     {...props}
