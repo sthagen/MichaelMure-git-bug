@@ -95,7 +95,7 @@ function CommentItem({
 
   return (
     <CommentCard.Root>
-      <CommentCard.AuthorAvatar src={item.author.avatarUrl} name={item.author.displayName} />
+      <CommentCard.AuthorAvatar avatarUrl={item.author.avatarUrl} displayName={item.author.displayName} />
       <CommentCard.Card>
         <CommentCard.CardHeader>
           <Link

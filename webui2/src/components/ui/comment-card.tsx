@@ -1,3 +1,4 @@
+import type { IdentitySummaryFragment } from "@/__generated__/graphql";
 import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
@@ -11,18 +12,16 @@ export function Root({ children, className }: RootProps) {
   return <div className={cn("flex gap-3", className)}>{children}</div>;
 }
 
-interface AuthorAvatarProps {
-  src?: string | null;
-  name: string;
+type AuthorAvatarProps = Pick<IdentitySummaryFragment, "displayName" | "avatarUrl"> & {
   className?: string;
-}
+};
 
-export function AuthorAvatar({ src, name, className }: AuthorAvatarProps) {
+export function AuthorAvatar({ avatarUrl, displayName, className }: AuthorAvatarProps) {
   return (
     <Avatar className={cn("mt-1 size-8 shrink-0", className)}>
-      <AvatarImage src={src ?? undefined} alt={name} />
+      <AvatarImage src={avatarUrl ?? undefined} alt={displayName} />
       <AvatarFallback className="text-xs">
-        {name.slice(0, 2).toUpperCase()}
+        {displayName.slice(0, 2).toUpperCase()}
       </AvatarFallback>
     </Avatar>
   );

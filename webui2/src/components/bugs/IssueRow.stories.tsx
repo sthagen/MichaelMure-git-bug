@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { formatDistanceToNow } from "date-fns";
 
+import type { BugSummaryFragment } from "@/__generated__/graphql";
 import { Status } from "@/__generated__/graphql";
 import { withRouter } from "@/../.storybook/decorators";
 
@@ -15,109 +16,91 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const ago = formatDistanceToNow(new Date(Date.now() - 3600 * 1000), { addSuffix: true });
+// Mock data shaped like BugSummaryFragment from GraphQL
+const openBug: BugSummaryFragment = {
+  id: "abc123",
+  humanId: "a1b2c3",
+  status: Status.Open,
+  title: "Fix login page crash on empty email",
+  labels: [
+    { name: "bug", color: { R: 252, G: 41, B: 41 } },
+    { name: "priority", color: { R: 255, G: 152, B: 0 } },
+  ],
+  author: { id: "u1", humanId: "user1", displayName: "Jane Doe", avatarUrl: null },
+  createdAt: new Date(Date.now() - 3600 * 1000).toISOString(),
+  comments: { totalCount: 3 },
+};
 
-export const OpenIssue: Story = {
-  args: { children: null },
-  render: () => (
+const closedBug: BugSummaryFragment = {
+  id: "def456",
+  humanId: "d4e5f6",
+  status: Status.Closed,
+  title: "Add dark mode support",
+  labels: [{ name: "enhancement", color: { R: 163, G: 230, B: 53 } }],
+  author: { id: "u2", humanId: "user2", displayName: "Bob Smith", avatarUrl: null },
+  createdAt: new Date(Date.now() - 86400 * 1000).toISOString(),
+  comments: { totalCount: 12 },
+};
+
+const noLabelsBug: BugSummaryFragment = {
+  id: "ghi789",
+  humanId: "g7h8i9",
+  status: Status.Open,
+  title: "Simple issue with no labels",
+  labels: [],
+  author: { id: "u3", humanId: "user3", displayName: "Alice Wu", avatarUrl: null },
+  createdAt: new Date(Date.now() - 7200 * 1000).toISOString(),
+  comments: { totalCount: 0 },
+};
+
+function BugRow({ bug }: { bug: BugSummaryFragment }) {
+  const ago = formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true });
+  return (
     <IssueRow.Root className="hover:bg-muted/30">
-      <IssueRow.StatusIcon status={Status.Open} />
+      <IssueRow.StatusIcon status={bug.status} />
       <div className="min-w-0 flex-1">
         <IssueRow.TitleArea>
           <a href="#" className="text-foreground hover:text-primary font-medium hover:underline">
-            Fix login page crash on empty email
+            {bug.title}
           </a>
-          <LabelBadge name="bug" color={{ R: 252, G: 41, B: 41 }} />
-          <LabelBadge name="priority" color={{ R: 255, G: 152, B: 0 }} />
+          {bug.labels.map((l) => (
+            <LabelBadge key={l.name} {...l} />
+          ))}
         </IssueRow.TitleArea>
         <IssueRow.Meta>
-          #a1b2c3 opened {ago} by <a href="#" className="hover:underline">Jane Doe</a>
+          #{bug.humanId} opened {ago} by{" "}
+          <a href="#" className="hover:underline">
+            {bug.author.displayName}
+          </a>
         </IssueRow.Meta>
       </div>
-      <IssueRow.CommentCount count={3} />
+      <IssueRow.CommentCount count={bug.comments.totalCount} />
     </IssueRow.Root>
-  ),
+  );
+}
+
+export const OpenIssue: Story = {
+  args: { children: null },
+  render: () => <BugRow bug={openBug} />,
 };
 
 export const ClosedIssue: Story = {
   args: { children: null },
-  render: () => (
-    <IssueRow.Root>
-      <IssueRow.StatusIcon status={Status.Closed} />
-      <div className="min-w-0 flex-1">
-        <IssueRow.TitleArea>
-          <a href="#" className="text-foreground hover:text-primary font-medium hover:underline">
-            Add dark mode support
-          </a>
-          <LabelBadge name="enhancement" color={{ R: 163, G: 230, B: 53 }} />
-        </IssueRow.TitleArea>
-        <IssueRow.Meta>#d4e5f6 opened {ago}</IssueRow.Meta>
-      </div>
-      <IssueRow.CommentCount count={12} />
-    </IssueRow.Root>
-  ),
+  render: () => <BugRow bug={closedBug} />,
 };
 
 export const NoLabelsNoComments: Story = {
   args: { children: null },
-  render: () => (
-    <IssueRow.Root>
-      <IssueRow.StatusIcon status={Status.Open} />
-      <div className="min-w-0 flex-1">
-        <IssueRow.TitleArea>
-          <a href="#" className="text-foreground hover:text-primary font-medium hover:underline">
-            Simple issue with no labels
-          </a>
-        </IssueRow.TitleArea>
-        <IssueRow.Meta>#abc123 opened {ago} by <a href="#" className="hover:underline">Bob</a></IssueRow.Meta>
-      </div>
-      <IssueRow.CommentCount count={0} />
-    </IssueRow.Root>
-  ),
+  render: () => <BugRow bug={noLabelsBug} />,
 };
 
 export const List: Story = {
   args: { children: null },
   render: () => (
     <div className="border-border rounded-md border">
-      <IssueRow.Root className="hover:bg-muted/30">
-        <IssueRow.StatusIcon status={Status.Open} />
-        <div className="min-w-0 flex-1">
-          <IssueRow.TitleArea>
-            <a href="#" className="text-foreground hover:text-primary font-medium hover:underline">
-              Fix login page crash on empty email
-            </a>
-            <LabelBadge name="bug" color={{ R: 252, G: 41, B: 41 }} />
-          </IssueRow.TitleArea>
-          <IssueRow.Meta>#a1b2c3 opened {ago} by Jane Doe</IssueRow.Meta>
-        </div>
-        <IssueRow.CommentCount count={3} />
-      </IssueRow.Root>
-      <IssueRow.Root className="hover:bg-muted/30">
-        <IssueRow.StatusIcon status={Status.Open} />
-        <div className="min-w-0 flex-1">
-          <IssueRow.TitleArea>
-            <a href="#" className="text-foreground hover:text-primary font-medium hover:underline">
-              Add dark mode support
-            </a>
-            <LabelBadge name="enhancement" color={{ R: 163, G: 230, B: 53 }} />
-          </IssueRow.TitleArea>
-          <IssueRow.Meta>#d4e5f6 opened {ago} by Bob</IssueRow.Meta>
-        </div>
-        <IssueRow.CommentCount count={0} />
-      </IssueRow.Root>
-      <IssueRow.Root className="hover:bg-muted/30">
-        <IssueRow.StatusIcon status={Status.Closed} />
-        <div className="min-w-0 flex-1">
-          <IssueRow.TitleArea>
-            <a href="#" className="text-foreground hover:text-primary font-medium hover:underline">
-              Update dependencies
-            </a>
-          </IssueRow.TitleArea>
-          <IssueRow.Meta>#g7h8i9 opened {ago} by Alice</IssueRow.Meta>
-        </div>
-        <IssueRow.CommentCount count={7} />
-      </IssueRow.Root>
+      <BugRow bug={openBug} />
+      <BugRow bug={closedBug} />
+      <BugRow bug={noLabelsBug} />
     </div>
   ),
 };

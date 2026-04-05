@@ -49,9 +49,9 @@ exports[`LabelBadge/Clickable matches snapshot 1`] = `
 <div>
   <span
     class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
-    style="background-color: rgb(100, 200, 150); color: rgba(0, 0, 0, 0.75);"
+    style="background-color: rgb(0, 150, 136); color: rgba(255, 255, 255, 0.9);"
   >
-    feature
+    help wanted
   </span>
 </div>
 `;

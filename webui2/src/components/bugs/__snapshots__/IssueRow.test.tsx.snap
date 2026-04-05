@@ -3,7 +3,7 @@
 exports[`IssueRow/ClosedIssue matches snapshot 1`] = `
 <div>
   <div
-    class="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0"
+    class="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0 hover:bg-muted/30"
   >
     <svg
       aria-hidden="true"
@@ -49,8 +49,18 @@ exports[`IssueRow/ClosedIssue matches snapshot 1`] = `
       <p
         class="text-muted-foreground mt-0.5 text-xs"
       >
-        #d4e5f6 opened 
-        about 1 hour ago
+        #
+        d4e5f6
+         opened 
+        1 day ago
+         by
+         
+        <a
+          class="hover:underline"
+          href="#"
+        >
+          Bob Smith
+        </a>
       </p>
     </div>
     <div
@@ -129,13 +139,28 @@ exports[`IssueRow/List matches snapshot 1`] = `
           >
             bug
           </span>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+            style="background-color: rgb(255, 152, 0); color: rgba(0, 0, 0, 0.75);"
+          >
+            priority
+          </span>
         </div>
         <p
           class="text-muted-foreground mt-0.5 text-xs"
         >
-          #a1b2c3 opened 
+          #
+          a1b2c3
+           opened 
           about 1 hour ago
-           by Jane Doe
+           by
+           
+          <a
+            class="hover:underline"
+            href="#"
+          >
+            Jane Doe
+          </a>
         </p>
       </div>
       <div
@@ -159,6 +184,90 @@ exports[`IssueRow/List matches snapshot 1`] = `
           />
         </svg>
         3
+      </div>
+    </div>
+    <div
+      class="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0 hover:bg-muted/30"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-circle-check mt-0.5 size-4 shrink-0 text-purple-600 dark:text-purple-400"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="10"
+        />
+        <path
+          d="m9 12 2 2 4-4"
+        />
+      </svg>
+      <div
+        class="min-w-0 flex-1"
+      >
+        <div
+          class="flex flex-wrap items-baseline gap-2"
+        >
+          <a
+            class="text-foreground hover:text-primary font-medium hover:underline"
+            href="#"
+          >
+            Add dark mode support
+          </a>
+          <span
+            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
+            style="background-color: rgb(163, 230, 53); color: rgba(0, 0, 0, 0.75);"
+          >
+            enhancement
+          </span>
+        </div>
+        <p
+          class="text-muted-foreground mt-0.5 text-xs"
+        >
+          #
+          d4e5f6
+           opened 
+          1 day ago
+           by
+           
+          <a
+            class="hover:underline"
+            href="#"
+          >
+            Bob Smith
+          </a>
+        </p>
+      </div>
+      <div
+        class="text-muted-foreground flex shrink-0 items-center gap-1 text-xs"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-message-square size-3.5"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"
+          />
+        </svg>
+        12
       </div>
     </div>
     <div
@@ -198,91 +307,25 @@ exports[`IssueRow/List matches snapshot 1`] = `
             class="text-foreground hover:text-primary font-medium hover:underline"
             href="#"
           >
-            Add dark mode support
+            Simple issue with no labels
           </a>
-          <span
-            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium "
-            style="background-color: rgb(163, 230, 53); color: rgba(0, 0, 0, 0.75);"
-          >
-            enhancement
-          </span>
         </div>
         <p
           class="text-muted-foreground mt-0.5 text-xs"
         >
-          #d4e5f6 opened 
-          about 1 hour ago
-           by Bob
-        </p>
-      </div>
-    </div>
-    <div
-      class="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0 hover:bg-muted/30"
-    >
-      <svg
-        aria-hidden="true"
-        class="lucide lucide-circle-check mt-0.5 size-4 shrink-0 text-purple-600 dark:text-purple-400"
-        fill="none"
-        height="24"
-        stroke="currentColor"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        viewBox="0 0 24 24"
-        width="24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          cx="12"
-          cy="12"
-          r="10"
-        />
-        <path
-          d="m9 12 2 2 4-4"
-        />
-      </svg>
-      <div
-        class="min-w-0 flex-1"
-      >
-        <div
-          class="flex flex-wrap items-baseline gap-2"
-        >
+          #
+          g7h8i9
+           opened 
+          about 2 hours ago
+           by
+           
           <a
-            class="text-foreground hover:text-primary font-medium hover:underline"
+            class="hover:underline"
             href="#"
           >
-            Update dependencies
+            Alice Wu
           </a>
-        </div>
-        <p
-          class="text-muted-foreground mt-0.5 text-xs"
-        >
-          #g7h8i9 opened 
-          about 1 hour ago
-           by Alice
         </p>
-      </div>
-      <div
-        class="text-muted-foreground flex shrink-0 items-center gap-1 text-xs"
-      >
-        <svg
-          aria-hidden="true"
-          class="lucide lucide-message-square size-3.5"
-          fill="none"
-          height="24"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-          width="24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"
-          />
-        </svg>
-        7
       </div>
     </div>
   </div>
@@ -292,7 +335,7 @@ exports[`IssueRow/List matches snapshot 1`] = `
 exports[`IssueRow/NoLabelsNoComments matches snapshot 1`] = `
 <div>
   <div
-    class="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0"
+    class="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0 hover:bg-muted/30"
   >
     <svg
       aria-hidden="true"
@@ -334,14 +377,17 @@ exports[`IssueRow/NoLabelsNoComments matches snapshot 1`] = `
       <p
         class="text-muted-foreground mt-0.5 text-xs"
       >
-        #abc123 opened 
-        about 1 hour ago
-         by 
+        #
+        g7h8i9
+         opened 
+        about 2 hours ago
+         by
+         
         <a
           class="hover:underline"
           href="#"
         >
-          Bob
+          Alice Wu
         </a>
       </p>
     </div>
@@ -406,9 +452,12 @@ exports[`IssueRow/OpenIssue matches snapshot 1`] = `
       <p
         class="text-muted-foreground mt-0.5 text-xs"
       >
-        #a1b2c3 opened 
+        #
+        a1b2c3
+         opened 
         about 1 hour ago
-         by 
+         by
+         
         <a
           class="hover:underline"
           href="#"
