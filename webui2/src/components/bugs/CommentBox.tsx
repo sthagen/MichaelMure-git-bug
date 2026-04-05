@@ -13,6 +13,7 @@ import { Markdown } from "@/components/content/Markdown";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import * as WritePreview from "@/components/ui/write-preview";
 import { useAuth } from "@/lib/auth";
 
 interface CommentBoxProps {
@@ -81,44 +82,23 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
       </Avatar>
 
       <div className="border-border min-w-0 flex-1 rounded-md border">
-        {/* Write / Preview tabs */}
-        <div className="border-border flex border-b">
-          <button
-            onClick={() => setPreview(false)}
-            className={`px-4 py-2 text-sm font-medium transition-colors ${
-              !preview
-                ? "border-primary text-foreground border-b-2"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Write
-          </button>
-          <button
-            onClick={() => setPreview(true)}
-            disabled={!hasMessage}
-            className={`px-4 py-2 text-sm font-medium transition-colors disabled:opacity-40 ${
-              preview
-                ? "border-primary text-foreground border-b-2"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            Preview
-          </button>
-        </div>
-
-        {preview ? (
-          <div className="min-h-[120px] px-4 py-3">
-            <Markdown content={message} />
-          </div>
-        ) : (
-          <Textarea
-            placeholder="Leave a comment…"
-            className="min-h-[120px] rounded-none border-0 shadow-none focus-visible:ring-0"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            disabled={busy}
-          />
-        )}
+        <WritePreview.Root hasContent={hasMessage} preview={preview} onPreviewChange={setPreview}>
+          <WritePreview.Tabs className="border-border border-b px-4 py-2" />
+          <WritePreview.WriteSlot>
+            <Textarea
+              placeholder="Leave a comment…"
+              className="min-h-[120px] rounded-none border-0 shadow-none focus-visible:ring-0"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              disabled={busy}
+            />
+          </WritePreview.WriteSlot>
+          <WritePreview.PreviewSlot>
+            <div className="min-h-[120px] px-4 py-3">
+              <Markdown content={message} />
+            </div>
+          </WritePreview.PreviewSlot>
+        </WritePreview.Root>
 
         <div className="border-border flex items-center justify-end gap-2 border-t px-3 py-2">
           <Button
