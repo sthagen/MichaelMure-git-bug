@@ -20,5 +20,26 @@
     "typeAware": true,
     "typeCheck": true
   },
-  "ignorePatterns": ["src/__generated__/**", "src/routeTree.gen.ts"]
+  "ignorePatterns": ["src/__generated__/**", "src/routeTree.gen.ts", ".storybook/**"],
+  "overrides": [
+    {
+      "files": ["**/*.stories.tsx"],
+      "jsPlugins": ["eslint-plugin-storybook"],
+      "rules": {
+        "storybook/await-interactions": "error",
+        "storybook/context-in-play-function": "error",
+        "storybook/csf-component": "warn",
+        "storybook/default-exports": "error",
+        "storybook/hierarchy-separator": "error",
+        "storybook/no-redundant-story-name": "warn",
+        "storybook/no-renderer-packages": "error",
+        "storybook/no-stories-of": "error",
+        "storybook/no-title-property-in-meta": "warn",
+        "storybook/prefer-pascal-case": "warn",
+        "storybook/story-exports": "error",
+        "storybook/use-storybook-expect": "error",
+        "storybook/use-storybook-testing-library": "error"
+      }
+    }
+  ]
 }
