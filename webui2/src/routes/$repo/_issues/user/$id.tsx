@@ -7,7 +7,6 @@ import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import {
-  MessageSquare,
   CircleDot,
   CircleCheck,
   ShieldCheck,
@@ -16,7 +15,8 @@ import {
 } from "lucide-react";
 import * as v from "valibot";
 
-import { Status, type UserProfileQuery, UserProfileDocument } from "@/__generated__/graphql";
+import { type UserProfileQuery, UserProfileDocument } from "@/__generated__/graphql";
+import * as IssueRow from "@/components/bugs/IssueRow";
 import { LabelBadge } from "@/components/bugs/LabelBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
@@ -170,49 +170,30 @@ function RouteComponent() {
           </p>
         )}
 
-        {bugs?.nodes.map((bug) => {
-          const isOpen = bug.status === Status.Open;
-          const StatusIcon = isOpen ? CircleDot : CircleCheck;
-          return (
-            <div
-              key={bug.id}
-              className="border-border flex items-start gap-3 border-b px-4 py-3 last:border-0"
-            >
-              <StatusIcon
-                className={cn(
-                  "mt-0.5 size-4 shrink-0",
-                  isOpen
-                    ? "text-green-600 dark:text-green-400"
-                    : "text-purple-600 dark:text-purple-400",
-                )}
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-baseline gap-2">
-                  <Link
-                    to="/$repo/issues/$id"
-                    params={{ repo, id: bug.humanId }}
-                    className="text-foreground hover:text-primary font-medium hover:underline"
-                  >
-                    {bug.title}
-                  </Link>
-                  {bug.labels.map((label) => (
-                    <LabelBadge key={label.name} name={label.name} color={label.color} />
-                  ))}
-                </div>
-                <p className="text-muted-foreground mt-0.5 text-xs">
-                  #{bug.humanId} opened{" "}
-                  {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
-                </p>
-              </div>
-              {bug.comments.totalCount > 0 && (
-                <div className="text-muted-foreground flex shrink-0 items-center gap-1 text-xs">
-                  <MessageSquare className="size-3.5" />
-                  {bug.comments.totalCount}
-                </div>
-              )}
+        {bugs?.nodes.map((bug) => (
+          <IssueRow.Root key={bug.id}>
+            <IssueRow.StatusIcon status={bug.status} />
+            <div className="min-w-0 flex-1">
+              <IssueRow.TitleArea>
+                <Link
+                  to="/$repo/issues/$id"
+                  params={{ repo, id: bug.humanId }}
+                  className="text-foreground hover:text-primary font-medium hover:underline"
+                >
+                  {bug.title}
+                </Link>
+                {bug.labels.map((label) => (
+                  <LabelBadge key={label.name} name={label.name} color={label.color} />
+                ))}
+              </IssueRow.TitleArea>
+              <IssueRow.Meta>
+                #{bug.humanId} opened{" "}
+                {formatDistanceToNow(new Date(bug.createdAt), { addSuffix: true })}
+              </IssueRow.Meta>
             </div>
-          );
-        })}
+            <IssueRow.CommentCount count={bug.comments.totalCount} />
+          </IssueRow.Root>
+        ))}
 
         {totalPages > 1 && (
           <div className="border-border flex items-center justify-center gap-2 border-t px-4 py-2">
