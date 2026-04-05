@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import * as WritePreview from "@/components/ui/write-preview";
 
 export const Route = createFileRoute("/$repo/_issues/issues/new")({
   component: RouteComponent,
@@ -19,7 +20,6 @@ function RouteComponent() {
   const { repo } = Route.useParams();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [preview, setPreview] = useState(false);
   const [createBug, { loading, error }] = useBugCreateMutation();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -58,36 +58,9 @@ function RouteComponent() {
           autoFocus
         />
 
-        <div>
-          <div className="mb-2">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setPreview(false)}
-                className={`rounded-sm px-2 py-0.5 transition-colors ${
-                  !preview ? "bg-muted font-medium" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Write
-              </button>
-              <button
-                type="button"
-                onClick={() => setPreview(true)}
-                disabled={!message.trim()}
-                className={`rounded-sm px-2 py-0.5 transition-colors disabled:opacity-40 ${
-                  preview ? "bg-muted font-medium" : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Preview
-              </button>
-            </div>
-          </div>
-
-          {preview ? (
-            <div className="border-input min-h-[200px] rounded-md border px-3 py-2">
-              <Markdown content={message} />
-            </div>
-          ) : (
+        <WritePreview.Root hasContent={!!message.trim()}>
+          <WritePreview.Tabs className="mb-2" />
+          <WritePreview.WriteSlot>
             <Textarea
               placeholder="Describe the issue in detail…"
               className="min-h-[200px]"
@@ -95,8 +68,13 @@ function RouteComponent() {
               onChange={(e) => setMessage(e.target.value)}
               disabled={loading}
             />
-          )}
-        </div>
+          </WritePreview.WriteSlot>
+          <WritePreview.PreviewSlot>
+            <div className="border-input min-h-[200px] rounded-md border px-3 py-2">
+              <Markdown content={message} />
+            </div>
+          </WritePreview.PreviewSlot>
+        </WritePreview.Root>
 
         {error && (
           <p className="text-destructive text-sm">Failed to create issue: {error.message}</p>
