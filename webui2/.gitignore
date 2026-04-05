@@ -20,3 +20,6 @@ yarn-error.log*
 
 # tanstack router plugin cache
 /.tanstack
+
+# storybook build output
+/storybook-static
