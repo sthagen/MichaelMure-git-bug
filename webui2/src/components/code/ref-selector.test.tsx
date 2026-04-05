@@ -1,7 +1,7 @@
 import { composeStories } from "@storybook/react-vite";
 import { expect, test } from "vitest";
 
-import * as stories from "./RefSelector.stories";
+import * as stories from "./ref-selector.stories";
 
 const composed = composeStories(stories);
 

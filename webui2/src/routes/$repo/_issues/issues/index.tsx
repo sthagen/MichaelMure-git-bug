@@ -6,10 +6,10 @@ import { useMemo, useState } from "react";
 import * as v from "valibot";
 
 import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
-import { IssueFilters } from "@/components/bugs/IssueFilters";
-import type { SortValue } from "@/components/bugs/IssueFilters";
-import * as IssueRow from "@/components/shared/IssueRow";
-import { LabelBadgeLink } from "@/components/shared/LabelBadge";
+import { IssueFilters } from "@/components/bugs/issue-filters";
+import type { SortValue } from "@/components/bugs/issue-filters";
+import * as IssueRow from "@/components/shared/issue-row";
+import { LabelBadgeLink } from "@/components/shared/label-badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
 import * as Pagination from "@/components/shared/pagination";

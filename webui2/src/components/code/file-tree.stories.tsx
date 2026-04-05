@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { GitObjectType } from "@/__generated__/graphql";
 import { withRouter } from "@/../.storybook/decorators";
 
-import { FileTree } from "./FileTree";
+import { FileTree } from "./file-tree";
 
 const meta = {
   component: FileTree,

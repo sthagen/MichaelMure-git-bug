@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { withRouter } from "@/../.storybook/decorators";
 
-import { CodeBreadcrumb } from "./CodeBreadcrumb";
+import { CodeBreadcrumb } from "./code-breadcrumb";
 
 const meta = {
   component: CodeBreadcrumb,

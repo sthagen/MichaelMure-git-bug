@@ -13,8 +13,8 @@ import {
 import { GitCommit } from "lucide-react";
 
 import type { GitRef } from "@/__generated__/graphql";
-import { CodeBreadcrumb } from "@/components/code/CodeBreadcrumb";
-import { RefSelector } from "@/components/code/RefSelector";
+import { CodeBreadcrumb } from "@/components/code/code-breadcrumb";
+import { RefSelector } from "@/components/code/ref-selector";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Skeleton } from "@/components/ui/skeleton";
 

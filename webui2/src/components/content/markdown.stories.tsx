@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { withRouter } from "@/../.storybook/decorators";
 
-import { Markdown } from "./Markdown";
+import { Markdown } from "./markdown";
 
 const meta = {
   component: Markdown,

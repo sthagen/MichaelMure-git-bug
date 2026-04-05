@@ -5,8 +5,8 @@ import type { BugSummaryFragment } from "@/__generated__/graphql";
 import { Status } from "@/__generated__/graphql";
 import { withRouter } from "@/../.storybook/decorators";
 
-import * as IssueRow from "./IssueRow";
-import { LabelBadge } from "./LabelBadge";
+import * as IssueRow from "./issue-row";
+import { LabelBadge } from "./label-badge";
 
 const meta = {
   component: IssueRow.Root,

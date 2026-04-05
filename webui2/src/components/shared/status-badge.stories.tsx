@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { Status } from "@/__generated__/graphql";
 
-import { StatusBadge } from "./StatusBadge";
+import { StatusBadge } from "./status-badge";
 
 const meta = {
   component: StatusBadge,

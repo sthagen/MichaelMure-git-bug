@@ -3,7 +3,7 @@ import { fn } from "storybook/test";
 
 import { GitRefType } from "@/__generated__/graphql";
 
-import { RefSelector } from "./RefSelector";
+import { RefSelector } from "./ref-selector";
 
 const meta = {
   component: RefSelector,

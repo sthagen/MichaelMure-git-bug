@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { SectionHeading } from "@/components/shared/section-heading";
 import { useAuth } from "@/lib/auth";
 
-import { LabelBadge } from "@/components/shared/LabelBadge";
+import { LabelBadge } from "@/components/shared/label-badge";
 
 interface LabelEditorProps {
   bugPrefix: string;

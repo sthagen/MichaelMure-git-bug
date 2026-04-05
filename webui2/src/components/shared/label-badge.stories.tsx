@@ -3,7 +3,7 @@ import { fn } from "storybook/test";
 
 import type { LabelFieldsFragment } from "@/__generated__/graphql";
 
-import { LabelBadge } from "./LabelBadge";
+import { LabelBadge } from "./label-badge";
 
 const meta = {
   component: LabelBadge,

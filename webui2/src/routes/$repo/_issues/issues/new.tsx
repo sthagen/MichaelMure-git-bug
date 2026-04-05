@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { useBugCreateMutation } from "@/__generated__/graphql";
-import { Markdown } from "@/components/content/Markdown";
+import { Markdown } from "@/components/content/markdown";
 import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";

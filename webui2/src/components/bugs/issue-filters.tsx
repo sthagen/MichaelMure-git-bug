@@ -6,7 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
-import { LabelBadge } from "@/components/shared/LabelBadge";
+import { LabelBadge } from "@/components/shared/label-badge";
 
 // Max authors shown in the non-searching state. We intentionally cap this to
 // avoid a giant list — the current-user + recently-seen pattern covers the

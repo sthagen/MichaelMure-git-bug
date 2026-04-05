@@ -7,7 +7,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { GitCommit } from "lucide-react";
 
-import { FileDiffView } from "@/components/code/FileDiffView";
+import { FileDiffView } from "@/components/code/file-diff-view";
 import { BackLink } from "@/components/ui/back-link";
 import { Skeleton } from "@/components/ui/skeleton";
 

@@ -10,9 +10,9 @@ import {
   type GitLastCommit,
   type GitBlob,
 } from "@/__generated__/graphql";
-import { FileTree } from "@/components/code/FileTree";
-import type { TreeEntryWithCommit } from "@/components/code/FileTree";
-import { Markdown } from "@/components/content/Markdown";
+import { FileTree } from "@/components/code/file-tree";
+import type { TreeEntryWithCommit } from "@/components/code/file-tree";
+import { Markdown } from "@/components/content/markdown";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const TREE_QUERY = gql`

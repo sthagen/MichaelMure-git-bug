@@ -1,7 +1,7 @@
 import { composeStories } from "@storybook/react-vite";
 import { expect, test } from "vitest";
 
-import * as stories from "./CodeBreadcrumb.stories";
+import * as stories from "./code-breadcrumb.stories";
 
 const composed = composeStories(stories);
 

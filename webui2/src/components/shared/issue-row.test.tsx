@@ -1,12 +1,12 @@
 import { composeStories } from "@storybook/react-vite";
 import { expect, test } from "vitest";
 
-import * as stories from "./FileViewer.stories";
+import * as stories from "./issue-row.stories";
 
 const composed = composeStories(stories);
 
 for (const [name, Story] of Object.entries(composed)) {
-  test(`FileViewer/${name} matches snapshot`, async () => {
+  test(`IssueRow/${name} matches snapshot`, async () => {
     await Story.run();
     expect(document.body.firstChild).toMatchSnapshot();
   });

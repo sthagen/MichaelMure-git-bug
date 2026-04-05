@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import { Markdown } from "@/components/content/Markdown";
+import { Markdown } from "@/components/content/markdown";
 import { Textarea } from "@/components/ui/textarea";
 import { withRouter } from "@/../.storybook/decorators";
 

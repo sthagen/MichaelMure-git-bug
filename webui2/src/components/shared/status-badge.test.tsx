@@ -1,7 +1,7 @@
 import { composeStories } from "@storybook/react-vite";
 import { expect, test } from "vitest";
 
-import * as stories from "./StatusBadge.stories";
+import * as stories from "./status-badge.stories";
 
 const composed = composeStories(stories);
 

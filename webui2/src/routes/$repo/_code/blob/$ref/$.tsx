@@ -5,7 +5,7 @@ import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import type { GitBlob } from "@/__generated__/graphql";
-import { FileViewer } from "@/components/code/FileViewer";
+import { FileViewer } from "@/components/code/file-viewer";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const BLOB_QUERY = gql`

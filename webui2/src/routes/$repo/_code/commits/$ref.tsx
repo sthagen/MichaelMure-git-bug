@@ -2,7 +2,7 @@
 
 import { createFileRoute } from "@tanstack/react-router";
 
-import { CommitList } from "@/components/code/CommitList";
+import { CommitList } from "@/components/code/commit-list";
 
 export const Route = createFileRoute("/$repo/_code/commits/$ref")({
   component: CommitsView,

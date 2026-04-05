@@ -1,7 +1,7 @@
 import { createRootRouteWithContext, useRouter } from "@tanstack/react-router";
 import { AlertTriangle } from "lucide-react";
 
-import { Shell } from "@/components/layout/Shell";
+import { Shell } from "@/components/layout/shell";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { preloadQuery } from "@/lib/apollo";

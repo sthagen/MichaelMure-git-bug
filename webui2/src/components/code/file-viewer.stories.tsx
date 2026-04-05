@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { FileViewer } from "./FileViewer";
+import { FileViewer } from "./file-viewer";
 
 const meta = {
   component: FileViewer,

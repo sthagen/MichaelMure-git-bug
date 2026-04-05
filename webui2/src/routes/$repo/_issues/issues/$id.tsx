@@ -3,11 +3,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 
 import { type BugDetailQuery, BugDetailDocument } from "@/__generated__/graphql";
-import { CommentBox } from "@/components/bugs/CommentBox";
-import { LabelEditor } from "@/components/bugs/LabelEditor";
-import { StatusBadge } from "@/components/shared/StatusBadge";
-import { Timeline } from "@/components/bugs/Timeline";
-import { TitleEditor } from "@/components/bugs/TitleEditor";
+import { CommentBox } from "@/components/bugs/comment-box";
+import { LabelEditor } from "@/components/bugs/label-editor";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { Timeline } from "@/components/bugs/timeline";
+import { TitleEditor } from "@/components/bugs/title-editor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
 import { EmptyState } from "@/components/shared/empty-state";

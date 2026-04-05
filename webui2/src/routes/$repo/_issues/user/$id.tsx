@@ -14,8 +14,8 @@ import {
 import * as v from "valibot";
 
 import { type UserProfileQuery, UserProfileDocument } from "@/__generated__/graphql";
-import * as IssueRow from "@/components/shared/IssueRow";
-import { LabelBadge } from "@/components/shared/LabelBadge";
+import * as IssueRow from "@/components/shared/issue-row";
+import { LabelBadge } from "@/components/shared/label-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BackLink } from "@/components/ui/back-link";
 import { EmptyState } from "@/components/shared/empty-state";
