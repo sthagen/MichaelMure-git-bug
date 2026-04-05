@@ -1,7 +1,10 @@
+import { createLink, type LinkComponent } from "@tanstack/react-router";
+import * as React from "react";
+
 interface LabelBadgeProps {
   name: string;
   color: { R: number; G: number; B: number };
-  onClick?: (name: string) => void;
+  className?: string;
 }
 
 function contrastColor(r: number, g: number, b: number): string {
@@ -10,35 +13,50 @@ function contrastColor(r: number, g: number, b: number): string {
   return luminance > 0.55 ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.9)";
 }
 
-// Coloured label pill. Renders as a <button> when onClick is provided,
-// used in BugRow and UserProfilePage to filter issues by label.
-export function LabelBadge({ name, color, onClick }: LabelBadgeProps) {
-  const bg = `rgb(${color.R},${color.G},${color.B})`;
-  const text = contrastColor(color.R, color.G, color.B);
+// Coloured label pill. Always renders as a <span>.
+// Use LabelBadgeLink for a clickable variant that navigates.
+const LabelBadge = React.forwardRef<HTMLSpanElement, LabelBadgeProps & Omit<React.HTMLAttributes<HTMLSpanElement>, "color">>(
+  ({ name, color, className, ...props }, ref) => {
+    const bg = `rgb(${color.R},${color.G},${color.B})`;
+    const text = contrastColor(color.R, color.G, color.B);
 
-  if (onClick) {
     return (
-      <button
-        type="button"
-        className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium hover:opacity-80"
+      <span
+        ref={ref}
+        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${className ?? ""}`}
         style={{ backgroundColor: bg, color: text }}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onClick(name);
-        }}
+        {...props}
       >
         {name}
-      </button>
+      </span>
     );
-  }
+  },
+);
+LabelBadge.displayName = "LabelBadge";
 
-  return (
-    <span
-      className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-      style={{ backgroundColor: bg, color: text }}
-    >
-      {name}
-    </span>
-  );
-}
+// LabelBadge as a TanStack Router link — renders as <a> with label styling.
+const CreatedLabelBadgeLink = createLink(
+  React.forwardRef<HTMLAnchorElement, LabelBadgeProps & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "color">>(
+    ({ name, color, className, ...props }, ref) => {
+      const bg = `rgb(${color.R},${color.G},${color.B})`;
+      const text = contrastColor(color.R, color.G, color.B);
+
+      return (
+        <a
+          ref={ref}
+          className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium hover:opacity-80 ${className ?? ""}`}
+          style={{ backgroundColor: bg, color: text }}
+          {...props}
+        >
+          {name}
+        </a>
+      );
+    },
+  ),
+);
+
+const LabelBadgeLink: LinkComponent<typeof CreatedLabelBadgeLink> = (props) => {
+  return <CreatedLabelBadgeLink preload="intent" {...props} />;
+};
+
+export { LabelBadge, LabelBadgeLink };
