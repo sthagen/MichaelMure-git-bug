@@ -14,6 +14,7 @@
     "fmt:check": "oxfmt --check",
     "check": "oxlint && oxfmt --check",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -71,6 +72,7 @@
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^6.0.1",
     "@vitest/browser-playwright": "^4.1.2",
+    "@vitest/coverage-v8": "^4.1.2",
     "eslint-plugin-storybook": "^10.3.4",
     "happy-dom": "^20.8.9",
     "oxfmt": "^0.42.0",

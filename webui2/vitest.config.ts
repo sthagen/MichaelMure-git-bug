@@ -12,6 +12,16 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      coverage: {
+        provider: "v8",
+        include: ["src/**/*.{ts,tsx}"],
+        exclude: [
+          "src/__generated__/**",
+          "src/routeTree.gen.ts",
+          "src/**/*.stories.{ts,tsx}",
+          "src/**/*.test.{ts,tsx}",
+        ],
+      },
       projects: [
         // Storybook smoke & interaction tests (real browser via Playwright)
         {
