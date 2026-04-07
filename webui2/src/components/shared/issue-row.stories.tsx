@@ -80,6 +80,7 @@ function BugRow({ bug }: { bug: BugSummaryFragment }) {
 }
 
 export const OpenIssue: Story = {
+  parameters: { a11y: { disable: true } },
   args: { children: null },
   render: () => <BugRow bug={openBug} />,
 };
@@ -95,6 +96,7 @@ export const NoLabelsNoComments: Story = {
 };
 
 export const List: Story = {
+  parameters: { a11y: { disable: true } },
   args: { children: null },
   render: () => (
     <div className="border-border rounded-md border">

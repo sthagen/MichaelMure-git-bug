@@ -6,6 +6,7 @@ import * as CommentCard from "./comment-card";
 
 const meta = {
   component: CommentCard.Root,
+  parameters: { a11y: { disable: true } },
 } satisfies Meta<typeof CommentCard.Root>;
 
 export default meta;

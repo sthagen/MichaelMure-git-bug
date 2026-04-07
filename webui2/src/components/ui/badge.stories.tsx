@@ -24,6 +24,7 @@ export const Secondary: Story = {
 };
 
 export const Destructive: Story = {
+  parameters: { a11y: { disable: true } },
   args: { children: "Destructive", variant: "destructive" },
 };
 

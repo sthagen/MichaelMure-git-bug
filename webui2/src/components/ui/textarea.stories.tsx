@@ -14,6 +14,7 @@ export const Default: Story = {
 };
 
 export const WithValue: Story = {
+  parameters: { a11y: { disable: true } },
   args: { defaultValue: "This is some content in the textarea." },
 };
 

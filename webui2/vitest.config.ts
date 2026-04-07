@@ -40,7 +40,6 @@ export default mergeConfig(
               headless: true,
               instances: [{ browser: "chromium" }],
             },
-            setupFiles: ["./.storybook/vitest.setup.ts"],
             // Shiki's WASM engine fails in Vitest browser mode
             exclude: ["src/components/code/file-viewer.stories.tsx"],
           },

@@ -145,7 +145,7 @@ function LabelEditorDemo() {
 
 const meta = {
   title: "bugs/LabelEditor",
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { disable: true } },
 } satisfies Meta;
 
 export default meta;

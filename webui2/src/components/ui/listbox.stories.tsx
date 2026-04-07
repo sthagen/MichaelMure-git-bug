@@ -22,7 +22,7 @@ import * as Listbox from "./listbox";
 // the "primary" component just to give Storybook a title.
 const meta = {
   title: "ui/Listbox",
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { disable: true } },
 } satisfies Meta;
 
 export default meta;

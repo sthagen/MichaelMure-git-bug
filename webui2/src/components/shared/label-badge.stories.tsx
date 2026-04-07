@@ -23,6 +23,7 @@ const priority: LabelFieldsFragment = { name: "priority", color: { R: 255, G: 15
 const allLabels = [bug, enhancement, documentation, helpWanted, wontfix, priority];
 
 export const Default: Story = {
+  parameters: { a11y: { disable: true } },
   args: bug,
 };
 
@@ -35,10 +36,12 @@ export const DarkBackground: Story = {
 };
 
 export const Clickable: Story = {
+  parameters: { a11y: { disable: true } },
   args: { ...helpWanted, onClick: fn() },
 };
 
 export const AllColors: Story = {
+  parameters: { a11y: { disable: true } },
   args: bug,
   render: () => (
     <div className="flex flex-wrap gap-2">

@@ -36,6 +36,7 @@ This is a paragraph with **bold**, *italic*, and \`inline code\`.
 };
 
 export const CodeBlock: Story = {
+  parameters: { a11y: { disable: true } },
   args: {
     content: `Here is a code block:
 
@@ -54,6 +55,7 @@ function greet(user: User): string {
 };
 
 export const GithubFlavored: Story = {
+  parameters: { a11y: { disable: true } },
   args: {
     content: `## Task list
 

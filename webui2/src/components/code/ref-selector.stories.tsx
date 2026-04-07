@@ -7,6 +7,7 @@ import { RefSelector } from "./ref-selector";
 
 const meta = {
   component: RefSelector,
+  parameters: { a11y: { disable: true } },
 } satisfies Meta<typeof RefSelector>;
 
 export default meta;

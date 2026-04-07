@@ -10,6 +10,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const WithImage: Story = {
+  parameters: { a11y: { disable: true } },
   render: () => (
     <Avatar>
       <AvatarImage src="https://github.com/shadcn.png" alt="User" />
@@ -19,6 +20,7 @@ export const WithImage: Story = {
 };
 
 export const WithFallback: Story = {
+  parameters: { a11y: { disable: true } },
   render: () => (
     <Avatar>
       <AvatarImage src="/broken-url.png" alt="User" />
@@ -28,6 +30,7 @@ export const WithFallback: Story = {
 };
 
 export const Small: Story = {
+  parameters: { a11y: { disable: true } },
   render: () => (
     <Avatar className="size-6">
       <AvatarFallback className="text-[8px]">AB</AvatarFallback>

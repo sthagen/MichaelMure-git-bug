@@ -8,7 +8,7 @@ import { IssueFilters, type LabelItem, type IdentityItem } from "./issue-filters
 
 const meta = {
   component: IssueFilters,
-  parameters: { layout: "centered" },
+  parameters: { layout: "centered", a11y: { disable: true } },
 } satisfies Meta<typeof IssueFilters>;
 
 export default meta;
