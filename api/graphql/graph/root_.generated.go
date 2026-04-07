@@ -50,6 +50,7 @@ type ResolverRoot interface {
 	BugSetTitleTimelineItem() BugSetTitleTimelineItemResolver
 	Color() ColorResolver
 	GitCommit() GitCommitResolver
+	GitTreeEntry() GitTreeEntryResolver
 	Identity() IdentityResolver
 	Label() LabelResolver
 	Mutation() MutationResolver
@@ -380,6 +381,7 @@ type ComplexityRoot struct {
 
 	GitTreeEntry struct {
 		Hash       func(childComplexity int) int
+		LastCommit func(childComplexity int) int
 		Name       func(childComplexity int) int
 		ObjectType func(childComplexity int) int
 	}
@@ -1881,6 +1883,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.GitTreeEntry.Hash(childComplexity), true
 
+	case "GitTreeEntry.lastCommit":
+		if e.complexity.GitTreeEntry.LastCommit == nil {
+			break
+		}
+
+		return e.complexity.GitTreeEntry.LastCommit(childComplexity), true
+
 	case "GitTreeEntry.name":
 		if e.complexity.GitTreeEntry.Name == nil {
 			break
@@ -3199,13 +3208,16 @@ type GitRef {
 
 """An entry in a git tree (directory listing)."""
 type GitTreeEntry
-@goModel(model: "github.com/git-bug/git-bug/repository.TreeEntry") {
+@goModel(model: "github.com/git-bug/git-bug/api/graphql/models.GitTreeEntry") {
     """File or directory name within the parent tree."""
     name: String!
     """Whether this entry is a file, directory, symlink, or submodule."""
     type: GitObjectType! @goField(name: "ObjectType")
     """Git object hash."""
     hash: String!
+    """The last git commit that touched this tree entry. Null when the entry
+    cannot be resolved within the history depth limit."""
+    lastCommit: GitCommit
 }
 
 """The content of a git blob (file)."""

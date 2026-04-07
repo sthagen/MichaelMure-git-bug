@@ -65,7 +65,9 @@ func (RootResolver) Bug() graph.BugResolver {
 }
 
 func (r RootResolver) GitCommit() graph.GitCommitResolver {
-	return &gitCommitResolver{
-		cache: r.MultiRepoCache,
-	}
+	return &gitCommitResolver{}
+}
+
+func (r RootResolver) GitTreeEntry() graph.GitTreeEntryResolver {
+	return &gitTreeEntryResolver{}
 }
