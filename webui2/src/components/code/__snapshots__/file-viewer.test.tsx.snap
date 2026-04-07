@@ -216,203 +216,607 @@ exports[`FileViewer/TypeScriptFile matches snapshot 1`] = `
     class="border-border overflow-hidden rounded-md border"
   >
     <div
-      class="border-border bg-muted/40 border-b px-4 py-2"
+      class="border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-b px-4 py-2 text-xs"
     >
-      <div
-        class="animate-pulse rounded-md bg-muted h-4 w-32"
-        data-slot="skeleton"
-      />
+      <span>
+        18
+         lines · 
+        312 B
+      </span>
+      <button
+        class="group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 size-6 rounded-[min(var(--radius-md),8px)] in-data-[slot=button-group]:rounded-md [&_svg:not([class*='size-'])]:size-3"
+        data-slot="button"
+        tabindex="0"
+        title="Copy"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-copy size-3.5"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            height="14"
+            rx="2"
+            ry="2"
+            width="14"
+            x="8"
+            y="8"
+          />
+          <path
+            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+          />
+        </svg>
+      </button>
     </div>
     <div
-      class="flex gap-4 p-4"
+      class="_code-block_26d040"
     >
       <div
-        class="space-y-1.5"
+        class="_code-content_26d040"
       >
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
-          data-slot="skeleton"
-        />
-      </div>
-      <div
-        class="flex-1 space-y-1.5"
-      >
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 30%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 77%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 64%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 51%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 38%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 85%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 72%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 59%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 46%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 33%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 80%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 67%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 54%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 41%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 88%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 75%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 62%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 49%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 36%;"
-        />
-        <div
-          class="animate-pulse rounded-md bg-muted h-3.5"
-          data-slot="skeleton"
-          style="width: 83%;"
-        />
+        <pre
+          class="shiki shiki-themes github-light github-dark"
+          style="--shiki-light: #24292e; --shiki-dark: #e1e4e8; --shiki-light-bg: #fff; --shiki-dark-bg: #24292e;"
+          tabindex="0"
+        >
+          <code>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="1"
+              >
+                1
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                import
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                 { useState } 
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                from
+              </span>
+              <span
+                style="--shiki-light: #032F62; --shiki-dark: #9ECBFF;"
+              >
+                 "react"
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                ;
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="2"
+              >
+                2
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="3"
+              >
+                3
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                interface
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 CounterProps
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                 {
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="4"
+              >
+                4
+              </span>
+              <span
+                style="--shiki-light: #E36209; --shiki-dark: #FFAB70;"
+              >
+                  initial
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                ?:
+              </span>
+              <span
+                style="--shiki-light: #005CC5; --shiki-dark: #79B8FF;"
+              >
+                 number
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                ;
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="5"
+              >
+                5
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                }
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="6"
+              >
+                6
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="7"
+              >
+                7
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                export
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                 function
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 Counter
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                ({ 
+              </span>
+              <span
+                style="--shiki-light: #E36209; --shiki-dark: #FFAB70;"
+              >
+                initial
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                 =
+              </span>
+              <span
+                style="--shiki-light: #005CC5; --shiki-dark: #79B8FF;"
+              >
+                 0
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                 }
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                :
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 CounterProps
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                ) {
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="8"
+              >
+                8
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                  const
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                 [
+              </span>
+              <span
+                style="--shiki-light: #005CC5; --shiki-dark: #79B8FF;"
+              >
+                count
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                , 
+              </span>
+              <span
+                style="--shiki-light: #005CC5; --shiki-dark: #79B8FF;"
+              >
+                setCount
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                ] 
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                =
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 useState
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                (initial);
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="9"
+              >
+                9
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="10"
+              >
+                10
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                  return
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                 (
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="11"
+              >
+                11
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                    &lt;
+              </span>
+              <span
+                style="--shiki-light: #22863A; --shiki-dark: #85E89D;"
+              >
+                div
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                &gt;
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="12"
+              >
+                12
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                      &lt;
+              </span>
+              <span
+                style="--shiki-light: #22863A; --shiki-dark: #85E89D;"
+              >
+                p
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                &gt;Count: {count}&lt;/
+              </span>
+              <span
+                style="--shiki-light: #22863A; --shiki-dark: #85E89D;"
+              >
+                p
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                &gt;
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="13"
+              >
+                13
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                      &lt;
+              </span>
+              <span
+                style="--shiki-light: #22863A; --shiki-dark: #85E89D;"
+              >
+                button
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 onClick
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                =
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                {() 
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                =&gt;
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 setCount
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                (
+              </span>
+              <span
+                style="--shiki-light: #E36209; --shiki-dark: #FFAB70;"
+              >
+                c
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                 =&gt;
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                 c 
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                +
+              </span>
+              <span
+                style="--shiki-light: #005CC5; --shiki-dark: #79B8FF;"
+              >
+                 1
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                )}&gt;
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="14"
+              >
+                14
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                        Increment
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="15"
+              >
+                15
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                      &lt;/
+              </span>
+              <span
+                style="--shiki-light: #22863A; --shiki-dark: #85E89D;"
+              >
+                button
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                &gt;
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="16"
+              >
+                16
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                    &lt;/
+              </span>
+              <span
+                style="--shiki-light: #22863A; --shiki-dark: #85E89D;"
+              >
+                div
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                &gt;
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="17"
+              >
+                17
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                  );
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="18"
+              >
+                18
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                }
+              </span>
+              
+
+            </span>
+          </code>
+        </pre>
       </div>
     </div>
   </div>
