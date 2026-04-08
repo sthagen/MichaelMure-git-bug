@@ -5,11 +5,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import { client } from "@/lib/apollo";
-import { REFS_QUERY, type RefsQueryData } from "@/routes/$repo";
+import { REFS_QUERY } from "@/routes/$repo";
 
 export const Route = createFileRoute("/$repo/")({
   beforeLoad: async ({ context: { ref }, params: { repo } }) => {
-    const { data } = await client.query<RefsQueryData>({
+    const { data } = await client.query({
       query: REFS_QUERY,
       variables: { repo: ref },
     });

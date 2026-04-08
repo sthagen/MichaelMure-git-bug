@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { ResultOf } from "@graphql-typed-document-node/core";
 
 import { graphql } from "@/__generated__/gql";
 
@@ -20,6 +21,13 @@ export const REFS_QUERY = graphql(`
     }
   }
 `);
+
+export type RefsQueryData = ResultOf<typeof REFS_QUERY>;
+
+/** A single git ref as returned by the REFS_QUERY. */
+export type RefsQueryRef = NonNullable<
+  NonNullable<RefsQueryData["repository"]>["refs"]
+>["nodes"][number];
 
 export const Route = createFileRoute("/$repo")({
   beforeLoad: ({ params: { repo }, context: { preloadQuery } }) => {

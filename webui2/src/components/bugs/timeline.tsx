@@ -13,7 +13,7 @@ import { LabelBadge } from "@/components/shared/label-badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
-export const BUG_CREATE_COMMENT_FIELDS = graphql(`
+const BUG_CREATE_COMMENT_FIELDS = graphql(`
   fragment BugCreateCommentFields on BugCreateTimelineItem {
     author {
       ...IdentitySummary
@@ -25,7 +25,7 @@ export const BUG_CREATE_COMMENT_FIELDS = graphql(`
   }
 `);
 
-export const BUG_ADD_COMMENT_FIELDS = graphql(`
+const BUG_ADD_COMMENT_FIELDS = graphql(`
   fragment BugAddCommentFields on BugAddCommentTimelineItem {
     author {
       ...IdentitySummary
@@ -37,7 +37,7 @@ export const BUG_ADD_COMMENT_FIELDS = graphql(`
   }
 `);
 
-export const LABEL_CHANGE_FIELDS = graphql(`
+const LABEL_CHANGE_FIELDS = graphql(`
   fragment LabelChangeFields on BugLabelChangeTimelineItem {
     author {
       humanId
@@ -53,7 +53,7 @@ export const LABEL_CHANGE_FIELDS = graphql(`
   }
 `);
 
-export const STATUS_CHANGE_FIELDS = graphql(`
+const STATUS_CHANGE_FIELDS = graphql(`
   fragment StatusChangeFields on BugSetStatusTimelineItem {
     author {
       humanId
@@ -64,7 +64,7 @@ export const STATUS_CHANGE_FIELDS = graphql(`
   }
 `);
 
-export const TITLE_CHANGE_FIELDS = graphql(`
+const TITLE_CHANGE_FIELDS = graphql(`
   fragment TitleChangeFields on BugSetTitleTimelineItem {
     author {
       humanId

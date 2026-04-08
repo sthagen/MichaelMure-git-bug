@@ -13,15 +13,16 @@ import {
 import { GitBranch, Tag } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { GitRefType, type GitRef } from "@/__generated__/graphql";
+import { GitRefType } from "@/__generated__/graphql";
+import type { RefsQueryRef } from "@/routes/$repo";
 import { Button } from "@/components/ui/button";
 import * as Listbox from "@/components/ui/listbox";
 import { cn } from "@/lib/utils";
 
 interface RefSelectorProps {
-  gitRefs: GitRef[];
+  gitRefs: RefsQueryRef[];
   currentRef: string;
-  onSelect: (ref: GitRef) => void;
+  onSelect: (ref: RefsQueryRef) => void;
 }
 
 // Branch / tag selector dropdown for the code browser. Shown in two groups
@@ -200,7 +201,7 @@ function RefItem({
   onSelect,
 }: {
   id: string;
-  ref_: GitRef;
+  ref_: RefsQueryRef;
   index: number;
   active: boolean;
   selected: boolean;

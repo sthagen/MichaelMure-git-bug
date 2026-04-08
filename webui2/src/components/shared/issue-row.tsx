@@ -4,7 +4,7 @@ import { Status } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
 import { cn } from "@/lib/utils";
 
-export const BUG_SUMMARY_FRAGMENT = graphql(`
+const BUG_SUMMARY_FRAGMENT = graphql(`
   fragment BugSummary on Bug {
     id
     humanId

@@ -4,7 +4,7 @@ import * as React from "react";
 import type { LabelFieldsFragment } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
 
-export const LABEL_FIELDS_FRAGMENT = graphql(`
+const LABEL_FIELDS_FRAGMENT = graphql(`
   fragment LabelFields on Label {
     name
     color {
