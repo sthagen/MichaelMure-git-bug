@@ -1,11 +1,10 @@
-// auth.tsx — authentication context for the webui.
+// auth.tsx — current user hook for the webui.
 //
-// Currently only supports local (single-user) mode: the identity is taken from
-// git config at server startup and fetched via GraphQL.
+// Fetches the user identity from git config via GraphQL. Apollo handles
+// deduplication and caching, so no Provider/Context is needed.
 
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
-import { createContext, useContext, type ReactNode } from "react";
 
 const USER_IDENTITY_QUERY = gql`
   query UserIdentity {
@@ -33,29 +32,9 @@ export interface AuthUser {
   login: string | null;
 }
 
-export interface AuthContextValue {
-  user: AuthUser | null;
-  loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextValue>({
-  user: null,
-  loading: true,
-});
-
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function useAuth(): { user: AuthUser | null; loading: boolean } {
   const { data, loading } = useQuery<{ repository: { userIdentity: AuthUser | null } }>(
     USER_IDENTITY_QUERY,
   );
-  const user: AuthUser | null = data?.repository?.userIdentity ?? null;
-
-  return (
-    <AuthContext.Provider value={{ user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export function useAuth(): AuthContextValue {
-  return useContext(AuthContext);
+  return { user: data?.repository?.userIdentity ?? null, loading };
 }
