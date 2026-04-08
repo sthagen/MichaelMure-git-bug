@@ -20,17 +20,8 @@ import (
 	"github.com/git-bug/git-bug/cache"
 )
 
-// ServerConfig carries server-level configuration that is passed down to
-// GraphQL resolvers. It is constructed once at startup and does not change.
-type ServerConfig struct {
-	// AuthMode is one of "local", "external", or "readonly".
-	AuthMode string
-	// LoginProviders lists the names of enabled login providers, e.g. ["github"].
-	LoginProviders []string
-}
-
-func NewHandler(mrc *cache.MultiRepoCache, cfg ServerConfig, errorOut io.Writer) http.Handler {
-	rootResolver := resolvers.NewRootResolver(mrc, cfg.AuthMode, cfg.LoginProviders)
+func NewHandler(mrc *cache.MultiRepoCache, errorOut io.Writer) http.Handler {
+	rootResolver := resolvers.NewRootResolver(mrc)
 	config := graph.Config{Resolvers: rootResolver}
 
 	h := handler.New(graph.NewExecutableSchema(config))

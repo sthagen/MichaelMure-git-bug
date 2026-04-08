@@ -12,23 +12,7 @@ import (
 var _ graph.QueryResolver = &rootQueryResolver{}
 
 type rootQueryResolver struct {
-	cache          *cache.MultiRepoCache
-	authMode       string
-	loginProviders []string
-}
-
-// ServerConfig returns static server configuration including the auth mode.
-// The frontend uses this to decide whether to show a login button, show "Read only",
-// or operate silently in single-user local mode.
-func (r rootQueryResolver) ServerConfig(_ context.Context) (*models.ServerConfig, error) {
-	providers := r.loginProviders
-	if providers == nil {
-		providers = []string{}
-	}
-	return &models.ServerConfig{
-		AuthMode:       r.authMode,
-		LoginProviders: providers,
-	}, nil
+	cache *cache.MultiRepoCache
 }
 
 func (r rootQueryResolver) Repository(_ context.Context, ref *string) (*models.Repository, error) {
@@ -51,7 +35,6 @@ func (r rootQueryResolver) Repository(_ context.Context, ref *string) (*models.R
 }
 
 // Repositories returns all registered repositories as a relay connection.
-// Used by the repo picker UI.
 func (r rootQueryResolver) Repositories(_ context.Context, after *string, before *string, first *int, last *int) (*models.RepositoryConnection, error) {
 	input := models.ConnectionInput{
 		After:  after,

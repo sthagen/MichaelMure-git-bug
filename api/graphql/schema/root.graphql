@@ -1,18 +1,4 @@
-"""Server-wide configuration, independent of any repository."""
-type ServerConfig {
-    """Authentication mode: 'local' (single user from git config),
-    'external' (multi-user via OAuth/OIDC providers), or 'readonly'."""
-    authMode: String!
-
-    """Names of the login providers enabled on this server, e.g. ['github'].
-    Empty when authMode is not 'external'."""
-    loginProviders: [String!]!
-}
-
 type Query {
-    """Server configuration and authentication mode."""
-    serverConfig: ServerConfig!
-
     """Access a repository by reference/name. If no ref is given, the default repository is returned if any.
     Returns null if the referenced repository does not exist."""
     repository(ref: String): Repository

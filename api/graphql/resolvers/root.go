@@ -11,24 +11,17 @@ var _ graph.ResolverRoot = &RootResolver{}
 type RootResolver struct {
 	*cache.MultiRepoCache
 	bugRootSubResolver
-
-	authMode       string
-	loginProviders []string
 }
 
-func NewRootResolver(mrc *cache.MultiRepoCache, authMode string, loginProviders []string) *RootResolver {
+func NewRootResolver(mrc *cache.MultiRepoCache) *RootResolver {
 	return &RootResolver{
 		MultiRepoCache: mrc,
-		authMode:       authMode,
-		loginProviders: loginProviders,
 	}
 }
 
 func (r RootResolver) Query() graph.QueryResolver {
 	return &rootQueryResolver{
-		cache:          r.MultiRepoCache,
-		authMode:       r.authMode,
-		loginProviders: r.loginProviders,
+		cache: r.MultiRepoCache,
 	}
 }
 

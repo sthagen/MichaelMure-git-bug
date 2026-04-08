@@ -469,7 +469,6 @@ type ComplexityRoot struct {
 	Query struct {
 		Repositories func(childComplexity int, after *string, before *string, first *int, last *int) int
 		Repository   func(childComplexity int, ref *string) int
-		ServerConfig func(childComplexity int) int
 	}
 
 	Repository struct {
@@ -499,11 +498,6 @@ type ComplexityRoot struct {
 	RepositoryEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
-	}
-
-	ServerConfig struct {
-		AuthMode       func(childComplexity int) int
-		LoginProviders func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -2281,13 +2275,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.Repository(childComplexity, args["ref"].(*string)), true
 
-	case "Query.serverConfig":
-		if e.complexity.Query.ServerConfig == nil {
-			break
-		}
-
-		return e.complexity.Query.ServerConfig(childComplexity), true
-
 	case "Repository.allBugs":
 		if e.complexity.Repository.AllBugs == nil {
 			break
@@ -2482,20 +2469,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.RepositoryEdge.Node(childComplexity), true
-
-	case "ServerConfig.authMode":
-		if e.complexity.ServerConfig.AuthMode == nil {
-			break
-		}
-
-		return e.complexity.ServerConfig.AuthMode(childComplexity), true
-
-	case "ServerConfig.loginProviders":
-		if e.complexity.ServerConfig.LoginProviders == nil {
-			break
-		}
-
-		return e.complexity.ServerConfig.LoginProviders(childComplexity), true
 
 	case "Subscription.allEvents":
 		if e.complexity.Subscription.AllEvents == nil {
@@ -3618,21 +3591,7 @@ type RepositoryEdge {
   node: Repository!
 }
 `, BuiltIn: false},
-	{Name: "../schema/root.graphql", Input: `"""Server-wide configuration, independent of any repository."""
-type ServerConfig {
-    """Authentication mode: 'local' (single user from git config),
-    'external' (multi-user via OAuth/OIDC providers), or 'readonly'."""
-    authMode: String!
-
-    """Names of the login providers enabled on this server, e.g. ['github'].
-    Empty when authMode is not 'external'."""
-    loginProviders: [String!]!
-}
-
-type Query {
-    """Server configuration and authentication mode."""
-    serverConfig: ServerConfig!
-
+	{Name: "../schema/root.graphql", Input: `type Query {
     """Access a repository by reference/name. If no ref is given, the default repository is returned if any.
     Returns null if the referenced repository does not exist."""
     repository(ref: String): Repository

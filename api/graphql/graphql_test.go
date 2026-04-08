@@ -24,7 +24,7 @@ func TestQueries(t *testing.T) {
 		require.NoError(t, event.Err)
 	}
 
-	handler := NewHandler(mrc, ServerConfig{AuthMode: "local"}, nil)
+	handler := NewHandler(mrc, nil)
 
 	c := client.New(handler)
 
@@ -301,7 +301,7 @@ func TestGitBrowseQueries(t *testing.T) {
 	for event := range events {
 		require.NoError(t, event.Err)
 	}
-	c := client.New(NewHandler(mrc, ServerConfig{AuthMode: "local"}, nil))
+	c := client.New(NewHandler(mrc, nil))
 
 	// ── commit ────────────────────────────────────────────────────────────────
 
@@ -476,7 +476,7 @@ func TestBugEventsSubscription(t *testing.T) {
 		require.NoError(t, event.Err)
 	}
 
-	h := NewHandler(mrc, ServerConfig{AuthMode: "local"}, nil)
+	h := NewHandler(mrc, nil)
 	c := client.New(h)
 
 	sub := c.Websocket(`subscription { bugEvents { type bug { id } } }`)

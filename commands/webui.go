@@ -18,7 +18,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/git-bug/git-bug/api/auth"
-	"github.com/git-bug/git-bug/api/auth/provider"
 	"github.com/git-bug/git-bug/api/graphql"
 	httpapi "github.com/git-bug/git-bug/api/http"
 	"github.com/git-bug/git-bug/cache"
@@ -38,12 +37,6 @@ type webUIOptions struct {
 	readOnly  bool
 	logErrors bool
 	query     string
-
-	// OAuth provider credentials. A provider is enabled when both its
-	// client-id and client-secret are non-empty. Multiple providers can be
-	// active simultaneously.
-	githubClientId     string
-	githubClientSecret string
 }
 
 func newWebUICommand(env *execenv.Env) *cobra.Command {
@@ -74,40 +67,17 @@ Available git config:
 	flags.BoolVar(&options.logErrors, "log-errors", false, "Whether to log errors")
 	flags.StringVarP(&options.query, "query", "q", "", "The query to open in the web UI bug list")
 
-	// GitHub OAuth: both flags must be provided together to enable GitHub login.
-	flags.StringVar(&options.githubClientId, "github-client-id", "", "GitHub OAuth application client ID (enables GitHub login)")
-	flags.StringVar(&options.githubClientSecret, "github-client-secret", "", "GitHub OAuth application client secret")
-	cmd.MarkFlagsRequiredTogether("github-client-id", "github-client-secret")
-
 	return cmd
 }
 
 // setupRoutes builds the router and registers all API and UI routes.
-func setupRoutes(env *execenv.Env, opts webUIOptions, baseURL string) (*mux.Router, func() error, error) {
-	// Collect enabled login providers.
-	var providers []provider.Provider
-	if opts.githubClientId != "" {
-		providers = append(providers, provider.NewGitHub(opts.githubClientId, opts.githubClientSecret))
-	}
-
-	// Determine auth mode and configure middleware accordingly.
-	var authMode string
-	var sessions *auth.SessionStore
+func setupRoutes(env *execenv.Env, opts webUIOptions) (*mux.Router, func() error, error) {
 	router := mux.NewRouter()
 
-	switch {
-	case opts.readOnly:
-		authMode = "readonly"
-		// No middleware: every request is unauthenticated.
-
-	case len(providers) > 0:
-		authMode = "external"
-		sessions = auth.NewSessionStore()
-		router.Use(auth.SessionMiddleware(sessions))
-
-	default:
-		authMode = "local"
-		// Single-user mode: inject the identity from git config for every request.
+	// If the webUI is not read-only, use an authentication middleware with a
+	// fixed identity: the default user of the repo
+	// TODO: support dynamic authentication with OAuth
+	if !opts.readOnly {
 		author, err := identity.GetUserIdentity(env.Repo)
 		if err != nil {
 			return nil, nil, err
@@ -126,54 +96,19 @@ func setupRoutes(env *execenv.Env, opts webUIOptions, baseURL string) (*mux.Rout
 		errOut = env.Err
 	}
 
-	// Collect provider names for GraphQL serverConfig.
-	providerNames := make([]string, len(providers))
-	for i, p := range providers {
-		providerNames[i] = p.Name()
-	}
-
-	graphqlHandler := graphql.NewHandler(mrc, graphql.ServerConfig{
-		AuthMode:       authMode,
-		LoginProviders: providerNames,
-	}, errOut)
-
-	// Register OAuth routes before the catch-all static handler.
-	if authMode == "external" {
-		ah := httpapi.NewAuthHandler(mrc, sessions, providers, baseURL)
-		router.Path("/auth/login").Methods("GET").HandlerFunc(ah.HandleLogin)
-		router.Path("/auth/callback").Methods("GET").HandlerFunc(ah.HandleCallback)
-		router.Path("/auth/user").Methods("GET").HandlerFunc(ah.HandleUser)
-		router.Path("/auth/logout").Methods("POST").HandlerFunc(ah.HandleLogout)
-		router.Path("/auth/identities").Methods("GET").HandlerFunc(ah.HandleIdentities)
-		router.Path("/auth/adopt").Methods("POST").HandlerFunc(ah.HandleAdopt)
-	}
+	graphqlHandler := graphql.NewHandler(mrc, errOut)
 
 	router.Path("/playground").Handler(playground.Handler("git-bug", "/graphql"))
 	router.Path("/graphql").Handler(graphqlHandler)
-
-	// File and upload routes for bug attachments.
 	router.Path("/gitfile/{repo}/{hash}").Handler(httpapi.NewGitFileHandler(mrc))
-	router.PathPrefix("/gitraw/{repo}/{ref}/{path:.*}").Handler(httpapi.NewGitRawHandler(mrc))
 	router.Path("/upload/{repo}").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
-
 	router.PathPrefix("/").Handler(webui2.NewHandler())
 
 	return router, mrc.Close, nil
 }
 
 func runWebUI(env *execenv.Env, opts webUIOptions) error {
-	if opts.port == 0 {
-		var err error
-		opts.port, err = freeport.GetFreePort()
-		if err != nil {
-			return err
-		}
-	}
-
-	addr := net.JoinHostPort(opts.bind, strconv.Itoa(opts.port))
-	baseURL := "http://" + addr
-
-	router, closeRoutes, err := setupRoutes(env, opts, baseURL)
+	router, closeRoutes, err := setupRoutes(env, opts)
 	if err != nil {
 		return err
 	}
@@ -183,15 +118,20 @@ func runWebUI(env *execenv.Env, opts webUIOptions) error {
 		}
 	}()
 
+	if opts.port == 0 {
+		opts.port, err = freeport.GetFreePort()
+		if err != nil {
+			return err
+		}
+	}
+
+	addr := net.JoinHostPort(opts.bind, strconv.Itoa(opts.port))
 	server := &http.Server{Addr: addr, Handler: router}
+	baseURL := "http://" + addr
 
 	env.Out.Printf("Web UI: %s\n", baseURL)
 	env.Out.Printf("Graphql API: %s/graphql\n", baseURL)
 	env.Out.Printf("Graphql Playground: %s/playground\n", baseURL)
-	if opts.githubClientId != "" {
-		env.Out.Printf("Login callback URL: %s/auth/callback\n", baseURL)
-		env.Out.Println("  ↳ Register this URL in your OAuth/OIDC application settings")
-	}
 	env.Out.Printf("\n[ Press Ctrl+c to quit ]\n\n")
 
 	toOpen := baseURL
