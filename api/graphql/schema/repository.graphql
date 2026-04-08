@@ -84,6 +84,11 @@ type Repository {
     tree listing without blocking the initial tree fetch."""
     lastCommits(ref: String!, path: String, names: [String!]!): [GitLastCommit!]!
 
+    """The commit pointed to by HEAD in the git repository.
+    Null if HEAD cannot be resolved to a commit, for example in an empty or unborn
+    repository, or if HEAD is missing or invalid."""
+    head: GitCommit
+
     """List of valid labels."""
     validLabels(
         """Returns the elements in the list that come after the specified cursor."""
