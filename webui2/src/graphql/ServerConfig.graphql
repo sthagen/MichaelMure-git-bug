@@ -1,7 +1,0 @@
-# Fetched once at startup to determine the auth mode and available providers.
-query ServerConfig {
-  serverConfig {
-    authMode
-    loginProviders
-  }
-}

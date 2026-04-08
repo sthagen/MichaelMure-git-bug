@@ -2,12 +2,9 @@
 // page (root) or inside a specific repo:
 //   - Root: shows logo only, no Code/Issues links
 //   - Repo: shows Code + Issues nav links scoped to the current repo slug
-//
-// In external mode, shows a "Sign in" button when logged out and a sign-out
-// action when logged in.
 
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
-import { Plus, Sun, Moon, LogIn, LogOut } from "lucide-react";
+import { Plus, Sun, Moon } from "lucide-react";
 
 import Logo from "@/assets/logo.svg?react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -17,32 +14,13 @@ import { useAuth } from "@/lib/auth";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-// SignOutButton sends a POST to /auth/logout and reloads the page.
-// A full reload is the simplest way to reset all Apollo cache + React state.
-function handleSignOut() {
-  void fetch("/auth/logout", { method: "POST", credentials: "include" }).finally(() =>
-    window.location.assign("/"),
-  );
-}
-
-function SignOutButton() {
-  return (
-    <Button variant="ghost" size="sm" onClick={handleSignOut} title="Sign out">
-      <LogOut className="size-4" />
-    </Button>
-  );
-}
-
 export function Header() {
-  const { user, mode, loginProviders } = useAuth();
+  const { user } = useAuth();
   const { theme, toggle } = useTheme();
 
   // Detect if we're inside a /$repo route and grab the slug.
   const params = useParams({ strict: false });
   const repo = params.repo ?? null;
-
-  // Don't show repo nav on the /auth/* pages.
-  const effectiveRepo = repo === "auth" ? null : repo;
 
   return (
     <header className="border-border bg-background/95 sticky top-0 z-50 border-b backdrop-blur">
@@ -54,34 +32,22 @@ export function Header() {
         </Link>
 
         {/* Repo-scoped nav links — only shown when inside a repo */}
-        {effectiveRepo && <RepoNav repo={effectiveRepo} />}
+        {repo && <RepoNav repo={repo} />}
 
         <div className="ml-auto flex items-center gap-2">
-          {mode === "readonly" && <span className="text-muted-foreground text-xs">Read only</span>}
-
           <Button variant="ghost" size="icon-sm" onClick={toggle} title="Toggle theme">
             {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
           </Button>
 
-          {/* External mode: show sign-in buttons when logged out */}
-          {mode === "external" &&
-            !user &&
-            loginProviders.map((p) => (
-              <Button key={p} render={<a href={`/auth/login?provider=${p}`} />} size="sm">
-                  <LogIn className="size-4" />
-                  Sign in with {providerLabel(p)}
-              </Button>
-            ))}
-
-          {user && effectiveRepo && (
+          {user && repo && (
             <>
-              <ButtonLink to="/$repo/issues/new" params={{ repo: effectiveRepo }} size="sm">
+              <ButtonLink to="/$repo/issues/new" params={{ repo }} size="sm">
                 <Plus className="size-4" />
                 New issue
               </ButtonLink>
               <Link
                 to="/$repo/user/$id"
-                params={{ repo: effectiveRepo, id: user.humanId }}
+                params={{ repo, id: user.humanId }}
                 search={{ status: "open" as const, after: "" }}
               >
                 <Avatar className="size-7">
@@ -93,9 +59,6 @@ export function Header() {
               </Link>
             </>
           )}
-
-          {/* Sign out only shown in external mode when logged in */}
-          {mode === "external" && user && <SignOutButton />}
         </div>
       </div>
     </header>
@@ -134,9 +97,4 @@ function RepoNav({ repo }: { repo: string }) {
       </Link>
     </nav>
   );
-}
-
-function providerLabel(name: string): string {
-  const labels: Record<string, string> = { github: "GitHub", gitlab: "GitLab", gitea: "Gitea" };
-  return labels[name] ?? name;
 }

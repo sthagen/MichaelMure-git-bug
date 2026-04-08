@@ -733,8 +733,6 @@ export type GitRef = {
   __typename?: 'GitRef';
   /** Commit hash the reference points to. */
   hash: Scalars['String']['output'];
-  /** True for the branch HEAD currently points to. */
-  isDefault: Scalars['Boolean']['output'];
   /** Full reference name, e.g. refs/heads/main or refs/tags/v1.0. */
   name: Scalars['String']['output'];
   /** Short name, e.g. main or v1.0. */
@@ -763,6 +761,11 @@ export type GitTreeEntry = {
   __typename?: 'GitTreeEntry';
   /** Git object hash. */
   hash: Scalars['String']['output'];
+  /**
+   * The last git commit that touched this tree entry. Null when the entry
+   * cannot be resolved within the history depth limit.
+   */
+  lastCommit?: Maybe<GitCommit>;
   /** File or directory name within the parent tree. */
   name: Scalars['String']['output'];
   /** Whether this entry is a file, directory, symlink, or submodule. */
@@ -967,8 +970,6 @@ export type Query = {
    * Returns null if the referenced repository does not exist.
    */
   repository?: Maybe<Repository>;
-  /** Server configuration and authentication mode. */
-  serverConfig: ServerConfig;
 };
 
 
@@ -1004,6 +1005,12 @@ export type Repository = {
    * touching path.
    */
   commits: GitCommitConnection;
+  /**
+   * The commit pointed to by HEAD in the git repository.
+   * Null if HEAD cannot be resolved to a commit, for example in an empty or unborn
+   * repository, or if HEAD is missing or invalid.
+   */
+  head?: Maybe<GitCommit>;
   /** Look up an identity by id prefix. Returns null if no identity matches the prefix. */
   identity?: Maybe<Identity>;
   /**
@@ -1116,21 +1123,6 @@ export type RepositoryEdge = {
   node: Repository;
 };
 
-/** Server-wide configuration, independent of any repository. */
-export type ServerConfig = {
-  __typename?: 'ServerConfig';
-  /**
-   * Authentication mode: 'local' (single user from git config),
-   * 'external' (multi-user via OAuth/OIDC providers), or 'readonly'.
-   */
-  authMode: Scalars['String']['output'];
-  /**
-   * Names of the login providers enabled on this server, e.g. ['github'].
-   * Empty when authMode is not 'external'.
-   */
-  loginProviders: Array<Scalars['String']['output']>;
-};
-
 export enum Status {
   Closed = 'CLOSED',
   Open = 'OPEN'
@@ -1162,12 +1154,6 @@ export type SubscriptionIdentityEventsArgs = {
   repoRef?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type IdentitySummaryFragment = { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null };
-
-export type BugSummaryFragment = { __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } };
-
-export type LabelFieldsFragment = { __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } };
-
 export type BugCreateCommentFieldsFragment = { __typename?: 'BugCreateTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } };
 
 export type BugAddCommentFieldsFragment = { __typename?: 'BugAddCommentTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } };
@@ -1177,6 +1163,12 @@ export type LabelChangeFieldsFragment = { __typename?: 'BugLabelChangeTimelineIt
 export type StatusChangeFieldsFragment = { __typename?: 'BugSetStatusTimelineItem', date: string, status: Status, author: { __typename?: 'Identity', humanId: string, displayName: string } };
 
 export type TitleChangeFieldsFragment = { __typename?: 'BugSetTitleTimelineItem', date: string, title: string, was: string, author: { __typename?: 'Identity', humanId: string, displayName: string } };
+
+export type IdentitySummaryFragment = { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null };
+
+export type BugSummaryFragment = { __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } };
+
+export type LabelFieldsFragment = { __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } };
 
 export type AllIdentitiesQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
@@ -1279,11 +1271,6 @@ export type RepositoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type RepositoriesQuery = { __typename?: 'Query', repositories: { __typename?: 'RepositoryConnection', totalCount: number, nodes: Array<{ __typename?: 'Repository', name?: string | null }> } };
 
-export type ServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ServerConfigQuery = { __typename?: 'Query', serverConfig: { __typename?: 'ServerConfig', authMode: string, loginProviders: Array<string> } };
-
 export type UserProfileQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
   prefix: Scalars['String']['input'];
@@ -1303,16 +1290,6 @@ export type ValidLabelsQueryVariables = Exact<{
 
 export type ValidLabelsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', validLabels: { __typename?: 'LabelConnection', nodes: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> } } | null };
 
-export const LabelFieldsFragmentDoc = gql`
-    fragment LabelFields on Label {
-  name
-  color {
-    R
-    G
-    B
-  }
-}
-    `;
 export const IdentitySummaryFragmentDoc = gql`
     fragment IdentitySummary on Identity {
   id
@@ -1321,25 +1298,6 @@ export const IdentitySummaryFragmentDoc = gql`
   avatarUrl
 }
     `;
-export const BugSummaryFragmentDoc = gql`
-    fragment BugSummary on Bug {
-  id
-  humanId
-  status
-  title
-  labels {
-    ...LabelFields
-  }
-  author {
-    ...IdentitySummary
-  }
-  createdAt
-  comments {
-    totalCount
-  }
-}
-    ${LabelFieldsFragmentDoc}
-${IdentitySummaryFragmentDoc}`;
 export const BugCreateCommentFieldsFragmentDoc = gql`
     fragment BugCreateCommentFields on BugCreateTimelineItem {
   author {
@@ -1362,6 +1320,16 @@ export const BugAddCommentFieldsFragmentDoc = gql`
   edited
 }
     ${IdentitySummaryFragmentDoc}`;
+export const LabelFieldsFragmentDoc = gql`
+    fragment LabelFields on Label {
+  name
+  color {
+    R
+    G
+    B
+  }
+}
+    `;
 export const LabelChangeFieldsFragmentDoc = gql`
     fragment LabelChangeFields on BugLabelChangeTimelineItem {
   author {
@@ -1398,6 +1366,25 @@ export const TitleChangeFieldsFragmentDoc = gql`
   was
 }
     `;
+export const BugSummaryFragmentDoc = gql`
+    fragment BugSummary on Bug {
+  id
+  humanId
+  status
+  title
+  labels {
+    ...LabelFields
+  }
+  author {
+    ...IdentitySummary
+  }
+  createdAt
+  comments {
+    totalCount
+  }
+}
+    ${LabelFieldsFragmentDoc}
+${IdentitySummaryFragmentDoc}`;
 export const AllIdentitiesDocument = gql`
     query AllIdentities($ref: String) {
   repository(ref: $ref) {
@@ -1965,49 +1952,6 @@ export type RepositoriesQueryHookResult = ReturnType<typeof useRepositoriesQuery
 export type RepositoriesLazyQueryHookResult = ReturnType<typeof useRepositoriesLazyQuery>;
 export type RepositoriesSuspenseQueryHookResult = ReturnType<typeof useRepositoriesSuspenseQuery>;
 export type RepositoriesQueryResult = Apollo.QueryResult<RepositoriesQuery, RepositoriesQueryVariables>;
-export const ServerConfigDocument = gql`
-    query ServerConfig {
-  serverConfig {
-    authMode
-    loginProviders
-  }
-}
-    `;
-
-/**
- * __useServerConfigQuery__
- *
- * To run a query within a React component, call `useServerConfigQuery` and pass it any options that fit your needs.
- * When your component renders, `useServerConfigQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useServerConfigQuery({
- *   variables: {
- *   },
- * });
- */
-export function useServerConfigQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
-      }
-export function useServerConfigLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
-        }
-// @ts-ignore
-export function useServerConfigSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ServerConfigQuery, ServerConfigQueryVariables>;
-export function useServerConfigSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ServerConfigQuery | undefined, ServerConfigQueryVariables>;
-export function useServerConfigSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ServerConfigQuery, ServerConfigQueryVariables>) {
-          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useSuspenseQuery<ServerConfigQuery, ServerConfigQueryVariables>(ServerConfigDocument, options);
-        }
-export type ServerConfigQueryHookResult = ReturnType<typeof useServerConfigQuery>;
-export type ServerConfigLazyQueryHookResult = ReturnType<typeof useServerConfigLazyQuery>;
-export type ServerConfigSuspenseQueryHookResult = ReturnType<typeof useServerConfigSuspenseQuery>;
-export type ServerConfigQueryResult = Apollo.QueryResult<ServerConfigQuery, ServerConfigQueryVariables>;
 export const UserProfileDocument = gql`
     query UserProfile($ref: String, $prefix: String!, $openQuery: String!, $closedQuery: String!, $listQuery: String!, $after: String) {
   repository(ref: $ref) {
