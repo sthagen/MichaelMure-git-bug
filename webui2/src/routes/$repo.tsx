@@ -7,13 +7,15 @@ export const REFS_QUERY = gql`
   query CodePageRefs($repo: String) {
     repository(ref: $repo) {
       name
+      head {
+        hash
+      }
       refs {
         nodes {
           name
           shortName
           type
           hash
-          isDefault
         }
       }
     }
@@ -23,6 +25,7 @@ export const REFS_QUERY = gql`
 export interface RefsQueryData {
   repository: {
     name: string;
+    head: { hash: string } | null;
     refs: { nodes: GitRef[] } | null;
   } | null;
 }

@@ -14,8 +14,9 @@ export const Route = createFileRoute("/$repo/")({
       variables: { repo: ref },
     });
     const refs = data?.repository?.refs?.nodes ?? [];
-    const defaultRef = refs.find((r) => r.isDefault) ?? refs[0];
-    const refName = defaultRef?.shortName ?? "master";
+    const headHash = data?.repository?.head?.hash;
+    const defaultRef = headHash ? refs.find((r) => r.hash === headHash) : undefined;
+    const refName = defaultRef?.shortName ?? refs[0]?.shortName ?? "master";
 
     throw redirect({
       to: "/$repo/tree/$ref/$",

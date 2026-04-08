@@ -14,13 +14,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const sampleRefs = [
-  { name: "refs/heads/main", shortName: "main", type: GitRefType.Branch, hash: "abc1", isDefault: true },
-  { name: "refs/heads/develop", shortName: "develop", type: GitRefType.Branch, hash: "abc2", isDefault: false },
-  { name: "refs/heads/feature/auth", shortName: "feature/auth", type: GitRefType.Branch, hash: "abc3", isDefault: false },
-  { name: "refs/heads/fix/login", shortName: "fix/login", type: GitRefType.Branch, hash: "abc4", isDefault: false },
-  { name: "refs/tags/v1.0.0", shortName: "v1.0.0", type: GitRefType.Tag, hash: "abc5", isDefault: false },
-  { name: "refs/tags/v1.1.0", shortName: "v1.1.0", type: GitRefType.Tag, hash: "abc6", isDefault: false },
-  { name: "refs/tags/v2.0.0-rc1", shortName: "v2.0.0-rc1", type: GitRefType.Tag, hash: "abc7", isDefault: false },
+  { name: "refs/heads/main", shortName: "main", type: GitRefType.Branch, hash: "abc1" },
+  { name: "refs/heads/develop", shortName: "develop", type: GitRefType.Branch, hash: "abc2" },
+  { name: "refs/heads/feature/auth", shortName: "feature/auth", type: GitRefType.Branch, hash: "abc3" },
+  { name: "refs/heads/fix/login", shortName: "fix/login", type: GitRefType.Branch, hash: "abc4" },
+  { name: "refs/tags/v1.0.0", shortName: "v1.0.0", type: GitRefType.Tag, hash: "abc5" },
+  { name: "refs/tags/v1.1.0", shortName: "v1.1.0", type: GitRefType.Tag, hash: "abc6" },
+  { name: "refs/tags/v2.0.0-rc1", shortName: "v2.0.0-rc1", type: GitRefType.Tag, hash: "abc7" },
 ];
 
 export const Default: Story = {
