@@ -76,7 +76,6 @@ type RepoCommon interface {
 
 	// GetRemotes returns the configured remotes repositories.
 	GetRemotes() (map[string]string, error)
-
 }
 
 type LocalStorage interface {

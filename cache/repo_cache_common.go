@@ -2,7 +2,6 @@ package cache
 
 import (
 	"io"
-	"strings"
 	"sync"
 
 	"github.com/pkg/errors"
@@ -81,13 +80,6 @@ func (c *RepoCache) LocalStorage() repository.LocalStorage {
 func (c *RepoCache) ReadData(hash repository.Hash) (io.ReadCloser, error) {
 	return c.repo.ReadData(hash)
 }
-
-// BlobAtPath returns the raw content, byte size, and git object hash of the
-// file at the given path within the tree of the given ref.
-func (c *RepoCache) BlobAtPath(ref, path string) (io.ReadCloser, int64, repository.Hash, error) {
-	return c.repo.BlobAtPath(ref, path)
-}
-
 
 // StoreData will store arbitrary data and return the corresponding hash
 func (c *RepoCache) StoreData(data []byte) (repository.Hash, error) {
@@ -253,23 +245,4 @@ func (c *RepoCache) GetUserIdentityExcerpt() (*IdentityExcerpt, error) {
 
 func (c *RepoCache) IsUserIdentitySet() (bool, error) {
 	return identity.IsUserIdentitySet(c.repo)
-}
-
-// SyncLocalRefs updates the cache for each ref that was updated externally
-// (e.g. after a git push). Each ref is matched against the subcaches by
-// namespace and the corresponding entity is re-read from git.
-func (c *RepoCache) SyncLocalRefs(refs []string) error {
-	for _, ref := range refs {
-		id := entity.RefToId(ref)
-		for _, subcache := range c.subcaches {
-			ns := subcache.GetNamespace()
-			if strings.Contains(ref, "/"+ns+"/") {
-				if err := subcache.SyncLocalRef(id); err != nil {
-					return err
-				}
-				break
-			}
-		}
-	}
-	return nil
 }

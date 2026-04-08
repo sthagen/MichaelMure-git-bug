@@ -848,8 +848,6 @@ func (repo *GoGitRepo) ReadCommit(hash Hash) (Commit, error) {
 	return result, nil
 }
 
-var _ RepoBrowse = &GoGitRepo{}
-
 func (repo *GoGitRepo) AllClocks() (map[string]lamport.Clock, error) {
 	repo.clocksMutex.Lock()
 	defer repo.clocksMutex.Unlock()

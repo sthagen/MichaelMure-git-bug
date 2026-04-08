@@ -121,7 +121,6 @@ func (r *mockRepoCommon) GetRemotes() (map[string]string, error) {
 	}, nil
 }
 
-
 var _ RepoStorage = &mockRepoStorage{}
 
 type mockRepoStorage struct {
