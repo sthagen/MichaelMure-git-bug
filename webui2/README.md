@@ -15,7 +15,7 @@ pnpm install
 pnpm dev
 ```
 
-Open http://localhost:5173. Vite proxies `/graphql`, `/gitfile`, `/gitraw`, `/upload`, and `/auth` to the Go server on port 3000.
+Open http://localhost:5173. Vite proxies `/graphql`, `/gitfile`, and `/upload` to the Go server on port 3000.
 
 Node 22 is required. If you use asdf, `.tool-versions` pins the right version automatically.
 
@@ -32,7 +32,6 @@ Node 22 is required. If you use asdf, `.tool-versions` pins the right version au
 | `/$repo/issues/new`            | New issue form                                 |
 | `/$repo/issues/$id`            | Issue detail and timeline                      |
 | `/$repo/user/$id`              | User profile with their issues                 |
-| `/auth/select-identity`        | OAuth identity adoption (first-time login)     |
 
 `_` is the URL segment for the default (unnamed) repository. Named repositories use their registered name.
 
@@ -51,7 +50,6 @@ src/
 │   │   ├── _issues.tsx # Issues layout — preloads labels + identities
 │   │   ├── _issues/    # issues/, issues/new, issues/$id, user/$id
 │   │   └── commit/     # commit/$hash
-│   └── auth/           # select-identity
 ├── components/
 │   ├── ui/             # shadcn/ui primitives (button, input, avatar, ...)
 │   ├── shared/         # Reusable app components with composition APIs
@@ -226,13 +224,7 @@ pnpm codegen     # regenerate GraphQL types
 
 ## Auth
 
-Three modes, configured at server start:
-
-- **`local`** — single user derived from git config; all writes enabled, no login UI.
-- **`external`** — multi-user via OAuth providers; unauthenticated requests get 401.
-- **`readonly`** — no identity; all write actions hidden in the UI.
-
-`AuthProvider` (`src/lib/auth.tsx`) fetches server config + user identity on load and exposes `{ user, mode, loginProviders }` to the component tree.
+Currently local-only: the server injects the git config identity for every request. `useAuth()` (`src/lib/auth.tsx`) fetches the user identity via a GraphQL `useSuspenseQuery`, preloaded in the root route loader so it's always resolved before components render.
 
 ## Build for production
 
