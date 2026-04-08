@@ -95,7 +95,7 @@ function useShikiHighlighter(): HighlighterCore | null {
 export function Markdown({ content, className, repoContext }: MarkdownProps) {
   const highlighter = useShikiHighlighter();
 
-  // Rewrite image src to /gitraw for raw content serving.
+  // Rewrite image src to /gitfile for raw content serving.
   // Links are handled by the custom `a` component below.
   const urlTransform = useMemo(() => {
     if (!repoContext) return undefined;
@@ -104,7 +104,7 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
       if (!isRelativeUrl(url)) return url;
       const resolved = resolveRelativePath(basePath, url);
       if (isImagePath(resolved)) {
-        return `/gitraw/${repo}/${ref}/${resolved}`;
+        return `/gitfile/${repo}/${ref}/${resolved}`;
       }
       // Non-image relative URLs are handled by the `a` component override,
       // but urlTransform runs first, so we still need to return something.
@@ -116,12 +116,12 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
   const components = useMemo(() => {
     if (!repoContext) return undefined;
     const { repo, ref, basePath } = repoContext;
-    const gitrawPrefix = `/gitraw/${repo}/${ref}/`;
+    const gitfilePrefix = `/gitfile/${repo}/${ref}/`;
     return {
       img: ({ src, alt, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) => {
         // Wrap repo-local images in a Link to the blob view
-        if (src?.startsWith(gitrawPrefix)) {
-          const path = src.slice(gitrawPrefix.length);
+        if (src?.startsWith(gitfilePrefix)) {
+          const path = src.slice(gitfilePrefix.length);
           return (
             <Link to="/$repo/blob/$ref/$" params={{ repo, ref, _splat: path }}>
               <img src={src} alt={alt} {...props} />
