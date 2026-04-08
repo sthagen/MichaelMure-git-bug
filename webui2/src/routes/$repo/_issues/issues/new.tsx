@@ -1,7 +1,8 @@
+import { useMutation } from "@apollo/client/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { useBugCreateMutation } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import { Markdown } from "@/components/content/markdown";
 import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,17 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import * as WritePreview from "@/components/shared/write-preview";
+
+const BUG_CREATE_MUTATION = graphql(`
+  mutation BugCreate($input: BugCreateInput!) {
+    bugCreate(input: $input) {
+      bug {
+        id
+        humanId
+      }
+    }
+  }
+`);
 
 export const Route = createFileRoute("/$repo/_issues/issues/new")({
   component: RouteComponent,
@@ -20,7 +32,7 @@ function RouteComponent() {
   const { repo } = Route.useParams();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [createBug, { loading, error }] = useBugCreateMutation();
+  const [createBug, { loading, error }] = useMutation(BUG_CREATE_MUTATION);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

@@ -1,3 +1,4 @@
+import { useMutation } from "@apollo/client/react";
 import {
   useFloating,
   useClick,
@@ -13,12 +14,30 @@ import {
 import { Settings2 } from "lucide-react";
 import { useRef, useState } from "react";
 
-import { useBugChangeLabelsMutation, BugDetailDocument } from "@/__generated__/graphql";
+import { BugDetailDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import * as Listbox from "@/components/ui/listbox";
+import { LabelBadge } from "@/components/shared/label-badge";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { useAuth } from "@/lib/auth";
 
-import { LabelBadge } from "@/components/shared/label-badge";
+const BUG_CHANGE_LABELS_MUTATION = graphql(`
+  mutation BugChangeLabels($input: BugChangeLabelInput) {
+    bugChangeLabels(input: $input) {
+      bug {
+        id
+        labels {
+          name
+          color {
+            R
+            G
+            B
+          }
+        }
+      }
+    }
+  }
+`);
 
 interface LabelEditorProps {
   bugPrefix: string;
@@ -34,7 +53,7 @@ interface LabelEditorProps {
 // Hidden in read-only mode.
 export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: LabelEditorProps) {
   const { user } = useAuth();
-  const [changeLabels] = useBugChangeLabelsMutation({
+  const [changeLabels] = useMutation(BUG_CHANGE_LABELS_MUTATION, {
     refetchQueries: [{ query: BugDetailDocument, variables: { ref: ref_, prefix: bugPrefix } }],
   });
 

@@ -6,12 +6,23 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { GitFork, FolderOpen, AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 
-import { type RepositoriesQuery, RepositoriesDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
+
+const REPOSITORIES_QUERY = graphql(`
+  query Repositories {
+    repositories {
+      nodes {
+        name
+      }
+      totalCount
+    }
+  }
+`);
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
   loader: async ({ context: { preloadQuery } }) => {
-    const repositoriesRef = preloadQuery<RepositoriesQuery>(RepositoriesDocument);
+    const repositoriesRef = preloadQuery(REPOSITORIES_QUERY);
     return { repositoriesRef: await preloadQuery.toPromise(repositoriesRef) };
   },
 });

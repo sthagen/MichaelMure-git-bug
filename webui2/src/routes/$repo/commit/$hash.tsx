@@ -1,17 +1,17 @@
 // Commit detail page (/:repo/commit/:hash). Shows commit metadata, full
 // message, parent links, and changed files with lazy diffs.
 
-import { gql } from "@apollo/client";
 import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { GitCommit } from "lucide-react";
 
+import { graphql } from "@/__generated__/gql";
 import { FileDiffView } from "@/components/code/file-diff-view";
 import { BackLink } from "@/components/ui/back-link";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const COMMIT_QUERY = gql`
+const COMMIT_QUERY = graphql(`
   query CommitPageDetail($repo: String, $hash: String!) {
     repository(ref: $repo) {
       commit(hash: $hash) {
@@ -33,31 +33,13 @@ const COMMIT_QUERY = gql`
       }
     }
   }
-`;
-
-interface CommitQueryData {
-  repository: {
-    commit: {
-      hash: string;
-      shortHash: string;
-      message: string;
-      fullMessage: string;
-      authorName: string;
-      authorEmail: string | null;
-      date: string;
-      parents: string[];
-      files: {
-        nodes: { path: string; oldPath: string | null; status: string }[];
-      } | null;
-    } | null;
-  } | null;
-}
+`);
 
 export const Route = createFileRoute("/$repo/commit/$hash")({
   component: RouteComponent,
   pendingComponent: CommitPageSkeleton,
   loader: async ({ context: { preloadQuery, ref }, params: { hash } }) => {
-    const commitRef = preloadQuery<CommitQueryData>(COMMIT_QUERY, {
+    const commitRef = preloadQuery(COMMIT_QUERY, {
       variables: { repo: ref, hash },
     });
     return { commitRef: await preloadQuery.toPromise(commitRef) };

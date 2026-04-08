@@ -1,14 +1,14 @@
 // Collapsible diff view for a single file in a commit.
 // Diff is fetched lazily on first expand via GraphQL.
 
-import { gql } from "@apollo/client";
 import { useLazyQuery } from "@apollo/client/react";
 import { ChevronRight, FilePlus, FileMinus, FileEdit } from "lucide-react";
 import { useState } from "react";
 
+import { graphql } from "@/__generated__/gql";
 import { cn } from "@/lib/utils";
 
-const DIFF_QUERY = gql`
+const DIFF_QUERY = graphql(`
   query FileDiff($repo: String, $hash: String!, $path: String!) {
     repository(ref: $repo) {
       commit(hash: $hash) {
@@ -34,22 +34,7 @@ const DIFF_QUERY = gql`
       }
     }
   }
-`;
-
-interface DiffQueryData {
-  repository: {
-    commit: {
-      diff: {
-        path: string;
-        oldPath: string | null;
-        isBinary: boolean;
-        isNew: boolean;
-        isDelete: boolean;
-        hunks: HunkType[];
-      } | null;
-    } | null;
-  } | null;
-}
+`);
 
 interface FileDiffViewProps {
   repo: string | null;
@@ -74,7 +59,7 @@ const statusBadge: Record<string, string> = {
 
 export function FileDiffView({ repo, hash, path, oldPath, status }: FileDiffViewProps) {
   const [open, setOpen] = useState(false);
-  const [fetchDiff, { data, loading, error }] = useLazyQuery<DiffQueryData>(DIFF_QUERY);
+  const [fetchDiff, { data, loading, error }] = useLazyQuery(DIFF_QUERY);
 
   function toggle() {
     if (!open && !data && !loading) {

@@ -1,9 +1,0 @@
-# Lists all registered repositories for the repo picker page.
-query Repositories {
-  repositories {
-    nodes {
-      name
-    }
-    totalCount
-  }
-}

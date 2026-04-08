@@ -1,17 +1,17 @@
 // Paginated commit history grouped by calendar date. Each row links to the
 // commit detail page. Used in CodePage's "History" view.
 
-import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client/react";
 import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { GitCommit } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { graphql } from "@/__generated__/gql";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const COMMITS_QUERY = gql`
+const COMMITS_QUERY = graphql(`
   query CommitList($repo: String, $ref: String!, $path: String, $after: String, $first: Int) {
     repository(ref: $repo) {
       commits(ref: $ref, path: $path, after: $after, first: $first) {
@@ -29,18 +29,9 @@ const COMMITS_QUERY = gql`
       }
     }
   }
-`;
+`);
 
 const PAGE_SIZE = 30;
-
-interface CommitListQueryData {
-  repository: {
-    commits: {
-      nodes: CommitNode[];
-      pageInfo: { hasNextPage: boolean; endCursor: string | null };
-    } | null;
-  } | null;
-}
 
 interface CommitListProps {
   repo: string | null;
@@ -60,7 +51,7 @@ export function CommitList({ repo, ref_, path }: CommitListProps) {
   const [cursor, setCursor] = useState<string | null>(null);
   const [allCommits, setAllCommits] = useState<CommitNode[]>([]);
 
-  const { data, loading, error, fetchMore } = useQuery<CommitListQueryData>(COMMITS_QUERY, {
+  const { data, loading, error, fetchMore } = useQuery(COMMITS_QUERY, {
     variables: { repo, ref: ref_, path: path ?? null, after: null, first: PAGE_SIZE },
     skip: !ref_,
   });

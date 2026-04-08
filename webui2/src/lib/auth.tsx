@@ -3,10 +3,11 @@
 // The UserIdentity query is preloaded in the root route loader and consumed
 // via useSuspenseQuery, so useAuth() always returns a resolved user.
 
-import { gql } from "@apollo/client";
 import { useSuspenseQuery } from "@apollo/client/react";
 
-export const USER_IDENTITY_QUERY = gql`
+import { graphql } from "@/__generated__/gql";
+
+export const USER_IDENTITY_QUERY = graphql(`
   query UserIdentity {
     repository {
       userIdentity {
@@ -20,7 +21,7 @@ export const USER_IDENTITY_QUERY = gql`
       }
     }
   }
-`;
+`);
 
 export interface AuthUser {
   id: string;
@@ -33,8 +34,6 @@ export interface AuthUser {
 }
 
 export function useAuth(): { user: AuthUser } {
-  const { data } = useSuspenseQuery<{ repository: { userIdentity: AuthUser } }>(
-    USER_IDENTITY_QUERY,
-  );
-  return { user: data.repository.userIdentity };
+  const { data } = useSuspenseQuery(USER_IDENTITY_QUERY);
+  return { user: data.repository!.userIdentity! as AuthUser };
 }

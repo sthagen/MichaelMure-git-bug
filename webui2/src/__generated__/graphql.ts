@@ -1,14 +1,12 @@
-import { gql } from '@apollo/client';
-import * as Apollo from '@apollo/client';
-import * as ApolloReactHooks from '@apollo/client/react';
+/* eslint-disable */
+import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
+export type InputMaybe<T> = T | null | undefined;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -28,7 +26,7 @@ export type Authored = {
 };
 
 export type Bug = Authored & Entity & {
-  __typename?: 'Bug';
+  __typename: 'Bug';
   /** The actors of the bug. Actors are Identity that have interacted with the bug. */
   actors: IdentityConnection;
   author: Identity;
@@ -105,11 +103,11 @@ export type BugAddCommentAndCloseInput = {
 };
 
 export type BugAddCommentAndClosePayload = {
-  __typename?: 'BugAddCommentAndClosePayload';
+  __typename: 'BugAddCommentAndClosePayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting AddComment operation. */
   commentOperation: BugAddCommentOperation;
   /** The resulting SetStatusOperation. */
@@ -130,11 +128,11 @@ export type BugAddCommentAndReopenInput = {
 };
 
 export type BugAddCommentAndReopenPayload = {
-  __typename?: 'BugAddCommentAndReopenPayload';
+  __typename: 'BugAddCommentAndReopenPayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting AddComment operation. */
   commentOperation: BugAddCommentOperation;
   /** The resulting SetStatusOperation. */
@@ -155,7 +153,7 @@ export type BugAddCommentInput = {
 };
 
 export type BugAddCommentOperation = Authored & Operation & {
-  __typename?: 'BugAddCommentOperation';
+  __typename: 'BugAddCommentOperation';
   /** The author of this object. */
   author: Identity;
   /** The datetime when this operation was issued. */
@@ -167,18 +165,18 @@ export type BugAddCommentOperation = Authored & Operation & {
 };
 
 export type BugAddCommentPayload = {
-  __typename?: 'BugAddCommentPayload';
+  __typename: 'BugAddCommentPayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting operation. */
   operation: BugAddCommentOperation;
 };
 
 /** BugAddCommentTimelineItem is a BugTimelineItem that represent a BugComment and its edition history */
 export type BugAddCommentTimelineItem = Authored & BugTimelineItem & {
-  __typename?: 'BugAddCommentTimelineItem';
+  __typename: 'BugAddCommentTimelineItem';
   author: Identity;
   createdAt: Scalars['Time']['output'];
   edited: Scalars['Boolean']['output'];
@@ -205,11 +203,11 @@ export type BugChangeLabelInput = {
 };
 
 export type BugChangeLabelPayload = {
-  __typename?: 'BugChangeLabelPayload';
+  __typename: 'BugChangeLabelPayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting operation. */
   operation: BugLabelChangeOperation;
   /** The effect each source label had. */
@@ -218,7 +216,7 @@ export type BugChangeLabelPayload = {
 
 /** Represents a comment on a bug. */
 export type BugComment = Authored & {
-  __typename?: 'BugComment';
+  __typename: 'BugComment';
   /** The author of this comment. */
   author: Identity;
   /** All media's hash referenced in this comment */
@@ -229,7 +227,7 @@ export type BugComment = Authored & {
 };
 
 export type BugCommentConnection = {
-  __typename?: 'BugCommentConnection';
+  __typename: 'BugCommentConnection';
   edges: Array<BugCommentEdge>;
   nodes: Array<BugComment>;
   pageInfo: PageInfo;
@@ -237,21 +235,21 @@ export type BugCommentConnection = {
 };
 
 export type BugCommentEdge = {
-  __typename?: 'BugCommentEdge';
+  __typename: 'BugCommentEdge';
   cursor: Scalars['String']['output'];
   node: BugComment;
 };
 
 /** CommentHistoryStep hold one version of a message in the history */
 export type BugCommentHistoryStep = {
-  __typename?: 'BugCommentHistoryStep';
+  __typename: 'BugCommentHistoryStep';
   date: Scalars['Time']['output'];
   message: Scalars['String']['output'];
 };
 
 /** The connection type for Bug. */
 export type BugConnection = {
-  __typename?: 'BugConnection';
+  __typename: 'BugConnection';
   /** A list of edges. */
   edges: Array<BugEdge>;
   nodes: Array<Bug>;
@@ -275,7 +273,7 @@ export type BugCreateInput = {
 };
 
 export type BugCreateOperation = Authored & Operation & {
-  __typename?: 'BugCreateOperation';
+  __typename: 'BugCreateOperation';
   /** The author of this object. */
   author: Identity;
   /** The datetime when this operation was issued. */
@@ -288,18 +286,18 @@ export type BugCreateOperation = Authored & Operation & {
 };
 
 export type BugCreatePayload = {
-  __typename?: 'BugCreatePayload';
+  __typename: 'BugCreatePayload';
   /** The created bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting operation. */
   operation: BugCreateOperation;
 };
 
 /** BugCreateTimelineItem is a BugTimelineItem that represent the creation of a bug and its message edition history */
 export type BugCreateTimelineItem = Authored & BugTimelineItem & {
-  __typename?: 'BugCreateTimelineItem';
+  __typename: 'BugCreateTimelineItem';
   author: Identity;
   createdAt: Scalars['Time']['output'];
   edited: Scalars['Boolean']['output'];
@@ -314,7 +312,7 @@ export type BugCreateTimelineItem = Authored & BugTimelineItem & {
 
 /** An edge in a connection. */
 export type BugEdge = {
-  __typename?: 'BugEdge';
+  __typename: 'BugEdge';
   /** A cursor for use in pagination. */
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
@@ -335,7 +333,7 @@ export type BugEditCommentInput = {
 };
 
 export type BugEditCommentOperation = Authored & Operation & {
-  __typename?: 'BugEditCommentOperation';
+  __typename: 'BugEditCommentOperation';
   /** The author of this object. */
   author: Identity;
   /** The datetime when this operation was issued. */
@@ -348,23 +346,23 @@ export type BugEditCommentOperation = Authored & Operation & {
 };
 
 export type BugEditCommentPayload = {
-  __typename?: 'BugEditCommentPayload';
+  __typename: 'BugEditCommentPayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting operation. */
   operation: BugEditCommentOperation;
 };
 
 export type BugEvent = {
-  __typename?: 'BugEvent';
+  __typename: 'BugEvent';
   bug: Bug;
   type: EntityEventType;
 };
 
 export type BugLabelChangeOperation = Authored & Operation & {
-  __typename?: 'BugLabelChangeOperation';
+  __typename: 'BugLabelChangeOperation';
   added: Array<Label>;
   /** The author of this object. */
   author: Identity;
@@ -377,7 +375,7 @@ export type BugLabelChangeOperation = Authored & Operation & {
 
 /** BugLabelChangeTimelineItem is a BugTimelineItem that represent a change in the labels of a bug */
 export type BugLabelChangeTimelineItem = Authored & BugTimelineItem & {
-  __typename?: 'BugLabelChangeTimelineItem';
+  __typename: 'BugLabelChangeTimelineItem';
   added: Array<Label>;
   author: Identity;
   date: Scalars['Time']['output'];
@@ -387,7 +385,7 @@ export type BugLabelChangeTimelineItem = Authored & BugTimelineItem & {
 };
 
 export type BugSetStatusOperation = Authored & Operation & {
-  __typename?: 'BugSetStatusOperation';
+  __typename: 'BugSetStatusOperation';
   /** The author of this object. */
   author: Identity;
   /** The datetime when this operation was issued. */
@@ -399,7 +397,7 @@ export type BugSetStatusOperation = Authored & Operation & {
 
 /** BugSetStatusTimelineItem is a BugTimelineItem that represent a change in the status of a bug */
 export type BugSetStatusTimelineItem = Authored & BugTimelineItem & {
-  __typename?: 'BugSetStatusTimelineItem';
+  __typename: 'BugSetStatusTimelineItem';
   author: Identity;
   date: Scalars['Time']['output'];
   /** The identifier of the source operation */
@@ -419,7 +417,7 @@ export type BugSetTitleInput = {
 };
 
 export type BugSetTitleOperation = Authored & Operation & {
-  __typename?: 'BugSetTitleOperation';
+  __typename: 'BugSetTitleOperation';
   /** The author of this object. */
   author: Identity;
   /** The datetime when this operation was issued. */
@@ -431,18 +429,18 @@ export type BugSetTitleOperation = Authored & Operation & {
 };
 
 export type BugSetTitlePayload = {
-  __typename?: 'BugSetTitlePayload';
+  __typename: 'BugSetTitlePayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting operation */
   operation: BugSetTitleOperation;
 };
 
 /** BugLabelChangeTimelineItem is a BugTimelineItem that represent a change in the title of a bug */
 export type BugSetTitleTimelineItem = Authored & BugTimelineItem & {
-  __typename?: 'BugSetTitleTimelineItem';
+  __typename: 'BugSetTitleTimelineItem';
   author: Identity;
   date: Scalars['Time']['output'];
   /** The identifier of the source operation */
@@ -461,11 +459,11 @@ export type BugStatusCloseInput = {
 };
 
 export type BugStatusClosePayload = {
-  __typename?: 'BugStatusClosePayload';
+  __typename: 'BugStatusClosePayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting operation. */
   operation: BugSetStatusOperation;
 };
@@ -480,11 +478,11 @@ export type BugStatusOpenInput = {
 };
 
 export type BugStatusOpenPayload = {
-  __typename?: 'BugStatusOpenPayload';
+  __typename: 'BugStatusOpenPayload';
   /** The affected bug. */
   bug: Bug;
   /** A unique identifier for the client performing the mutation. */
-  clientMutationId?: Maybe<Scalars['String']['output']>;
+  clientMutationId: Maybe<Scalars['String']['output']>;
   /** The resulting operation. */
   operation: BugSetStatusOperation;
 };
@@ -497,7 +495,7 @@ export type BugTimelineItem = {
 
 /** The connection type for TimelineItem */
 export type BugTimelineItemConnection = {
-  __typename?: 'BugTimelineItemConnection';
+  __typename: 'BugTimelineItemConnection';
   edges: Array<BugTimelineItemEdge>;
   nodes: Array<BugTimelineItem>;
   pageInfo: PageInfo;
@@ -506,14 +504,14 @@ export type BugTimelineItemConnection = {
 
 /** Represent a TimelineItem */
 export type BugTimelineItemEdge = {
-  __typename?: 'BugTimelineItemEdge';
+  __typename: 'BugTimelineItemEdge';
   cursor: Scalars['String']['output'];
   node: BugTimelineItem;
 };
 
 /** Defines a color by red, green and blue components. */
 export type Color = {
-  __typename?: 'Color';
+  __typename: 'Color';
   /** Blue component of the color. */
   B: Scalars['Int']['output'];
   /** Green component of the color. */
@@ -531,8 +529,8 @@ export type Entity = {
 };
 
 export type EntityEvent = {
-  __typename?: 'EntityEvent';
-  entity?: Maybe<Entity>;
+  __typename: 'EntityEvent';
+  entity: Maybe<Entity>;
   type: EntityEventType;
 };
 
@@ -544,7 +542,7 @@ export enum EntityEventType {
 
 /** The content of a git blob (file). */
 export type GitBlob = {
-  __typename?: 'GitBlob';
+  __typename: 'GitBlob';
   /**
    * Git object hash. Can be used as a stable cache key or to construct a
    * raw download URL.
@@ -568,7 +566,7 @@ export type GitBlob = {
    * UTF-8 text content of the file. Null when isBinary is true or when
    * the file is too large to be returned inline (see isTruncated).
    */
-  text?: Maybe<Scalars['String']['output']>;
+  text: Maybe<Scalars['String']['output']>;
 };
 
 /** How a file was affected by a commit. */
@@ -585,9 +583,9 @@ export enum GitChangeStatus {
 
 /** A file that was changed in a commit. */
 export type GitChangedFile = {
-  __typename?: 'GitChangedFile';
+  __typename: 'GitChangedFile';
   /** Previous path, non-null only for renames. */
-  oldPath?: Maybe<Scalars['String']['output']>;
+  oldPath: Maybe<Scalars['String']['output']>;
   /** Path of the file in the new version of the commit. */
   path: Scalars['String']['output'];
   /** How the file was affected by the commit. */
@@ -595,7 +593,7 @@ export type GitChangedFile = {
 };
 
 export type GitChangedFileConnection = {
-  __typename?: 'GitChangedFileConnection';
+  __typename: 'GitChangedFileConnection';
   nodes: Array<GitChangedFile>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
@@ -603,7 +601,7 @@ export type GitChangedFileConnection = {
 
 /** Metadata for a single git commit. */
 export type GitCommit = {
-  __typename?: 'GitCommit';
+  __typename: 'GitCommit';
   /** Email address of the commit author. */
   authorEmail: Scalars['String']['output'];
   /** Name of the commit author. */
@@ -611,7 +609,7 @@ export type GitCommit = {
   /** Timestamp from the author field (when the change was originally made). */
   date: Scalars['Time']['output'];
   /** Unified diff for a single file in this commit. */
-  diff?: Maybe<GitFileDiff>;
+  diff: Maybe<GitFileDiff>;
   /**
    * Files changed relative to the first parent (or the empty tree for the
    * initial commit).
@@ -646,7 +644,7 @@ export type GitCommitFilesArgs = {
 
 /** Paginated list of commits. */
 export type GitCommitConnection = {
-  __typename?: 'GitCommitConnection';
+  __typename: 'GitCommitConnection';
   nodes: Array<GitCommit>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
@@ -654,7 +652,7 @@ export type GitCommitConnection = {
 
 /** A contiguous block of changes in a unified diff. */
 export type GitDiffHunk = {
-  __typename?: 'GitDiffHunk';
+  __typename: 'GitDiffHunk';
   /** Lines in this hunk, including context, additions, and deletions. */
   lines: Array<GitDiffLine>;
   /** Number of lines from the new file included in this hunk. */
@@ -669,7 +667,7 @@ export type GitDiffHunk = {
 
 /** A single line in a unified diff hunk. */
 export type GitDiffLine = {
-  __typename?: 'GitDiffLine';
+  __typename: 'GitDiffLine';
   /** Raw line content, without the leading +/- prefix. */
   content: Scalars['String']['output'];
   /** Line number in the new file. 0 for deleted lines. */
@@ -692,7 +690,7 @@ export enum GitDiffLineType {
 
 /** The diff for a single file in a commit. */
 export type GitFileDiff = {
-  __typename?: 'GitFileDiff';
+  __typename: 'GitFileDiff';
   /** Contiguous blocks of changes. Empty for binary files. */
   hunks: Array<GitDiffHunk>;
   /** True when the file is binary and no textual diff is available. */
@@ -702,14 +700,14 @@ export type GitFileDiff = {
   /** True when the file was created in this commit. */
   isNew: Scalars['Boolean']['output'];
   /** Previous path, non-null only for renames. */
-  oldPath?: Maybe<Scalars['String']['output']>;
+  oldPath: Maybe<Scalars['String']['output']>;
   /** Path of the file in the new version. */
   path: Scalars['String']['output'];
 };
 
 /** The last commit that touched each requested entry in a directory. */
 export type GitLastCommit = {
-  __typename?: 'GitLastCommit';
+  __typename: 'GitLastCommit';
   /** Most recent commit that modified this entry. */
   commit: GitCommit;
   /** Entry name within the directory. */
@@ -730,7 +728,7 @@ export enum GitObjectType {
 
 /** A git branch or tag reference. */
 export type GitRef = {
-  __typename?: 'GitRef';
+  __typename: 'GitRef';
   /** Git commit the reference points to. */
   commit: GitCommit;
   /** Commit hash the reference points to. */
@@ -744,7 +742,7 @@ export type GitRef = {
 };
 
 export type GitRefConnection = {
-  __typename?: 'GitRefConnection';
+  __typename: 'GitRefConnection';
   nodes: Array<GitRef>;
   pageInfo: PageInfo;
   totalCount: Scalars['Int']['output'];
@@ -762,14 +760,14 @@ export enum GitRefType {
 
 /** An entry in a git tree (directory listing). */
 export type GitTreeEntry = {
-  __typename?: 'GitTreeEntry';
+  __typename: 'GitTreeEntry';
   /** Git object hash. */
   hash: Scalars['String']['output'];
   /**
    * The last git commit that touched this tree entry. Null when the entry
    * cannot be resolved within the history depth limit.
    */
-  lastCommit?: Maybe<GitCommit>;
+  lastCommit: Maybe<GitCommit>;
   /** File or directory name within the parent tree. */
   name: Scalars['String']['output'];
   /** Whether this entry is a file, directory, symlink, or submodule. */
@@ -778,13 +776,13 @@ export type GitTreeEntry = {
 
 /** Represents an identity */
 export type Identity = Entity & {
-  __typename?: 'Identity';
+  __typename: 'Identity';
   /** An url to an avatar */
-  avatarUrl?: Maybe<Scalars['String']['output']>;
+  avatarUrl: Maybe<Scalars['String']['output']>;
   /** A non-empty string to display, representing the identity, based on the non-empty values. */
   displayName: Scalars['String']['output'];
   /** The email of the person, if known. */
-  email?: Maybe<Scalars['String']['output']>;
+  email: Maybe<Scalars['String']['output']>;
   /** The human version (truncated) identifier for this identity */
   humanId: Scalars['String']['output'];
   /** The identifier for this identity */
@@ -795,13 +793,13 @@ export type Identity = Entity & {
    */
   isProtected: Scalars['Boolean']['output'];
   /** The login of the person, if known. */
-  login?: Maybe<Scalars['String']['output']>;
+  login: Maybe<Scalars['String']['output']>;
   /** The name of the person, if known. */
-  name?: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
 };
 
 export type IdentityConnection = {
-  __typename?: 'IdentityConnection';
+  __typename: 'IdentityConnection';
   edges: Array<IdentityEdge>;
   nodes: Array<Identity>;
   pageInfo: PageInfo;
@@ -809,20 +807,20 @@ export type IdentityConnection = {
 };
 
 export type IdentityEdge = {
-  __typename?: 'IdentityEdge';
+  __typename: 'IdentityEdge';
   cursor: Scalars['String']['output'];
   node: Identity;
 };
 
 export type IdentityEvent = {
-  __typename?: 'IdentityEvent';
+  __typename: 'IdentityEvent';
   identity: Identity;
   type: EntityEventType;
 };
 
 /** Label for a bug. */
 export type Label = {
-  __typename?: 'Label';
+  __typename: 'Label';
   /** Color of the label. */
   color: Color;
   /** The name of the label. */
@@ -830,7 +828,7 @@ export type Label = {
 };
 
 export type LabelChangeResult = {
-  __typename?: 'LabelChangeResult';
+  __typename: 'LabelChangeResult';
   /** The source label. */
   label: Label;
   /** The effect this label had. */
@@ -846,7 +844,7 @@ export enum LabelChangeStatus {
 }
 
 export type LabelConnection = {
-  __typename?: 'LabelConnection';
+  __typename: 'LabelConnection';
   edges: Array<LabelEdge>;
   nodes: Array<Label>;
   pageInfo: PageInfo;
@@ -854,13 +852,13 @@ export type LabelConnection = {
 };
 
 export type LabelEdge = {
-  __typename?: 'LabelEdge';
+  __typename: 'LabelEdge';
   cursor: Scalars['String']['output'];
   node: Label;
 };
 
 export type Mutation = {
-  __typename?: 'Mutation';
+  __typename: 'Mutation';
   /** Add a new comment to a bug */
   bugAddComment: BugAddCommentPayload;
   /** Add a new comment to a bug and close it */
@@ -938,7 +936,7 @@ export type Operation = {
 
 /** The connection type for an Operation */
 export type OperationConnection = {
-  __typename?: 'OperationConnection';
+  __typename: 'OperationConnection';
   edges: Array<OperationEdge>;
   nodes: Array<Operation>;
   pageInfo: PageInfo;
@@ -947,14 +945,14 @@ export type OperationConnection = {
 
 /** Represent an Operation */
 export type OperationEdge = {
-  __typename?: 'OperationEdge';
+  __typename: 'OperationEdge';
   cursor: Scalars['String']['output'];
   node: Operation;
 };
 
 /** Information about pagination in a connection. */
 export type PageInfo = {
-  __typename?: 'PageInfo';
+  __typename: 'PageInfo';
   /** When paginating forwards, the cursor to continue. */
   endCursor: Scalars['String']['output'];
   /** When paginating forwards, are there more items? */
@@ -966,14 +964,14 @@ export type PageInfo = {
 };
 
 export type Query = {
-  __typename?: 'Query';
+  __typename: 'Query';
   /** List all registered repositories. */
   repositories: RepositoryConnection;
   /**
    * Access a repository by reference/name. If no ref is given, the default repository is returned if any.
    * Returns null if the referenced repository does not exist.
    */
-  repository?: Maybe<Repository>;
+  repository: Maybe<Repository>;
 };
 
 
@@ -990,7 +988,7 @@ export type QueryRepositoryArgs = {
 };
 
 export type Repository = {
-  __typename?: 'Repository';
+  __typename: 'Repository';
   /** All the bugs */
   allBugs: BugConnection;
   /** All the identities */
@@ -999,11 +997,11 @@ export type Repository = {
    * Content of the file at path under ref. Null if the path does not exist
    * or resolves to a tree rather than a blob.
    */
-  blob?: Maybe<GitBlob>;
+  blob: Maybe<GitBlob>;
   /** Look up a bug by id prefix. Returns null if no bug matches the prefix. */
-  bug?: Maybe<Bug>;
+  bug: Maybe<Bug>;
   /** A single commit by hash. Returns null if the hash does not exist in the repository. */
-  commit?: Maybe<GitCommit>;
+  commit: Maybe<GitCommit>;
   /**
    * Paginated commit log reachable from ref, optionally filtered to commits
    * touching path.
@@ -1014,9 +1012,9 @@ export type Repository = {
    * Null if HEAD cannot be resolved, for example in an empty or unborn
    * repository, or if HEAD is missing or invalid.
    */
-  head?: Maybe<GitRef>;
+  head: Maybe<GitRef>;
   /** Look up an identity by id prefix. Returns null if no identity matches the prefix. */
-  identity?: Maybe<Identity>;
+  identity: Maybe<Identity>;
   /**
    * The most recent commit that touched each of the named entries in the
    * directory at path under ref. Use this to populate last-commit info on a
@@ -1024,7 +1022,7 @@ export type Repository = {
    */
   lastCommits: Array<GitLastCommit>;
   /** The name of the repository. Null for the default (unnamed) repository in a single-repo setup. */
-  name?: Maybe<Scalars['String']['output']>;
+  name: Maybe<Scalars['String']['output']>;
   /**
    * All branches and tags, optionally filtered by type. BRANCH and TAG are
    * the only accepted filter values; passing COMMIT returns an error.
@@ -1033,7 +1031,7 @@ export type Repository = {
   /** Directory listing at path under ref. An empty path returns the root tree. */
   tree: Array<GitTreeEntry>;
   /** The identity created or selected by the user as its own */
-  userIdentity?: Maybe<Identity>;
+  userIdentity: Maybe<Identity>;
   /** List of valid labels. */
   validLabels: LabelConnection;
 };
@@ -1117,7 +1115,7 @@ export type RepositoryValidLabelsArgs = {
 };
 
 export type RepositoryConnection = {
-  __typename?: 'RepositoryConnection';
+  __typename: 'RepositoryConnection';
   edges: Array<RepositoryEdge>;
   nodes: Array<Repository>;
   pageInfo: PageInfo;
@@ -1125,7 +1123,7 @@ export type RepositoryConnection = {
 };
 
 export type RepositoryEdge = {
-  __typename?: 'RepositoryEdge';
+  __typename: 'RepositoryEdge';
   cursor: Scalars['String']['output'];
   node: Repository;
 };
@@ -1136,7 +1134,7 @@ export enum Status {
 }
 
 export type Subscription = {
-  __typename?: 'Subscription';
+  __typename: 'Subscription';
   /** Subscribe to events on all entities. For events on a specific repo you can provide a repo reference. Without it, you get the unique default repo or all repo events. */
   allEvents: EntityEvent;
   /** Subscribe to bug entity events. For events on a specific repo you can provide a repo reference. Without it, you get the unique default repo or all repo events. */
@@ -1161,28 +1159,160 @@ export type SubscriptionIdentityEventsArgs = {
   repoRef?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type BugCreateCommentFieldsFragment = { __typename?: 'BugCreateTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } };
+export type BugAddCommentMutationVariables = Exact<{
+  input: BugAddCommentInput;
+}>;
 
-export type BugAddCommentFieldsFragment = { __typename?: 'BugAddCommentTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } };
 
-export type LabelChangeFieldsFragment = { __typename?: 'BugLabelChangeTimelineItem', date: string, author: { __typename?: 'Identity', humanId: string, displayName: string }, added: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, removed: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> };
+export type BugAddCommentMutation = { bugAddComment: { __typename: 'BugAddCommentPayload', bug: { __typename: 'Bug', id: string } } };
 
-export type StatusChangeFieldsFragment = { __typename?: 'BugSetStatusTimelineItem', date: string, status: Status, author: { __typename?: 'Identity', humanId: string, displayName: string } };
+export type BugAddCommentAndCloseMutationVariables = Exact<{
+  input: BugAddCommentAndCloseInput;
+}>;
 
-export type TitleChangeFieldsFragment = { __typename?: 'BugSetTitleTimelineItem', date: string, title: string, was: string, author: { __typename?: 'Identity', humanId: string, displayName: string } };
 
-export type IdentitySummaryFragment = { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null };
+export type BugAddCommentAndCloseMutation = { bugAddCommentAndClose: { __typename: 'BugAddCommentAndClosePayload', bug: { __typename: 'Bug', id: string } } };
 
-export type BugSummaryFragment = { __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } };
+export type BugAddCommentAndReopenMutationVariables = Exact<{
+  input: BugAddCommentAndReopenInput;
+}>;
 
-export type LabelFieldsFragment = { __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } };
+
+export type BugAddCommentAndReopenMutation = { bugAddCommentAndReopen: { __typename: 'BugAddCommentAndReopenPayload', bug: { __typename: 'Bug', id: string } } };
+
+export type BugStatusOpenMutationVariables = Exact<{
+  input: BugStatusOpenInput;
+}>;
+
+
+export type BugStatusOpenMutation = { bugStatusOpen: { __typename: 'BugStatusOpenPayload', bug: { __typename: 'Bug', id: string, status: Status } } };
+
+export type BugStatusCloseMutationVariables = Exact<{
+  input: BugStatusCloseInput;
+}>;
+
+
+export type BugStatusCloseMutation = { bugStatusClose: { __typename: 'BugStatusClosePayload', bug: { __typename: 'Bug', id: string, status: Status } } };
+
+export type BugChangeLabelsMutationVariables = Exact<{
+  input?: InputMaybe<BugChangeLabelInput>;
+}>;
+
+
+export type BugChangeLabelsMutation = { bugChangeLabels: { __typename: 'BugChangeLabelPayload', bug: { __typename: 'Bug', id: string, labels: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }> } } };
+
+export type BugCreateCommentFieldsFragment = { __typename: 'BugCreateTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null } };
+
+export type BugAddCommentFieldsFragment = { __typename: 'BugAddCommentTimelineItem', message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null } };
+
+export type LabelChangeFieldsFragment = { __typename: 'BugLabelChangeTimelineItem', date: string, author: { __typename: 'Identity', humanId: string, displayName: string }, added: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }>, removed: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }> };
+
+export type StatusChangeFieldsFragment = { __typename: 'BugSetStatusTimelineItem', date: string, status: Status, author: { __typename: 'Identity', humanId: string, displayName: string } };
+
+export type TitleChangeFieldsFragment = { __typename: 'BugSetTitleTimelineItem', date: string, title: string, was: string, author: { __typename: 'Identity', humanId: string, displayName: string } };
+
+export type BugEditCommentMutationVariables = Exact<{
+  input: BugEditCommentInput;
+}>;
+
+
+export type BugEditCommentMutation = { bugEditComment: { __typename: 'BugEditCommentPayload', bug: { __typename: 'Bug', id: string } } };
+
+export type BugSetTitleMutationVariables = Exact<{
+  input: BugSetTitleInput;
+}>;
+
+
+export type BugSetTitleMutation = { bugSetTitle: { __typename: 'BugSetTitlePayload', bug: { __typename: 'Bug', id: string, title: string } } };
+
+export type CommitListQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
+  path?: InputMaybe<Scalars['String']['input']>;
+  after?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type CommitListQuery = { repository: { __typename: 'Repository', commits: { __typename: 'GitCommitConnection', nodes: Array<{ __typename: 'GitCommit', hash: string, shortHash: string, message: string, authorName: string, date: string }>, pageInfo: { __typename: 'PageInfo', hasNextPage: boolean, endCursor: string } } } | null };
+
+export type FileDiffQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+  hash: Scalars['String']['input'];
+  path: Scalars['String']['input'];
+}>;
+
+
+export type FileDiffQuery = { repository: { __typename: 'Repository', commit: { __typename: 'GitCommit', diff: { __typename: 'GitFileDiff', path: string, oldPath: string | null, isBinary: boolean, isNew: boolean, isDelete: boolean, hunks: Array<{ __typename: 'GitDiffHunk', oldStart: number, oldLines: number, newStart: number, newLines: number, lines: Array<{ __typename: 'GitDiffLine', type: GitDiffLineType, content: string, oldLine: number, newLine: number }> }> } | null } | null } | null };
+
+export type IdentitySummaryFragment = { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null };
+
+export type BugSummaryFragment = { __typename: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }>, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null }, comments: { __typename: 'BugCommentConnection', totalCount: number } };
+
+export type LabelFieldsFragment = { __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } };
+
+export type UserIdentityQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type UserIdentityQuery = { repository: { __typename: 'Repository', userIdentity: { __typename: 'Identity', id: string, humanId: string, name: string | null, displayName: string, avatarUrl: string | null, email: string | null, login: string | null } | null } | null };
+
+export type CodePageRefsQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CodePageRefsQuery = { repository: { __typename: 'Repository', name: string | null, head: { __typename: 'GitRef', shortName: string } | null, refs: { __typename: 'GitRefConnection', nodes: Array<{ __typename: 'GitRef', name: string, shortName: string, type: GitRefType, hash: string }> } } | null };
+
+export type CodePageBlobQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
+  path: Scalars['String']['input'];
+}>;
+
+
+export type CodePageBlobQuery = { repository: { __typename: 'Repository', blob: { __typename: 'GitBlob', path: string, hash: string, text: string | null, size: number, isBinary: boolean, isTruncated: boolean } | null } | null };
+
+export type CodePageTreeQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
+  path?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type CodePageTreeQuery = { repository: { __typename: 'Repository', tree: Array<{ __typename: 'GitTreeEntry', name: string, type: GitObjectType, hash: string }> } | null };
+
+export type CodePageLastCommitsQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
+  path?: InputMaybe<Scalars['String']['input']>;
+  names: Array<Scalars['String']['input']> | Scalars['String']['input'];
+}>;
+
+
+export type CodePageLastCommitsQuery = { repository: { __typename: 'Repository', lastCommits: Array<{ __typename: 'GitLastCommit', name: string, commit: { __typename: 'GitCommit', hash: string, shortHash: string, message: string, date: string } }> } | null };
+
+export type CodePageReadmeQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+  ref: Scalars['String']['input'];
+  path: Scalars['String']['input'];
+}>;
+
+
+export type CodePageReadmeQuery = { repository: { __typename: 'Repository', blob: { __typename: 'GitBlob', text: string | null } | null } | null };
 
 export type AllIdentitiesQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type AllIdentitiesQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', allIdentities: { __typename?: 'IdentityConnection', nodes: Array<{ __typename?: 'Identity', id: string, humanId: string, name?: string | null, email?: string | null, login?: string | null, displayName: string, avatarUrl?: string | null }> } } | null };
+export type AllIdentitiesQuery = { repository: { __typename: 'Repository', allIdentities: { __typename: 'IdentityConnection', nodes: Array<{ __typename: 'Identity', id: string, humanId: string, name: string | null, email: string | null, login: string | null, displayName: string, avatarUrl: string | null }> } } | null };
+
+export type ValidLabelsQueryVariables = Exact<{
+  ref?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type ValidLabelsQuery = { repository: { __typename: 'Repository', validLabels: { __typename: 'LabelConnection', nodes: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }> } } | null };
 
 export type BugDetailQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
@@ -1190,13 +1320,13 @@ export type BugDetailQueryVariables = Exact<{
 }>;
 
 
-export type BugDetailQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', bug?: { __typename?: 'Bug', lastEdit: string, id: string, humanId: string, status: Status, title: string, createdAt: string, participants: { __typename?: 'IdentityConnection', nodes: Array<{ __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }> }, timeline: { __typename?: 'BugTimelineItemConnection', nodes: Array<
-          | { __typename: 'BugAddCommentTimelineItem', id: string, message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } }
-          | { __typename: 'BugCreateTimelineItem', id: string, message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null } }
-          | { __typename: 'BugLabelChangeTimelineItem', id: string, date: string, author: { __typename?: 'Identity', humanId: string, displayName: string }, added: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, removed: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> }
-          | { __typename: 'BugSetStatusTimelineItem', id: string, date: string, status: Status, author: { __typename?: 'Identity', humanId: string, displayName: string } }
-          | { __typename: 'BugSetTitleTimelineItem', id: string, date: string, title: string, was: string, author: { __typename?: 'Identity', humanId: string, displayName: string } }
-        > }, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } } | null } | null };
+export type BugDetailQuery = { repository: { __typename: 'Repository', bug: { __typename: 'Bug', lastEdit: string, id: string, humanId: string, status: Status, title: string, createdAt: string, participants: { __typename: 'IdentityConnection', nodes: Array<{ __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null }> }, timeline: { __typename: 'BugTimelineItemConnection', nodes: Array<
+          | { __typename: 'BugAddCommentTimelineItem', id: string, message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null } }
+          | { __typename: 'BugCreateTimelineItem', id: string, message: string, createdAt: string, lastEdit: string, edited: boolean, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null } }
+          | { __typename: 'BugLabelChangeTimelineItem', id: string, date: string, author: { __typename: 'Identity', humanId: string, displayName: string }, added: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }>, removed: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }> }
+          | { __typename: 'BugSetStatusTimelineItem', id: string, date: string, status: Status, author: { __typename: 'Identity', humanId: string, displayName: string } }
+          | { __typename: 'BugSetTitleTimelineItem', id: string, date: string, title: string, was: string, author: { __typename: 'Identity', humanId: string, displayName: string } }
+        > }, labels: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }>, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null }, comments: { __typename: 'BugCommentConnection', totalCount: number } } | null } | null };
 
 export type BugListQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
@@ -1208,75 +1338,14 @@ export type BugListQueryVariables = Exact<{
 }>;
 
 
-export type BugListQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', openCount: { __typename?: 'BugConnection', totalCount: number }, closedCount: { __typename?: 'BugConnection', totalCount: number }, bugs: { __typename?: 'BugConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } }> } } | null };
+export type BugListQuery = { repository: { __typename: 'Repository', openCount: { __typename: 'BugConnection', totalCount: number }, closedCount: { __typename: 'BugConnection', totalCount: number }, bugs: { __typename: 'BugConnection', totalCount: number, pageInfo: { __typename: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }>, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null }, comments: { __typename: 'BugCommentConnection', totalCount: number } }> } } | null };
 
 export type BugCreateMutationVariables = Exact<{
   input: BugCreateInput;
 }>;
 
 
-export type BugCreateMutation = { __typename?: 'Mutation', bugCreate: { __typename?: 'BugCreatePayload', bug: { __typename?: 'Bug', id: string, humanId: string } } };
-
-export type BugAddCommentMutationVariables = Exact<{
-  input: BugAddCommentInput;
-}>;
-
-
-export type BugAddCommentMutation = { __typename?: 'Mutation', bugAddComment: { __typename?: 'BugAddCommentPayload', bug: { __typename?: 'Bug', id: string } } };
-
-export type BugAddCommentAndCloseMutationVariables = Exact<{
-  input: BugAddCommentAndCloseInput;
-}>;
-
-
-export type BugAddCommentAndCloseMutation = { __typename?: 'Mutation', bugAddCommentAndClose: { __typename?: 'BugAddCommentAndClosePayload', bug: { __typename?: 'Bug', id: string } } };
-
-export type BugAddCommentAndReopenMutationVariables = Exact<{
-  input: BugAddCommentAndReopenInput;
-}>;
-
-
-export type BugAddCommentAndReopenMutation = { __typename?: 'Mutation', bugAddCommentAndReopen: { __typename?: 'BugAddCommentAndReopenPayload', bug: { __typename?: 'Bug', id: string } } };
-
-export type BugEditCommentMutationVariables = Exact<{
-  input: BugEditCommentInput;
-}>;
-
-
-export type BugEditCommentMutation = { __typename?: 'Mutation', bugEditComment: { __typename?: 'BugEditCommentPayload', bug: { __typename?: 'Bug', id: string } } };
-
-export type BugChangeLabelsMutationVariables = Exact<{
-  input?: InputMaybe<BugChangeLabelInput>;
-}>;
-
-
-export type BugChangeLabelsMutation = { __typename?: 'Mutation', bugChangeLabels: { __typename?: 'BugChangeLabelPayload', bug: { __typename?: 'Bug', id: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> } } };
-
-export type BugStatusOpenMutationVariables = Exact<{
-  input: BugStatusOpenInput;
-}>;
-
-
-export type BugStatusOpenMutation = { __typename?: 'Mutation', bugStatusOpen: { __typename?: 'BugStatusOpenPayload', bug: { __typename?: 'Bug', id: string, status: Status } } };
-
-export type BugStatusCloseMutationVariables = Exact<{
-  input: BugStatusCloseInput;
-}>;
-
-
-export type BugStatusCloseMutation = { __typename?: 'Mutation', bugStatusClose: { __typename?: 'BugStatusClosePayload', bug: { __typename?: 'Bug', id: string, status: Status } } };
-
-export type BugSetTitleMutationVariables = Exact<{
-  input: BugSetTitleInput;
-}>;
-
-
-export type BugSetTitleMutation = { __typename?: 'Mutation', bugSetTitle: { __typename?: 'BugSetTitlePayload', bug: { __typename?: 'Bug', id: string, title: string } } };
-
-export type RepositoriesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type RepositoriesQuery = { __typename?: 'Query', repositories: { __typename?: 'RepositoryConnection', totalCount: number, nodes: Array<{ __typename?: 'Repository', name?: string | null }> } };
+export type BugCreateMutation = { bugCreate: { __typename: 'BugCreatePayload', bug: { __typename: 'Bug', id: string, humanId: string } } };
 
 export type UserProfileQueryVariables = Exact<{
   ref?: InputMaybe<Scalars['String']['input']>;
@@ -1288,799 +1357,50 @@ export type UserProfileQueryVariables = Exact<{
 }>;
 
 
-export type UserProfileQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', identity?: { __typename?: 'Identity', id: string, humanId: string, name?: string | null, email?: string | null, login?: string | null, displayName: string, avatarUrl?: string | null, isProtected: boolean } | null, openCount: { __typename?: 'BugConnection', totalCount: number }, closedCount: { __typename?: 'BugConnection', totalCount: number }, bugs: { __typename?: 'BugConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename?: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }>, author: { __typename?: 'Identity', id: string, humanId: string, displayName: string, avatarUrl?: string | null }, comments: { __typename?: 'BugCommentConnection', totalCount: number } }> } } | null };
+export type UserProfileQuery = { repository: { __typename: 'Repository', identity: { __typename: 'Identity', id: string, humanId: string, name: string | null, email: string | null, login: string | null, displayName: string, avatarUrl: string | null, isProtected: boolean } | null, openCount: { __typename: 'BugConnection', totalCount: number }, closedCount: { __typename: 'BugConnection', totalCount: number }, bugs: { __typename: 'BugConnection', totalCount: number, pageInfo: { __typename: 'PageInfo', hasNextPage: boolean, endCursor: string }, nodes: Array<{ __typename: 'Bug', id: string, humanId: string, status: Status, title: string, createdAt: string, labels: Array<{ __typename: 'Label', name: string, color: { __typename: 'Color', R: number, G: number, B: number } }>, author: { __typename: 'Identity', id: string, humanId: string, displayName: string, avatarUrl: string | null }, comments: { __typename: 'BugCommentConnection', totalCount: number } }> } } | null };
 
-export type ValidLabelsQueryVariables = Exact<{
-  ref?: InputMaybe<Scalars['String']['input']>;
+export type CommitPageDetailQueryVariables = Exact<{
+  repo?: InputMaybe<Scalars['String']['input']>;
+  hash: Scalars['String']['input'];
 }>;
 
 
-export type ValidLabelsQuery = { __typename?: 'Query', repository?: { __typename?: 'Repository', validLabels: { __typename?: 'LabelConnection', nodes: Array<{ __typename?: 'Label', name: string, color: { __typename?: 'Color', R: number, G: number, B: number } }> } } | null };
+export type CommitPageDetailQuery = { repository: { __typename: 'Repository', commit: { __typename: 'GitCommit', hash: string, shortHash: string, message: string, fullMessage: string, authorName: string, authorEmail: string, date: string, parents: Array<string>, files: { __typename: 'GitChangedFileConnection', nodes: Array<{ __typename: 'GitChangedFile', path: string, oldPath: string | null, status: GitChangeStatus }> } } | null } | null };
 
-export const IdentitySummaryFragmentDoc = gql`
-    fragment IdentitySummary on Identity {
-  id
-  humanId
-  displayName
-  avatarUrl
-}
-    `;
-export const BugCreateCommentFieldsFragmentDoc = gql`
-    fragment BugCreateCommentFields on BugCreateTimelineItem {
-  author {
-    ...IdentitySummary
-  }
-  message
-  createdAt
-  lastEdit
-  edited
-}
-    ${IdentitySummaryFragmentDoc}`;
-export const BugAddCommentFieldsFragmentDoc = gql`
-    fragment BugAddCommentFields on BugAddCommentTimelineItem {
-  author {
-    ...IdentitySummary
-  }
-  message
-  createdAt
-  lastEdit
-  edited
-}
-    ${IdentitySummaryFragmentDoc}`;
-export const LabelFieldsFragmentDoc = gql`
-    fragment LabelFields on Label {
-  name
-  color {
-    R
-    G
-    B
-  }
-}
-    `;
-export const LabelChangeFieldsFragmentDoc = gql`
-    fragment LabelChangeFields on BugLabelChangeTimelineItem {
-  author {
-    humanId
-    displayName
-  }
-  date
-  added {
-    ...LabelFields
-  }
-  removed {
-    ...LabelFields
-  }
-}
-    ${LabelFieldsFragmentDoc}`;
-export const StatusChangeFieldsFragmentDoc = gql`
-    fragment StatusChangeFields on BugSetStatusTimelineItem {
-  author {
-    humanId
-    displayName
-  }
-  date
-  status
-}
-    `;
-export const TitleChangeFieldsFragmentDoc = gql`
-    fragment TitleChangeFields on BugSetTitleTimelineItem {
-  author {
-    humanId
-    displayName
-  }
-  date
-  title
-  was
-}
-    `;
-export const BugSummaryFragmentDoc = gql`
-    fragment BugSummary on Bug {
-  id
-  humanId
-  status
-  title
-  labels {
-    ...LabelFields
-  }
-  author {
-    ...IdentitySummary
-  }
-  createdAt
-  comments {
-    totalCount
-  }
-}
-    ${LabelFieldsFragmentDoc}
-${IdentitySummaryFragmentDoc}`;
-export const AllIdentitiesDocument = gql`
-    query AllIdentities($ref: String) {
-  repository(ref: $ref) {
-    allIdentities(first: 1000) {
-      nodes {
-        id
-        humanId
-        name
-        email
-        login
-        displayName
-        avatarUrl
-      }
-    }
-  }
-}
-    `;
+export type RepositoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
-/**
- * __useAllIdentitiesQuery__
- *
- * To run a query within a React component, call `useAllIdentitiesQuery` and pass it any options that fit your needs.
- * When your component renders, `useAllIdentitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useAllIdentitiesQuery({
- *   variables: {
- *      ref: // value for 'ref'
- *   },
- * });
- */
-export function useAllIdentitiesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
-      }
-export function useAllIdentitiesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
-        }
-// @ts-ignore
-export function useAllIdentitiesSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<AllIdentitiesQuery, AllIdentitiesQueryVariables>;
-export function useAllIdentitiesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<AllIdentitiesQuery | undefined, AllIdentitiesQueryVariables>;
-export function useAllIdentitiesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<AllIdentitiesQuery, AllIdentitiesQueryVariables>) {
-          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useSuspenseQuery<AllIdentitiesQuery, AllIdentitiesQueryVariables>(AllIdentitiesDocument, options);
-        }
-export type AllIdentitiesQueryHookResult = ReturnType<typeof useAllIdentitiesQuery>;
-export type AllIdentitiesLazyQueryHookResult = ReturnType<typeof useAllIdentitiesLazyQuery>;
-export type AllIdentitiesSuspenseQueryHookResult = ReturnType<typeof useAllIdentitiesSuspenseQuery>;
-export type AllIdentitiesQueryResult = Apollo.QueryResult<AllIdentitiesQuery, AllIdentitiesQueryVariables>;
-export const BugDetailDocument = gql`
-    query BugDetail($ref: String, $prefix: String!) {
-  repository(ref: $ref) {
-    bug(prefix: $prefix) {
-      ...BugSummary
-      lastEdit
-      participants(first: 20) {
-        nodes {
-          ...IdentitySummary
-        }
-      }
-      timeline(first: 250) {
-        nodes {
-          __typename
-          id
-          ... on BugCreateTimelineItem {
-            ...BugCreateCommentFields
-          }
-          ... on BugAddCommentTimelineItem {
-            ...BugAddCommentFields
-          }
-          ... on BugLabelChangeTimelineItem {
-            ...LabelChangeFields
-          }
-          ... on BugSetStatusTimelineItem {
-            ...StatusChangeFields
-          }
-          ... on BugSetTitleTimelineItem {
-            ...TitleChangeFields
-          }
-        }
-      }
-    }
-  }
-}
-    ${BugSummaryFragmentDoc}
-${IdentitySummaryFragmentDoc}
-${BugCreateCommentFieldsFragmentDoc}
-${BugAddCommentFieldsFragmentDoc}
-${LabelChangeFieldsFragmentDoc}
-${StatusChangeFieldsFragmentDoc}
-${TitleChangeFieldsFragmentDoc}`;
 
-/**
- * __useBugDetailQuery__
- *
- * To run a query within a React component, call `useBugDetailQuery` and pass it any options that fit your needs.
- * When your component renders, `useBugDetailQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useBugDetailQuery({
- *   variables: {
- *      ref: // value for 'ref'
- *      prefix: // value for 'prefix'
- *   },
- * });
- */
-export function useBugDetailQuery(baseOptions: ApolloReactHooks.QueryHookOptions<BugDetailQuery, BugDetailQueryVariables> & ({ variables: BugDetailQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
-      }
-export function useBugDetailLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
-        }
-// @ts-ignore
-export function useBugDetailSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugDetailQuery, BugDetailQueryVariables>;
-export function useBugDetailSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugDetailQuery | undefined, BugDetailQueryVariables>;
-export function useBugDetailSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugDetailQuery, BugDetailQueryVariables>) {
-          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useSuspenseQuery<BugDetailQuery, BugDetailQueryVariables>(BugDetailDocument, options);
-        }
-export type BugDetailQueryHookResult = ReturnType<typeof useBugDetailQuery>;
-export type BugDetailLazyQueryHookResult = ReturnType<typeof useBugDetailLazyQuery>;
-export type BugDetailSuspenseQueryHookResult = ReturnType<typeof useBugDetailSuspenseQuery>;
-export type BugDetailQueryResult = Apollo.QueryResult<BugDetailQuery, BugDetailQueryVariables>;
-export const BugListDocument = gql`
-    query BugList($ref: String, $openQuery: String!, $closedQuery: String!, $listQuery: String!, $first: Int, $after: String) {
-  repository(ref: $ref) {
-    openCount: allBugs(query: $openQuery, first: 1) {
-      totalCount
-    }
-    closedCount: allBugs(query: $closedQuery, first: 1) {
-      totalCount
-    }
-    bugs: allBugs(query: $listQuery, first: $first, after: $after) {
-      totalCount
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      nodes {
-        ...BugSummary
-      }
-    }
-  }
-}
-    ${BugSummaryFragmentDoc}`;
+export type RepositoriesQuery = { repositories: { __typename: 'RepositoryConnection', totalCount: number, nodes: Array<{ __typename: 'Repository', name: string | null }> } };
 
-/**
- * __useBugListQuery__
- *
- * To run a query within a React component, call `useBugListQuery` and pass it any options that fit your needs.
- * When your component renders, `useBugListQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useBugListQuery({
- *   variables: {
- *      ref: // value for 'ref'
- *      openQuery: // value for 'openQuery'
- *      closedQuery: // value for 'closedQuery'
- *      listQuery: // value for 'listQuery'
- *      first: // value for 'first'
- *      after: // value for 'after'
- *   },
- * });
- */
-export function useBugListQuery(baseOptions: ApolloReactHooks.QueryHookOptions<BugListQuery, BugListQueryVariables> & ({ variables: BugListQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
-      }
-export function useBugListLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<BugListQuery, BugListQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
-        }
-// @ts-ignore
-export function useBugListSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugListQuery, BugListQueryVariables>;
-export function useBugListSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<BugListQuery | undefined, BugListQueryVariables>;
-export function useBugListSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<BugListQuery, BugListQueryVariables>) {
-          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useSuspenseQuery<BugListQuery, BugListQueryVariables>(BugListDocument, options);
-        }
-export type BugListQueryHookResult = ReturnType<typeof useBugListQuery>;
-export type BugListLazyQueryHookResult = ReturnType<typeof useBugListLazyQuery>;
-export type BugListSuspenseQueryHookResult = ReturnType<typeof useBugListSuspenseQuery>;
-export type BugListQueryResult = Apollo.QueryResult<BugListQuery, BugListQueryVariables>;
-export const BugCreateDocument = gql`
-    mutation BugCreate($input: BugCreateInput!) {
-  bugCreate(input: $input) {
-    bug {
-      id
-      humanId
-    }
-  }
-}
-    `;
-export type BugCreateMutationFn = Apollo.MutationFunction<BugCreateMutation, BugCreateMutationVariables>;
-
-/**
- * __useBugCreateMutation__
- *
- * To run a mutation, you first call `useBugCreateMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugCreateMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugCreateMutation, { data, loading, error }] = useBugCreateMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugCreateMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugCreateMutation, BugCreateMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugCreateMutation, BugCreateMutationVariables>(BugCreateDocument, options);
-      }
-export type BugCreateMutationHookResult = ReturnType<typeof useBugCreateMutation>;
-export type BugCreateMutationResult = Apollo.MutationResult<BugCreateMutation>;
-export type BugCreateMutationOptions = Apollo.BaseMutationOptions<BugCreateMutation, BugCreateMutationVariables>;
-export const BugAddCommentDocument = gql`
-    mutation BugAddComment($input: BugAddCommentInput!) {
-  bugAddComment(input: $input) {
-    bug {
-      id
-    }
-  }
-}
-    `;
-export type BugAddCommentMutationFn = Apollo.MutationFunction<BugAddCommentMutation, BugAddCommentMutationVariables>;
-
-/**
- * __useBugAddCommentMutation__
- *
- * To run a mutation, you first call `useBugAddCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugAddCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugAddCommentMutation, { data, loading, error }] = useBugAddCommentMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugAddCommentMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugAddCommentMutation, BugAddCommentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugAddCommentMutation, BugAddCommentMutationVariables>(BugAddCommentDocument, options);
-      }
-export type BugAddCommentMutationHookResult = ReturnType<typeof useBugAddCommentMutation>;
-export type BugAddCommentMutationResult = Apollo.MutationResult<BugAddCommentMutation>;
-export type BugAddCommentMutationOptions = Apollo.BaseMutationOptions<BugAddCommentMutation, BugAddCommentMutationVariables>;
-export const BugAddCommentAndCloseDocument = gql`
-    mutation BugAddCommentAndClose($input: BugAddCommentAndCloseInput!) {
-  bugAddCommentAndClose(input: $input) {
-    bug {
-      id
-    }
-  }
-}
-    `;
-export type BugAddCommentAndCloseMutationFn = Apollo.MutationFunction<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>;
-
-/**
- * __useBugAddCommentAndCloseMutation__
- *
- * To run a mutation, you first call `useBugAddCommentAndCloseMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugAddCommentAndCloseMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugAddCommentAndCloseMutation, { data, loading, error }] = useBugAddCommentAndCloseMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugAddCommentAndCloseMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>(BugAddCommentAndCloseDocument, options);
-      }
-export type BugAddCommentAndCloseMutationHookResult = ReturnType<typeof useBugAddCommentAndCloseMutation>;
-export type BugAddCommentAndCloseMutationResult = Apollo.MutationResult<BugAddCommentAndCloseMutation>;
-export type BugAddCommentAndCloseMutationOptions = Apollo.BaseMutationOptions<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>;
-export const BugAddCommentAndReopenDocument = gql`
-    mutation BugAddCommentAndReopen($input: BugAddCommentAndReopenInput!) {
-  bugAddCommentAndReopen(input: $input) {
-    bug {
-      id
-    }
-  }
-}
-    `;
-export type BugAddCommentAndReopenMutationFn = Apollo.MutationFunction<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>;
-
-/**
- * __useBugAddCommentAndReopenMutation__
- *
- * To run a mutation, you first call `useBugAddCommentAndReopenMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugAddCommentAndReopenMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugAddCommentAndReopenMutation, { data, loading, error }] = useBugAddCommentAndReopenMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugAddCommentAndReopenMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>(BugAddCommentAndReopenDocument, options);
-      }
-export type BugAddCommentAndReopenMutationHookResult = ReturnType<typeof useBugAddCommentAndReopenMutation>;
-export type BugAddCommentAndReopenMutationResult = Apollo.MutationResult<BugAddCommentAndReopenMutation>;
-export type BugAddCommentAndReopenMutationOptions = Apollo.BaseMutationOptions<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>;
-export const BugEditCommentDocument = gql`
-    mutation BugEditComment($input: BugEditCommentInput!) {
-  bugEditComment(input: $input) {
-    bug {
-      id
-    }
-  }
-}
-    `;
-export type BugEditCommentMutationFn = Apollo.MutationFunction<BugEditCommentMutation, BugEditCommentMutationVariables>;
-
-/**
- * __useBugEditCommentMutation__
- *
- * To run a mutation, you first call `useBugEditCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugEditCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugEditCommentMutation, { data, loading, error }] = useBugEditCommentMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugEditCommentMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugEditCommentMutation, BugEditCommentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugEditCommentMutation, BugEditCommentMutationVariables>(BugEditCommentDocument, options);
-      }
-export type BugEditCommentMutationHookResult = ReturnType<typeof useBugEditCommentMutation>;
-export type BugEditCommentMutationResult = Apollo.MutationResult<BugEditCommentMutation>;
-export type BugEditCommentMutationOptions = Apollo.BaseMutationOptions<BugEditCommentMutation, BugEditCommentMutationVariables>;
-export const BugChangeLabelsDocument = gql`
-    mutation BugChangeLabels($input: BugChangeLabelInput) {
-  bugChangeLabels(input: $input) {
-    bug {
-      id
-      labels {
-        name
-        color {
-          R
-          G
-          B
-        }
-      }
-    }
-  }
-}
-    `;
-export type BugChangeLabelsMutationFn = Apollo.MutationFunction<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>;
-
-/**
- * __useBugChangeLabelsMutation__
- *
- * To run a mutation, you first call `useBugChangeLabelsMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugChangeLabelsMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugChangeLabelsMutation, { data, loading, error }] = useBugChangeLabelsMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugChangeLabelsMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>(BugChangeLabelsDocument, options);
-      }
-export type BugChangeLabelsMutationHookResult = ReturnType<typeof useBugChangeLabelsMutation>;
-export type BugChangeLabelsMutationResult = Apollo.MutationResult<BugChangeLabelsMutation>;
-export type BugChangeLabelsMutationOptions = Apollo.BaseMutationOptions<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>;
-export const BugStatusOpenDocument = gql`
-    mutation BugStatusOpen($input: BugStatusOpenInput!) {
-  bugStatusOpen(input: $input) {
-    bug {
-      id
-      status
-    }
-  }
-}
-    `;
-export type BugStatusOpenMutationFn = Apollo.MutationFunction<BugStatusOpenMutation, BugStatusOpenMutationVariables>;
-
-/**
- * __useBugStatusOpenMutation__
- *
- * To run a mutation, you first call `useBugStatusOpenMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugStatusOpenMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugStatusOpenMutation, { data, loading, error }] = useBugStatusOpenMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugStatusOpenMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugStatusOpenMutation, BugStatusOpenMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugStatusOpenMutation, BugStatusOpenMutationVariables>(BugStatusOpenDocument, options);
-      }
-export type BugStatusOpenMutationHookResult = ReturnType<typeof useBugStatusOpenMutation>;
-export type BugStatusOpenMutationResult = Apollo.MutationResult<BugStatusOpenMutation>;
-export type BugStatusOpenMutationOptions = Apollo.BaseMutationOptions<BugStatusOpenMutation, BugStatusOpenMutationVariables>;
-export const BugStatusCloseDocument = gql`
-    mutation BugStatusClose($input: BugStatusCloseInput!) {
-  bugStatusClose(input: $input) {
-    bug {
-      id
-      status
-    }
-  }
-}
-    `;
-export type BugStatusCloseMutationFn = Apollo.MutationFunction<BugStatusCloseMutation, BugStatusCloseMutationVariables>;
-
-/**
- * __useBugStatusCloseMutation__
- *
- * To run a mutation, you first call `useBugStatusCloseMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugStatusCloseMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugStatusCloseMutation, { data, loading, error }] = useBugStatusCloseMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugStatusCloseMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugStatusCloseMutation, BugStatusCloseMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugStatusCloseMutation, BugStatusCloseMutationVariables>(BugStatusCloseDocument, options);
-      }
-export type BugStatusCloseMutationHookResult = ReturnType<typeof useBugStatusCloseMutation>;
-export type BugStatusCloseMutationResult = Apollo.MutationResult<BugStatusCloseMutation>;
-export type BugStatusCloseMutationOptions = Apollo.BaseMutationOptions<BugStatusCloseMutation, BugStatusCloseMutationVariables>;
-export const BugSetTitleDocument = gql`
-    mutation BugSetTitle($input: BugSetTitleInput!) {
-  bugSetTitle(input: $input) {
-    bug {
-      id
-      title
-    }
-  }
-}
-    `;
-export type BugSetTitleMutationFn = Apollo.MutationFunction<BugSetTitleMutation, BugSetTitleMutationVariables>;
-
-/**
- * __useBugSetTitleMutation__
- *
- * To run a mutation, you first call `useBugSetTitleMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useBugSetTitleMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [bugSetTitleMutation, { data, loading, error }] = useBugSetTitleMutation({
- *   variables: {
- *      input: // value for 'input'
- *   },
- * });
- */
-export function useBugSetTitleMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<BugSetTitleMutation, BugSetTitleMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useMutation<BugSetTitleMutation, BugSetTitleMutationVariables>(BugSetTitleDocument, options);
-      }
-export type BugSetTitleMutationHookResult = ReturnType<typeof useBugSetTitleMutation>;
-export type BugSetTitleMutationResult = Apollo.MutationResult<BugSetTitleMutation>;
-export type BugSetTitleMutationOptions = Apollo.BaseMutationOptions<BugSetTitleMutation, BugSetTitleMutationVariables>;
-export const RepositoriesDocument = gql`
-    query Repositories {
-  repositories {
-    nodes {
-      name
-    }
-    totalCount
-  }
-}
-    `;
-
-/**
- * __useRepositoriesQuery__
- *
- * To run a query within a React component, call `useRepositoriesQuery` and pass it any options that fit your needs.
- * When your component renders, `useRepositoriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useRepositoriesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useRepositoriesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
-      }
-export function useRepositoriesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
-        }
-// @ts-ignore
-export function useRepositoriesSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<RepositoriesQuery, RepositoriesQueryVariables>;
-export function useRepositoriesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<RepositoriesQuery | undefined, RepositoriesQueryVariables>;
-export function useRepositoriesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<RepositoriesQuery, RepositoriesQueryVariables>) {
-          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useSuspenseQuery<RepositoriesQuery, RepositoriesQueryVariables>(RepositoriesDocument, options);
-        }
-export type RepositoriesQueryHookResult = ReturnType<typeof useRepositoriesQuery>;
-export type RepositoriesLazyQueryHookResult = ReturnType<typeof useRepositoriesLazyQuery>;
-export type RepositoriesSuspenseQueryHookResult = ReturnType<typeof useRepositoriesSuspenseQuery>;
-export type RepositoriesQueryResult = Apollo.QueryResult<RepositoriesQuery, RepositoriesQueryVariables>;
-export const UserProfileDocument = gql`
-    query UserProfile($ref: String, $prefix: String!, $openQuery: String!, $closedQuery: String!, $listQuery: String!, $after: String) {
-  repository(ref: $ref) {
-    identity(prefix: $prefix) {
-      id
-      humanId
-      name
-      email
-      login
-      displayName
-      avatarUrl
-      isProtected
-    }
-    openCount: allBugs(query: $openQuery, first: 1) {
-      totalCount
-    }
-    closedCount: allBugs(query: $closedQuery, first: 1) {
-      totalCount
-    }
-    bugs: allBugs(query: $listQuery, first: 25, after: $after) {
-      totalCount
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      nodes {
-        ...BugSummary
-      }
-    }
-  }
-}
-    ${BugSummaryFragmentDoc}`;
-
-/**
- * __useUserProfileQuery__
- *
- * To run a query within a React component, call `useUserProfileQuery` and pass it any options that fit your needs.
- * When your component renders, `useUserProfileQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useUserProfileQuery({
- *   variables: {
- *      ref: // value for 'ref'
- *      prefix: // value for 'prefix'
- *      openQuery: // value for 'openQuery'
- *      closedQuery: // value for 'closedQuery'
- *      listQuery: // value for 'listQuery'
- *      after: // value for 'after'
- *   },
- * });
- */
-export function useUserProfileQuery(baseOptions: ApolloReactHooks.QueryHookOptions<UserProfileQuery, UserProfileQueryVariables> & ({ variables: UserProfileQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
-      }
-export function useUserProfileLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
-        }
-// @ts-ignore
-export function useUserProfileSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<UserProfileQuery, UserProfileQueryVariables>;
-export function useUserProfileSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<UserProfileQuery | undefined, UserProfileQueryVariables>;
-export function useUserProfileSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<UserProfileQuery, UserProfileQueryVariables>) {
-          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useSuspenseQuery<UserProfileQuery, UserProfileQueryVariables>(UserProfileDocument, options);
-        }
-export type UserProfileQueryHookResult = ReturnType<typeof useUserProfileQuery>;
-export type UserProfileLazyQueryHookResult = ReturnType<typeof useUserProfileLazyQuery>;
-export type UserProfileSuspenseQueryHookResult = ReturnType<typeof useUserProfileSuspenseQuery>;
-export type UserProfileQueryResult = Apollo.QueryResult<UserProfileQuery, UserProfileQueryVariables>;
-export const ValidLabelsDocument = gql`
-    query ValidLabels($ref: String) {
-  repository(ref: $ref) {
-    validLabels {
-      nodes {
-        name
-        color {
-          R
-          G
-          B
-        }
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useValidLabelsQuery__
- *
- * To run a query within a React component, call `useValidLabelsQuery` and pass it any options that fit your needs.
- * When your component renders, `useValidLabelsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useValidLabelsQuery({
- *   variables: {
- *      ref: // value for 'ref'
- *   },
- * });
- */
-export function useValidLabelsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return ApolloReactHooks.useQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
-      }
-export function useValidLabelsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useLazyQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
-        }
-// @ts-ignore
-export function useValidLabelsSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ValidLabelsQuery, ValidLabelsQueryVariables>;
-export function useValidLabelsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<ValidLabelsQuery | undefined, ValidLabelsQueryVariables>;
-export function useValidLabelsSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<ValidLabelsQuery, ValidLabelsQueryVariables>) {
-          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return ApolloReactHooks.useSuspenseQuery<ValidLabelsQuery, ValidLabelsQueryVariables>(ValidLabelsDocument, options);
-        }
-export type ValidLabelsQueryHookResult = ReturnType<typeof useValidLabelsQuery>;
-export type ValidLabelsLazyQueryHookResult = ReturnType<typeof useValidLabelsLazyQuery>;
-export type ValidLabelsSuspenseQueryHookResult = ReturnType<typeof useValidLabelsSuspenseQuery>;
-export type ValidLabelsQueryResult = Apollo.QueryResult<ValidLabelsQuery, ValidLabelsQueryVariables>;
+export const IdentitySummaryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"IdentitySummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Identity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]} as unknown as DocumentNode<IdentitySummaryFragment, unknown>;
+export const BugCreateCommentFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugCreateCommentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugCreateTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastEdit"}},{"kind":"Field","name":{"kind":"Name","value":"edited"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"IdentitySummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Identity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]} as unknown as DocumentNode<BugCreateCommentFieldsFragment, unknown>;
+export const BugAddCommentFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugAddCommentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugAddCommentTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastEdit"}},{"kind":"Field","name":{"kind":"Name","value":"edited"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"IdentitySummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Identity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]} as unknown as DocumentNode<BugAddCommentFieldsFragment, unknown>;
+export const LabelFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Label"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}}]} as unknown as DocumentNode<LabelFieldsFragment, unknown>;
+export const LabelChangeFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelChangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugLabelChangeTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"added"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"removed"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Label"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}}]} as unknown as DocumentNode<LabelChangeFieldsFragment, unknown>;
+export const StatusChangeFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"StatusChangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugSetStatusTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<StatusChangeFieldsFragment, unknown>;
+export const TitleChangeFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TitleChangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugSetTitleTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"was"}}]}}]} as unknown as DocumentNode<TitleChangeFieldsFragment, unknown>;
+export const BugSummaryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Bug"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Label"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"IdentitySummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Identity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]} as unknown as DocumentNode<BugSummaryFragment, unknown>;
+export const BugAddCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugAddComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugAddCommentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugAddComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<BugAddCommentMutation, BugAddCommentMutationVariables>;
+export const BugAddCommentAndCloseDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugAddCommentAndClose"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugAddCommentAndCloseInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugAddCommentAndClose"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<BugAddCommentAndCloseMutation, BugAddCommentAndCloseMutationVariables>;
+export const BugAddCommentAndReopenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugAddCommentAndReopen"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugAddCommentAndReopenInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugAddCommentAndReopen"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<BugAddCommentAndReopenMutation, BugAddCommentAndReopenMutationVariables>;
+export const BugStatusOpenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugStatusOpen"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugStatusOpenInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugStatusOpen"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]} as unknown as DocumentNode<BugStatusOpenMutation, BugStatusOpenMutationVariables>;
+export const BugStatusCloseDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugStatusClose"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugStatusCloseInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugStatusClose"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]} as unknown as DocumentNode<BugStatusCloseMutation, BugStatusCloseMutationVariables>;
+export const BugChangeLabelsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugChangeLabels"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"BugChangeLabelInput"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugChangeLabels"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<BugChangeLabelsMutation, BugChangeLabelsMutationVariables>;
+export const BugEditCommentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugEditComment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugEditCommentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugEditComment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<BugEditCommentMutation, BugEditCommentMutationVariables>;
+export const BugSetTitleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugSetTitle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugSetTitleInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugSetTitle"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}}]}}]}}]} as unknown as DocumentNode<BugSetTitleMutation, BugSetTitleMutationVariables>;
+export const CommitListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CommitList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commits"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}},{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"shortHash"}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"authorName"}},{"kind":"Field","name":{"kind":"Name","value":"date"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CommitListQuery, CommitListQueryVariables>;
+export const FileDiffDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"FileDiff"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hash"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commit"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"hash"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hash"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"diff"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"oldPath"}},{"kind":"Field","name":{"kind":"Name","value":"isBinary"}},{"kind":"Field","name":{"kind":"Name","value":"isNew"}},{"kind":"Field","name":{"kind":"Name","value":"isDelete"}},{"kind":"Field","name":{"kind":"Name","value":"hunks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"oldStart"}},{"kind":"Field","name":{"kind":"Name","value":"oldLines"}},{"kind":"Field","name":{"kind":"Name","value":"newStart"}},{"kind":"Field","name":{"kind":"Name","value":"newLines"}},{"kind":"Field","name":{"kind":"Name","value":"lines"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"oldLine"}},{"kind":"Field","name":{"kind":"Name","value":"newLine"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<FileDiffQuery, FileDiffQueryVariables>;
+export const UserIdentityDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserIdentity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userIdentity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"login"}}]}}]}}]}}]} as unknown as DocumentNode<UserIdentityQuery, UserIdentityQueryVariables>;
+export const CodePageRefsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CodePageRefs"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"head"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"refs"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortName"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CodePageRefsQuery, CodePageRefsQueryVariables>;
+export const CodePageBlobDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CodePageBlob"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blob"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}},{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"size"}},{"kind":"Field","name":{"kind":"Name","value":"isBinary"}},{"kind":"Field","name":{"kind":"Name","value":"isTruncated"}}]}}]}}]}}]} as unknown as DocumentNode<CodePageBlobQuery, CodePageBlobQueryVariables>;
+export const CodePageTreeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CodePageTree"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tree"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}},{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"hash"}}]}}]}}]}}]} as unknown as DocumentNode<CodePageTreeQuery, CodePageTreeQueryVariables>;
+export const CodePageLastCommitsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CodePageLastCommits"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"names"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lastCommits"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}},{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}},{"kind":"Argument","name":{"kind":"Name","value":"names"},"value":{"kind":"Variable","name":{"kind":"Name","value":"names"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"commit"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"shortHash"}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"date"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CodePageLastCommitsQuery, CodePageLastCommitsQueryVariables>;
+export const CodePageReadmeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CodePageReadme"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"path"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blob"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}},{"kind":"Argument","name":{"kind":"Name","value":"path"},"value":{"kind":"Variable","name":{"kind":"Name","value":"path"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}}]} as unknown as DocumentNode<CodePageReadmeQuery, CodePageReadmeQueryVariables>;
+export const AllIdentitiesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AllIdentities"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"allIdentities"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1000"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"login"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AllIdentitiesQuery, AllIdentitiesQueryVariables>;
+export const ValidLabelsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ValidLabels"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"validLabels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ValidLabelsQuery, ValidLabelsQueryVariables>;
+export const BugDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BugDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"prefix"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"prefix"},"value":{"kind":"Variable","name":{"kind":"Name","value":"prefix"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BugSummary"}},{"kind":"Field","name":{"kind":"Name","value":"lastEdit"}},{"kind":"Field","name":{"kind":"Name","value":"participants"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"20"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"timeline"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"250"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugCreateTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BugCreateCommentFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugAddCommentTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BugAddCommentFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugLabelChangeTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelChangeFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugSetStatusTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"StatusChangeFields"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugSetTitleTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TitleChangeFields"}}]}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Label"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"IdentitySummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Identity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Bug"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugCreateCommentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugCreateTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastEdit"}},{"kind":"Field","name":{"kind":"Name","value":"edited"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugAddCommentFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugAddCommentTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastEdit"}},{"kind":"Field","name":{"kind":"Name","value":"edited"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelChangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugLabelChangeTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"added"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"removed"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"StatusChangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugSetStatusTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TitleChangeFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"BugSetTitleTimelineItem"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"was"}}]}}]} as unknown as DocumentNode<BugDetailQuery, BugDetailQueryVariables>;
+export const BugListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BugList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"openQuery"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"closedQuery"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"listQuery"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"first"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"openCount"},"name":{"kind":"Name","value":"allBugs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"openQuery"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"closedCount"},"name":{"kind":"Name","value":"allBugs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"closedQuery"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"bugs"},"name":{"kind":"Name","value":"allBugs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"listQuery"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"Variable","name":{"kind":"Name","value":"first"}}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BugSummary"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Label"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"IdentitySummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Identity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Bug"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}}]} as unknown as DocumentNode<BugListQuery, BugListQueryVariables>;
+export const BugCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"BugCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"BugCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bugCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bug"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}}]}}]}}]}}]} as unknown as DocumentNode<BugCreateMutation, BugCreateMutationVariables>;
+export const UserProfileDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UserProfile"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ref"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"prefix"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"openQuery"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"closedQuery"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"listQuery"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ref"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"prefix"},"value":{"kind":"Variable","name":{"kind":"Name","value":"prefix"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"login"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"isProtected"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"openCount"},"name":{"kind":"Name","value":"allBugs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"openQuery"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"closedCount"},"name":{"kind":"Name","value":"allBugs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"closedQuery"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"bugs"},"name":{"kind":"Name","value":"allBugs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"query"},"value":{"kind":"Variable","name":{"kind":"Name","value":"listQuery"}}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"25"}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"BugSummary"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"LabelFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Label"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"R"}},{"kind":"Field","name":{"kind":"Name","value":"G"}},{"kind":"Field","name":{"kind":"Name","value":"B"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"IdentitySummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Identity"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"BugSummary"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Bug"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"humanId"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"labels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"LabelFields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"author"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"IdentitySummary"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"comments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}}]} as unknown as DocumentNode<UserProfileQuery, UserProfileQueryVariables>;
+export const CommitPageDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CommitPageDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"repo"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hash"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repository"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ref"},"value":{"kind":"Variable","name":{"kind":"Name","value":"repo"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commit"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"hash"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hash"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hash"}},{"kind":"Field","name":{"kind":"Name","value":"shortHash"}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"fullMessage"}},{"kind":"Field","name":{"kind":"Name","value":"authorName"}},{"kind":"Field","name":{"kind":"Name","value":"authorEmail"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"parents"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"oldPath"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CommitPageDetailQuery, CommitPageDetailQueryVariables>;
+export const RepositoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Repositories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"repositories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}}]} as unknown as DocumentNode<RepositoriesQuery, RepositoriesQueryVariables>;

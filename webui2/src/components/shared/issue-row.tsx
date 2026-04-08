@@ -1,7 +1,27 @@
 import { CircleDot, CircleCheck, MessageSquare } from "lucide-react";
 
 import { Status } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import { cn } from "@/lib/utils";
+
+export const BUG_SUMMARY_FRAGMENT = graphql(`
+  fragment BugSummary on Bug {
+    id
+    humanId
+    status
+    title
+    labels {
+      ...LabelFields
+    }
+    author {
+      ...IdentitySummary
+    }
+    createdAt
+    comments {
+      totalCount
+    }
+  }
+`);
 
 interface RootProps {
   className?: string;

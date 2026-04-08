@@ -1,9 +1,8 @@
-import { gql } from "@apollo/client";
 import { createFileRoute } from "@tanstack/react-router";
 
-import type { GitRef } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 
-export const REFS_QUERY = gql`
+export const REFS_QUERY = graphql(`
   query CodePageRefs($repo: String) {
     repository(ref: $repo) {
       name
@@ -20,15 +19,7 @@ export const REFS_QUERY = gql`
       }
     }
   }
-`;
-
-export interface RefsQueryData {
-  repository: {
-    name: string;
-    head: { shortName: string } | null;
-    refs: { nodes: GitRef[] } | null;
-  } | null;
-}
+`);
 
 export const Route = createFileRoute("/$repo")({
   beforeLoad: ({ params: { repo }, context: { preloadQuery } }) => {
@@ -37,7 +28,7 @@ export const Route = createFileRoute("/$repo")({
 
     // Preload refs once for the entire repo — shared by code browser,
     // and used for the /$repo → tree redirect.
-    const refsRef = preloadQuery<RefsQueryData>(REFS_QUERY, {
+    const refsRef = preloadQuery(REFS_QUERY, {
       variables: { repo: ref },
     });
 

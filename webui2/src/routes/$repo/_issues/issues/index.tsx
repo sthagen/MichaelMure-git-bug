@@ -5,8 +5,38 @@ import { Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import * as v from "valibot";
 
-import { type BugListQuery, BugListDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import { IssueFilters } from "@/components/shared/issue-filters";
+
+const BUG_LIST_QUERY = graphql(`
+  query BugList(
+    $ref: String
+    $openQuery: String!
+    $closedQuery: String!
+    $listQuery: String!
+    $first: Int
+    $after: String
+  ) {
+    repository(ref: $ref) {
+      openCount: allBugs(query: $openQuery, first: 1) {
+        totalCount
+      }
+      closedCount: allBugs(query: $closedQuery, first: 1) {
+        totalCount
+      }
+      bugs: allBugs(query: $listQuery, first: $first, after: $after) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          ...BugSummary
+        }
+      }
+    }
+  }
+`);
 import * as IssueRow from "@/components/shared/issue-row";
 import * as StatusTabs from "@/components/shared/status-tabs";
 import { LabelBadgeLink } from "@/components/shared/label-badge";
@@ -32,7 +62,7 @@ export const Route = createFileRoute("/$repo/_issues/issues/")({
   loader: async ({ context: { preloadQuery, ref }, deps: { q, after } }) => {
     const parsed = parseQueryString(q);
     const baseQuery = buildBaseQuery(parsed.labels, parsed.author, parsed.freeText);
-    const bugListRef = preloadQuery<BugListQuery>(BugListDocument, {
+    const bugListRef = preloadQuery(BUG_LIST_QUERY, {
       variables: {
         ref,
         openQuery: `status:open ${baseQuery}`.trim(),

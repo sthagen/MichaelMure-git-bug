@@ -1,10 +1,23 @@
+import { useMutation } from "@apollo/client/react";
 import { Pencil } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
-import { useBugSetTitleMutation, BugDetailDocument } from "@/__generated__/graphql";
+import { BugDetailDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
+
+const BUG_SET_TITLE_MUTATION = graphql(`
+  mutation BugSetTitle($input: BugSetTitleInput!) {
+    bugSetTitle(input: $input) {
+      bug {
+        id
+        title
+      }
+    }
+  }
+`);
 
 interface TitleEditorProps {
   bugPrefix: string;
@@ -22,7 +35,7 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
   const [value, setValue] = useState(title);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [setTitle, { loading }] = useBugSetTitleMutation({
+  const [setTitle, { loading }] = useMutation(BUG_SET_TITLE_MUTATION, {
     refetchQueries: [{ query: BugDetailDocument, variables: { ref: ref_, prefix: bugPrefix } }],
   });
 

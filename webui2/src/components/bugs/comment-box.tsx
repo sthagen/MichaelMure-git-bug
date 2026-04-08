@@ -1,20 +1,66 @@
+import { useMutation } from "@apollo/client/react";
 import { useState } from "react";
 
-import { Status } from "@/__generated__/graphql";
-import {
-  useBugAddCommentMutation,
-  useBugAddCommentAndCloseMutation,
-  useBugAddCommentAndReopenMutation,
-  useBugStatusCloseMutation,
-  useBugStatusOpenMutation,
-  BugDetailDocument,
-} from "@/__generated__/graphql";
+import { Status, BugDetailDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import { Markdown } from "@/components/content/markdown";
 import { Button } from "@/components/ui/button";
 import * as CommentCard from "@/components/shared/comment-card";
 import { Textarea } from "@/components/ui/textarea";
 import * as WritePreview from "@/components/shared/write-preview";
 import { useAuth } from "@/lib/auth";
+
+const BUG_ADD_COMMENT_MUTATION = graphql(`
+  mutation BugAddComment($input: BugAddCommentInput!) {
+    bugAddComment(input: $input) {
+      bug {
+        id
+      }
+    }
+  }
+`);
+
+const BUG_ADD_COMMENT_AND_CLOSE_MUTATION = graphql(`
+  mutation BugAddCommentAndClose($input: BugAddCommentAndCloseInput!) {
+    bugAddCommentAndClose(input: $input) {
+      bug {
+        id
+      }
+    }
+  }
+`);
+
+const BUG_ADD_COMMENT_AND_REOPEN_MUTATION = graphql(`
+  mutation BugAddCommentAndReopen($input: BugAddCommentAndReopenInput!) {
+    bugAddCommentAndReopen(input: $input) {
+      bug {
+        id
+      }
+    }
+  }
+`);
+
+const BUG_STATUS_OPEN_MUTATION = graphql(`
+  mutation BugStatusOpen($input: BugStatusOpenInput!) {
+    bugStatusOpen(input: $input) {
+      bug {
+        id
+        status
+      }
+    }
+  }
+`);
+
+const BUG_STATUS_CLOSE_MUTATION = graphql(`
+  mutation BugStatusClose($input: BugStatusCloseInput!) {
+    bugStatusClose(input: $input) {
+      bug {
+        id
+        status
+      }
+    }
+  }
+`);
 
 interface CommentBoxProps {
   bugPrefix: string;
@@ -33,12 +79,12 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
   const refetchVars = { variables: { ref: ref_, prefix: bugPrefix } };
   const refetch = { refetchQueries: [{ query: BugDetailDocument, ...refetchVars }] };
 
-  const [addComment, { loading: addingComment }] = useBugAddCommentMutation(refetch);
-  const [addAndClose, { loading: addingAndClosing }] = useBugAddCommentAndCloseMutation(refetch);
+  const [addComment, { loading: addingComment }] = useMutation(BUG_ADD_COMMENT_MUTATION, refetch);
+  const [addAndClose, { loading: addingAndClosing }] = useMutation(BUG_ADD_COMMENT_AND_CLOSE_MUTATION, refetch);
   const [addAndReopen, { loading: addingAndReopening }] =
-    useBugAddCommentAndReopenMutation(refetch);
-  const [statusClose, { loading: closing }] = useBugStatusCloseMutation(refetch);
-  const [statusOpen, { loading: reopening }] = useBugStatusOpenMutation(refetch);
+    useMutation(BUG_ADD_COMMENT_AND_REOPEN_MUTATION, refetch);
+  const [statusClose, { loading: closing }] = useMutation(BUG_STATUS_CLOSE_MUTATION, refetch);
+  const [statusOpen, { loading: reopening }] = useMutation(BUG_STATUS_OPEN_MUTATION, refetch);
 
   const isOpen = bugStatus === Status.Open;
   const busy = addingComment || addingAndClosing || addingAndReopening || closing || reopening;

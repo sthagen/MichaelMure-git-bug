@@ -1,21 +1,90 @@
+import { useMutation } from "@apollo/client/react";
 import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Tag, GitPullRequestClosed, Pencil, CircleDot } from "lucide-react";
 import { useState } from "react";
 
-import {
-  Status,
-  type BugDetailQuery,
-  useBugEditCommentMutation,
-  BugDetailDocument,
-} from "@/__generated__/graphql";
+import { Status, type BugDetailQuery, BugDetailDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import { Markdown } from "@/components/content/markdown";
 import { Button } from "@/components/ui/button";
 import * as CommentCard from "@/components/shared/comment-card";
+import { LabelBadge } from "@/components/shared/label-badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
-import { LabelBadge } from "@/components/shared/label-badge";
+export const BUG_CREATE_COMMENT_FIELDS = graphql(`
+  fragment BugCreateCommentFields on BugCreateTimelineItem {
+    author {
+      ...IdentitySummary
+    }
+    message
+    createdAt
+    lastEdit
+    edited
+  }
+`);
+
+export const BUG_ADD_COMMENT_FIELDS = graphql(`
+  fragment BugAddCommentFields on BugAddCommentTimelineItem {
+    author {
+      ...IdentitySummary
+    }
+    message
+    createdAt
+    lastEdit
+    edited
+  }
+`);
+
+export const LABEL_CHANGE_FIELDS = graphql(`
+  fragment LabelChangeFields on BugLabelChangeTimelineItem {
+    author {
+      humanId
+      displayName
+    }
+    date
+    added {
+      ...LabelFields
+    }
+    removed {
+      ...LabelFields
+    }
+  }
+`);
+
+export const STATUS_CHANGE_FIELDS = graphql(`
+  fragment StatusChangeFields on BugSetStatusTimelineItem {
+    author {
+      humanId
+      displayName
+    }
+    date
+    status
+  }
+`);
+
+export const TITLE_CHANGE_FIELDS = graphql(`
+  fragment TitleChangeFields on BugSetTitleTimelineItem {
+    author {
+      humanId
+      displayName
+    }
+    date
+    title
+    was
+  }
+`);
+
+const BUG_EDIT_COMMENT_MUTATION = graphql(`
+  mutation BugEditComment($input: BugEditCommentInput!) {
+    bugEditComment(input: $input) {
+      bug {
+        id
+      }
+    }
+  }
+`);
 
 type TimelineNode = NonNullable<
   NonNullable<NonNullable<BugDetailQuery["repository"]>["bug"]>["timeline"]["nodes"][number]
@@ -72,7 +141,7 @@ function CommentItem({
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState(item.message ?? "");
 
-  const [editComment, { loading }] = useBugEditCommentMutation({
+  const [editComment, { loading }] = useMutation(BUG_EDIT_COMMENT_MUTATION, {
     refetchQueries: [{ query: BugDetailDocument, variables: { prefix: bugPrefix } }],
   });
 

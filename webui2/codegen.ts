@@ -1,16 +1,25 @@
 import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
+  overwrite: true,
   schema: "../api/graphql/schema/*.graphql",
-  documents: ["src/graphql/**/*.graphql", "src/components/**/*.graphql"],
+  documents: ["src/**/*.{ts,tsx}", "!src/__generated__/**/*"],
+  ignoreNoDocuments: true,
   generates: {
-    "src/__generated__/graphql.ts": {
-      plugins: ["typescript", "typescript-operations", "typescript-react-apollo"],
+    "./src/__generated__/": {
+      preset: "client",
+      presetConfig: {
+        fragmentMasking: false,
+      },
       config: {
-        withHooks: true,
-        withComponent: false,
-        withHOC: false,
-        apolloReactHooksImportFrom: "@apollo/client/react",
+        useTypeImports: true,
+        avoidOptionals: {
+          field: true,
+          inputValue: false,
+        },
+        defaultScalarType: "unknown",
+        nonOptionalTypename: true,
+        skipTypeNameForRoot: true,
         scalars: {
           Time: "string",
           Hash: "string",

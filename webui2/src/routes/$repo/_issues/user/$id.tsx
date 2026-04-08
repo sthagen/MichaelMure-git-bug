@@ -9,8 +9,48 @@ import { formatDistanceToNow } from "date-fns";
 import { CircleDot, CircleCheck, ShieldCheck } from "lucide-react";
 import * as v from "valibot";
 
-import { type UserProfileQuery, UserProfileDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import * as IssueRow from "@/components/shared/issue-row";
+
+const USER_PROFILE_QUERY = graphql(`
+  query UserProfile(
+    $ref: String
+    $prefix: String!
+    $openQuery: String!
+    $closedQuery: String!
+    $listQuery: String!
+    $after: String
+  ) {
+    repository(ref: $ref) {
+      identity(prefix: $prefix) {
+        id
+        humanId
+        name
+        email
+        login
+        displayName
+        avatarUrl
+        isProtected
+      }
+      openCount: allBugs(query: $openQuery, first: 1) {
+        totalCount
+      }
+      closedCount: allBugs(query: $closedQuery, first: 1) {
+        totalCount
+      }
+      bugs: allBugs(query: $listQuery, first: 25, after: $after) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          ...BugSummary
+        }
+      }
+    }
+  }
+`);
 import { LabelBadge } from "@/components/shared/label-badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import * as Pagination from "@/components/shared/pagination";
@@ -32,7 +72,7 @@ export const Route = createFileRoute("/$repo/_issues/user/$id")({
   validateSearch: (search) => v.parse(profileSearchSchema, search),
   loaderDeps: ({ search: { status, after } }) => ({ status, after }),
   loader: async ({ context: { preloadQuery, ref }, params: { id }, deps: { status, after } }) => {
-    const profileRef = preloadQuery<UserProfileQuery>(UserProfileDocument, {
+    const profileRef = preloadQuery(USER_PROFILE_QUERY, {
       variables: {
         ref,
         prefix: id,

@@ -2,8 +2,45 @@ import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 
-import { type BugDetailQuery, BugDetailDocument } from "@/__generated__/graphql";
+import { graphql } from "@/__generated__/gql";
 import { CommentBox } from "@/components/bugs/comment-box";
+
+const BUG_DETAIL_QUERY = graphql(`
+  query BugDetail($ref: String, $prefix: String!) {
+    repository(ref: $ref) {
+      bug(prefix: $prefix) {
+        ...BugSummary
+        lastEdit
+        participants(first: 20) {
+          nodes {
+            ...IdentitySummary
+          }
+        }
+        timeline(first: 250) {
+          nodes {
+            __typename
+            id
+            ... on BugCreateTimelineItem {
+              ...BugCreateCommentFields
+            }
+            ... on BugAddCommentTimelineItem {
+              ...BugAddCommentFields
+            }
+            ... on BugLabelChangeTimelineItem {
+              ...LabelChangeFields
+            }
+            ... on BugSetStatusTimelineItem {
+              ...StatusChangeFields
+            }
+            ... on BugSetTitleTimelineItem {
+              ...TitleChangeFields
+            }
+          }
+        }
+      }
+    }
+  }
+`);
 import { LabelEditor } from "@/components/bugs/label-editor";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Timeline } from "@/components/bugs/timeline";
@@ -19,7 +56,7 @@ export const Route = createFileRoute("/$repo/_issues/issues/$id")({
   component: RouteComponent,
   pendingComponent: BugDetailSkeleton,
   loader: async ({ context: { preloadQuery, ref }, params: { id } }) => {
-    const bugDetailRef = preloadQuery<BugDetailQuery>(BugDetailDocument, {
+    const bugDetailRef = preloadQuery(BUG_DETAIL_QUERY, {
       variables: { ref, prefix: id },
     });
     return { bugDetailRef: await preloadQuery.toPromise(bugDetailRef) };
