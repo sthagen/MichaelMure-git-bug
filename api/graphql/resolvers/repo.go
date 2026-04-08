@@ -28,9 +28,6 @@ func (repoResolver) Name(_ context.Context, obj *models.Repository) (*string, er
 		return nil, nil
 	}
 	name := obj.Repo.Name()
-	if name == "" {
-		return nil, nil
-	}
 	return &name, nil
 }
 

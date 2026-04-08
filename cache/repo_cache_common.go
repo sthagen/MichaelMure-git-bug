@@ -12,12 +12,7 @@ import (
 	"github.com/git-bug/git-bug/util/multierr"
 )
 
-// Name returns the registered name of this repository, or empty string for
-// the default (unnamed) repository.
 func (c *RepoCache) Name() string {
-	if c.name == defaultRepoName {
-		return ""
-	}
 	return c.name
 }
 

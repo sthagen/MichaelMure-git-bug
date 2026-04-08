@@ -60,17 +60,13 @@ func (c *MultiRepoCache) DefaultRepo() (*RepoCache, error) {
 	panic("unreachable")
 }
 
-// ResolveRepo retrieve a repository by name or slug
-func (c *MultiRepoCache) ResolveRepo(ref string) (*RepoCache, error) {
-	// "_" is the conventional placeholder for the default repository,
-	// consistent with the REST API path convention /api/repos/_/_/...
-	if ref == "_" {
-		return c.DefaultRepo()
+// ResolveRepo retrieves a repository by name
+func (c *MultiRepoCache) ResolveRepo(name string) (*RepoCache, error) {
+	r, ok := c.repos[name]
+	if !ok {
+		return nil, fmt.Errorf("unknown repo")
 	}
-	if r, ok := c.repos[ref]; ok {
-		return r, nil
-	}
-	return nil, fmt.Errorf("unknown repo %q", ref)
+	return r, nil
 }
 
 // AllRepos returns all registered repositories. Order is not guaranteed.
