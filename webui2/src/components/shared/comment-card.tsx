@@ -1,10 +1,12 @@
-import type { IdentitySummaryFragment } from "@/__generated__/graphql";
+import { useSuspenseFragment } from "@apollo/client/react";
+import type { FragmentType } from "@apollo/client/masking";
+
 import { graphql } from "@/__generated__/gql";
 import { cn } from "@/lib/utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const IDENTITY_SUMMARY_FRAGMENT = graphql(`
+export const IDENTITY_SUMMARY_FRAGMENT = graphql(`
   fragment IdentitySummary on Identity {
     id
     humanId
@@ -22,16 +24,19 @@ export function Root({ children, className }: RootProps) {
   return <div className={cn("flex gap-3", className)}>{children}</div>;
 }
 
-type AuthorAvatarProps = Pick<IdentitySummaryFragment, "displayName" | "avatarUrl"> & {
+interface AuthorAvatarProps {
+  from: FragmentType<typeof IDENTITY_SUMMARY_FRAGMENT>;
   className?: string;
-};
+}
 
-export function AuthorAvatar({ avatarUrl, displayName, className }: AuthorAvatarProps) {
+export function AuthorAvatar({ from, className }: AuthorAvatarProps) {
+  const { data } = useSuspenseFragment({ fragment: IDENTITY_SUMMARY_FRAGMENT, from });
+
   return (
     <Avatar className={cn("mt-1 size-8 shrink-0", className)}>
-      <AvatarImage src={avatarUrl ?? undefined} alt={displayName} />
+      <AvatarImage src={data.avatarUrl ?? undefined} alt={data.displayName} />
       <AvatarFallback className="text-xs">
-        {displayName.slice(0, 2).toUpperCase()}
+        {data.displayName.slice(0, 2).toUpperCase()}
       </AvatarFallback>
     </Avatar>
   );

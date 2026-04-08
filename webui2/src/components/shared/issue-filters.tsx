@@ -14,13 +14,14 @@ import {
 import { ArrowUpDown, ChevronDown, Tag, User, X } from "lucide-react";
 import { useMemo, useRef, useState, useCallback, useEffect } from "react";
 
+import type { FragmentType } from "@apollo/client/masking";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as Listbox from "@/components/ui/listbox";
 import { useAuth } from "@/lib/auth";
 import { SORT_OPTIONS, type SortValue } from "@/lib/query-utils";
 import { cn } from "@/lib/utils";
 
-import { LabelBadge } from "@/components/shared/label-badge";
+import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
 
 // Max authors shown in the non-searching state. We intentionally cap this to
 // avoid a giant list — the current-user + recently-seen pattern covers the
@@ -46,10 +47,10 @@ function authorQueryValue(i: {
 
 export type { SortValue } from "@/lib/query-utils";
 
-export interface LabelItem {
+export type LabelItem = {
   name: string;
   color: { R: number; G: number; B: number };
-}
+} & FragmentType<typeof LABEL_FIELDS_FRAGMENT>;
 
 export interface IdentityItem {
   id: string;
@@ -372,7 +373,7 @@ function LabelFilter({
                           opacity: active ? 1 : 0.35,
                         }}
                       />
-                      <LabelBadge name={label.name} color={label.color} />
+                      <LabelBadge from={label} />
                     </Listbox.Item>
                   );
                 })}

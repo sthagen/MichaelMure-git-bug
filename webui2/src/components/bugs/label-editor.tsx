@@ -14,10 +14,11 @@ import {
 import { Settings2 } from "lucide-react";
 import { useRef, useState } from "react";
 
+import type { FragmentType } from "@apollo/client/masking";
 import { BugDetailDocument } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
 import * as Listbox from "@/components/ui/listbox";
-import { LabelBadge } from "@/components/shared/label-badge";
+import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
 import { SectionHeading } from "@/components/shared/section-heading";
 import { useAuth } from "@/lib/auth";
 
@@ -28,11 +29,7 @@ const BUG_CHANGE_LABELS_MUTATION = graphql(`
         id
         labels {
           name
-          color {
-            R
-            G
-            B
-          }
+          ...LabelFields
         }
       }
     }
@@ -41,11 +38,11 @@ const BUG_CHANGE_LABELS_MUTATION = graphql(`
 
 interface LabelEditorProps {
   bugPrefix: string;
-  currentLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>;
+  currentLabels: Array<{ name: string } & FragmentType<typeof LABEL_FIELDS_FRAGMENT>>;
   /** Current repo slug, passed as `ref` in refetch query variables. */
   ref_?: string | null;
   /** Pre-fetched valid labels for the repository. */
-  validLabels: Array<{ name: string; color: { R: number; G: number; B: number } }>;
+  validLabels: Array<{ name: string; color: { R: number; G: number; B: number } } & FragmentType<typeof LABEL_FIELDS_FRAGMENT>>;
 }
 
 // Gear-icon popover in the BugDetailPage sidebar for adding/removing labels.
@@ -160,7 +157,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
                             : {}
                         }
                       />
-                      <LabelBadge name={label.name} color={label.color} />
+                      <LabelBadge from={label} />
                     </Listbox.Item>
                   );
                 })}
@@ -175,7 +172,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
       ) : (
         <div className="flex flex-wrap gap-1">
           {currentLabels.map((label) => (
-            <LabelBadge key={label.name} name={label.name} color={label.color} />
+            <LabelBadge key={label.name} from={label} />
           ))}
         </div>
       )}

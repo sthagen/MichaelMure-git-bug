@@ -13,7 +13,7 @@ import { LabelBadge } from "@/components/shared/label-badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
-const BUG_CREATE_COMMENT_FIELDS = graphql(`
+graphql(`
   fragment BugCreateCommentFields on BugCreateTimelineItem {
     author {
       ...IdentitySummary
@@ -25,7 +25,7 @@ const BUG_CREATE_COMMENT_FIELDS = graphql(`
   }
 `);
 
-const BUG_ADD_COMMENT_FIELDS = graphql(`
+graphql(`
   fragment BugAddCommentFields on BugAddCommentTimelineItem {
     author {
       ...IdentitySummary
@@ -37,7 +37,7 @@ const BUG_ADD_COMMENT_FIELDS = graphql(`
   }
 `);
 
-const LABEL_CHANGE_FIELDS = graphql(`
+graphql(`
   fragment LabelChangeFields on BugLabelChangeTimelineItem {
     author {
       humanId
@@ -53,7 +53,7 @@ const LABEL_CHANGE_FIELDS = graphql(`
   }
 `);
 
-const STATUS_CHANGE_FIELDS = graphql(`
+graphql(`
   fragment StatusChangeFields on BugSetStatusTimelineItem {
     author {
       humanId
@@ -64,7 +64,7 @@ const STATUS_CHANGE_FIELDS = graphql(`
   }
 `);
 
-const TITLE_CHANGE_FIELDS = graphql(`
+graphql(`
   fragment TitleChangeFields on BugSetTitleTimelineItem {
     author {
       humanId
@@ -164,7 +164,7 @@ function CommentItem({
 
   return (
     <CommentCard.Root>
-      <CommentCard.AuthorAvatar avatarUrl={item.author.avatarUrl} displayName={item.author.displayName} />
+      <CommentCard.AuthorAvatar from={item.author} />
       <CommentCard.Card>
         <CommentCard.CardHeader>
           <Link
@@ -257,16 +257,16 @@ function LabelChangeItem({ item, repo }: { item: LabelChangeItem; repo: string |
         {item.added.length > 0 && (
           <>
             added{" "}
-            {item.added.map((l) => (
-              <LabelBadge key={l.name} name={l.name} color={l.color} />
+            {item.added.map((l, i) => (
+              <LabelBadge key={i} from={l} />
             ))}{" "}
           </>
         )}
         {item.removed.length > 0 && (
           <>
             removed{" "}
-            {item.removed.map((l) => (
-              <LabelBadge key={l.name} name={l.name} color={l.color} />
+            {item.removed.map((l, i) => (
+              <LabelBadge key={i} from={l} />
             ))}{" "}
           </>
         )}

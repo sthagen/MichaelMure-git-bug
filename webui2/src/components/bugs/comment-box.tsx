@@ -120,7 +120,7 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
 
   return (
     <CommentCard.Root>
-      <CommentCard.AuthorAvatar avatarUrl={user.avatarUrl} displayName={user.displayName} />
+      <CommentCard.AuthorAvatar from={user} />
       <CommentCard.Card>
         <WritePreview.Root hasContent={hasMessage} preview={preview} onPreviewChange={setPreview}>
           <WritePreview.Tabs className="border-border border-b px-4 py-2" />

@@ -4,13 +4,14 @@ import { Status } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
 import { cn } from "@/lib/utils";
 
-const BUG_SUMMARY_FRAGMENT = graphql(`
+graphql(`
   fragment BugSummary on Bug {
     id
     humanId
     status
     title
     labels {
+      name
       ...LabelFields
     }
     author {

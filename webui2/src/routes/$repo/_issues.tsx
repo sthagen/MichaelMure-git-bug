@@ -31,6 +31,7 @@ const VALID_LABELS_QUERY = graphql(`
             G
             B
           }
+          ...LabelFields
         }
       }
     }

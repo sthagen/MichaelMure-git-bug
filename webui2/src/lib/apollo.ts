@@ -9,6 +9,7 @@ const httpLink = new HttpLink({
 
 export const client = new ApolloClient({
   link: httpLink,
+  dataMasking: true,
 
   cache: new InMemoryCache({
     typePolicies: {

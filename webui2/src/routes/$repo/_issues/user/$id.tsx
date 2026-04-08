@@ -191,7 +191,7 @@ function RouteComponent() {
                   {bug.title}
                 </Link>
                 {bug.labels.map((label) => (
-                  <LabelBadge key={label.name} name={label.name} color={label.color} />
+                  <LabelBadge key={label.name} from={label} />
                 ))}
               </IssueRow.TitleArea>
               <IssueRow.Meta>

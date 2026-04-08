@@ -1,10 +1,11 @@
+import { useSuspenseFragment } from "@apollo/client/react";
+import type { FragmentType } from "@apollo/client/masking";
 import { createLink, type LinkComponent } from "@tanstack/react-router";
 import * as React from "react";
 
-import type { LabelFieldsFragment } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
 
-const LABEL_FIELDS_FRAGMENT = graphql(`
+export const LABEL_FIELDS_FRAGMENT = graphql(`
   fragment LabelFields on Label {
     name
     color {
@@ -15,14 +16,14 @@ const LABEL_FIELDS_FRAGMENT = graphql(`
   }
 `);
 
-type LabelBadgeProps = LabelFieldsFragment & {
-  className?: string;
-};
-
 function contrastColor(r: number, g: number, b: number): string {
-  // Perceived luminance — pick black or white text for readability
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   return luminance > 0.55 ? "rgba(0,0,0,0.75)" : "rgba(255,255,255,0.9)";
+}
+
+interface LabelBadgeProps {
+  from: FragmentType<typeof LABEL_FIELDS_FRAGMENT>;
+  className?: string;
 }
 
 // Coloured label pill. Always renders as a <span>.
@@ -30,9 +31,10 @@ function contrastColor(r: number, g: number, b: number): string {
 const LabelBadge = React.forwardRef<
   HTMLSpanElement,
   LabelBadgeProps & Omit<React.HTMLAttributes<HTMLSpanElement>, "color">
->(({ name, color, className, ...props }, ref) => {
-  const bg = `rgb(${color.R},${color.G},${color.B})`;
-  const text = contrastColor(color.R, color.G, color.B);
+>(({ from, className, ...props }, ref) => {
+  const { data } = useSuspenseFragment({ fragment: LABEL_FIELDS_FRAGMENT, from });
+  const bg = `rgb(${data.color.R},${data.color.G},${data.color.B})`;
+  const text = contrastColor(data.color.R, data.color.G, data.color.B);
 
   return (
     <span
@@ -41,7 +43,7 @@ const LabelBadge = React.forwardRef<
       style={{ backgroundColor: bg, color: text }}
       {...props}
     >
-      {name}
+      {data.name}
     </span>
   );
 });
@@ -52,9 +54,10 @@ const CreatedLabelBadgeLink = createLink(
   React.forwardRef<
     HTMLAnchorElement,
     LabelBadgeProps & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "color">
-  >(({ name, color, className, ...props }, ref) => {
-    const bg = `rgb(${color.R},${color.G},${color.B})`;
-    const text = contrastColor(color.R, color.G, color.B);
+  >(({ from, className, ...props }, ref) => {
+    const { data } = useSuspenseFragment({ fragment: LABEL_FIELDS_FRAGMENT, from });
+    const bg = `rgb(${data.color.R},${data.color.G},${data.color.B})`;
+    const text = contrastColor(data.color.R, data.color.G, data.color.B);
 
     return (
       <a
@@ -63,7 +66,7 @@ const CreatedLabelBadgeLink = createLink(
         style={{ backgroundColor: bg, color: text }}
         {...props}
       >
-        {name}
+        {data.name}
       </a>
     );
   }),
