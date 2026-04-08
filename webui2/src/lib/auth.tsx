@@ -1,12 +1,12 @@
 // auth.tsx — current user hook for the webui.
 //
-// Fetches the user identity from git config via GraphQL. Apollo handles
-// deduplication and caching, so no Provider/Context is needed.
+// The UserIdentity query is preloaded in the root route loader and consumed
+// via useSuspenseQuery, so useAuth() always returns a resolved user.
 
 import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client/react";
+import { useSuspenseQuery } from "@apollo/client/react";
 
-const USER_IDENTITY_QUERY = gql`
+export const USER_IDENTITY_QUERY = gql`
   query UserIdentity {
     repository {
       userIdentity {
@@ -32,9 +32,9 @@ export interface AuthUser {
   login: string | null;
 }
 
-export function useAuth(): { user: AuthUser | null; loading: boolean } {
-  const { data, loading } = useQuery<{ repository: { userIdentity: AuthUser | null } }>(
+export function useAuth(): { user: AuthUser } {
+  const { data } = useSuspenseQuery<{ repository: { userIdentity: AuthUser } }>(
     USER_IDENTITY_QUERY,
   );
-  return { user: data?.repository?.userIdentity ?? null, loading };
+  return { user: data.repository.userIdentity };
 }

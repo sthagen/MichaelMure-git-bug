@@ -5,12 +5,17 @@ import { Shell } from "@/components/layout/shell";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import type { preloadQuery } from "@/lib/apollo";
+import { USER_IDENTITY_QUERY } from "@/lib/auth";
 
 export interface RouterContext {
   preloadQuery: typeof preloadQuery;
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
+  async loader({ context }) {
+    const ref = context.preloadQuery(USER_IDENTITY_QUERY);
+    await context.preloadQuery.toPromise(ref);
+  },
   component: Shell,
   errorComponent: ErrorPage,
 });
