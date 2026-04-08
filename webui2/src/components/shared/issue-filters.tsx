@@ -373,7 +373,7 @@ function LabelFilter({
                           opacity: active ? 1 : 0.35,
                         }}
                       />
-                      <LabelBadge from={label} />
+                      <LabelBadge label={label} />
                     </Listbox.Item>
                   );
                 })}

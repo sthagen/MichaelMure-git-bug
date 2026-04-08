@@ -290,7 +290,7 @@ function RouteComponent() {
                 {bug.labels.map((label) => (
                   <LabelBadgeLink
                     key={label.name}
-                    from={label}
+                    label={label}
                     to="/$repo/issues"
                     params={{ repo }}
                     search={{

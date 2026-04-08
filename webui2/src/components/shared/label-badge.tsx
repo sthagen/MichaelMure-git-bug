@@ -22,7 +22,7 @@ function contrastColor(r: number, g: number, b: number): string {
 }
 
 interface LabelBadgeProps {
-  from: FragmentType<typeof LABEL_FIELDS_FRAGMENT>;
+  label: FragmentType<typeof LABEL_FIELDS_FRAGMENT>;
   className?: string;
 }
 
@@ -31,8 +31,8 @@ interface LabelBadgeProps {
 const LabelBadge = React.forwardRef<
   HTMLSpanElement,
   LabelBadgeProps & Omit<React.HTMLAttributes<HTMLSpanElement>, "color">
->(({ from, className, ...props }, ref) => {
-  const { data } = useSuspenseFragment({ fragment: LABEL_FIELDS_FRAGMENT, from });
+>(({ label, className, ...props }, ref) => {
+  const { data } = useSuspenseFragment({ fragment: LABEL_FIELDS_FRAGMENT, from: label });
   const bg = `rgb(${data.color.R},${data.color.G},${data.color.B})`;
   const text = contrastColor(data.color.R, data.color.G, data.color.B);
 

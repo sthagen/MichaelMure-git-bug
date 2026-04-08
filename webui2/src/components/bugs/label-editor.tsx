@@ -157,7 +157,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
                             : {}
                         }
                       />
-                      <LabelBadge from={label} />
+                      <LabelBadge label={label} />
                     </Listbox.Item>
                   );
                 })}
@@ -172,7 +172,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
       ) : (
         <div className="flex flex-wrap gap-1">
           {currentLabels.map((label) => (
-            <LabelBadge key={label.name} from={label} />
+            <LabelBadge key={label.name} label={label} />
           ))}
         </div>
       )}

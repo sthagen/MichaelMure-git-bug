@@ -164,7 +164,7 @@ function CommentItem({
 
   return (
     <CommentCard.Root>
-      <CommentCard.AuthorAvatar from={item.author} />
+      <CommentCard.AuthorAvatar author={item.author} />
       <CommentCard.Card>
         <CommentCard.CardHeader>
           <Link
@@ -258,7 +258,7 @@ function LabelChangeItem({ item, repo }: { item: LabelChangeItem; repo: string |
           <>
             added{" "}
             {item.added.map((l, i) => (
-              <LabelBadge key={i} from={l} />
+              <LabelBadge key={i} label={l} />
             ))}{" "}
           </>
         )}
@@ -266,7 +266,7 @@ function LabelChangeItem({ item, repo }: { item: LabelChangeItem; repo: string |
           <>
             removed{" "}
             {item.removed.map((l, i) => (
-              <LabelBadge key={i} from={l} />
+              <LabelBadge key={i} label={l} />
             ))}{" "}
           </>
         )}

@@ -25,12 +25,12 @@ export function Root({ children, className }: RootProps) {
 }
 
 interface AuthorAvatarProps {
-  from: FragmentType<typeof IDENTITY_SUMMARY_FRAGMENT>;
+  author: FragmentType<typeof IDENTITY_SUMMARY_FRAGMENT>;
   className?: string;
 }
 
-export function AuthorAvatar({ from, className }: AuthorAvatarProps) {
-  const { data } = useSuspenseFragment({ fragment: IDENTITY_SUMMARY_FRAGMENT, from });
+export function AuthorAvatar({ author, className }: AuthorAvatarProps) {
+  const { data } = useSuspenseFragment({ fragment: IDENTITY_SUMMARY_FRAGMENT, from: author });
 
   return (
     <Avatar className={cn("mt-1 size-8 shrink-0", className)}>
