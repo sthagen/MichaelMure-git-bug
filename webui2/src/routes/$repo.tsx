@@ -8,7 +8,7 @@ export const REFS_QUERY = gql`
     repository(ref: $repo) {
       name
       head {
-        hash
+        shortName
       }
       refs {
         nodes {
@@ -25,7 +25,7 @@ export const REFS_QUERY = gql`
 export interface RefsQueryData {
   repository: {
     name: string;
-    head: { hash: string } | null;
+    head: { shortName: string } | null;
     refs: { nodes: GitRef[] } | null;
   } | null;
 }

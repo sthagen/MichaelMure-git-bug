@@ -731,6 +731,8 @@ export enum GitObjectType {
 /** A git branch or tag reference. */
 export type GitRef = {
   __typename?: 'GitRef';
+  /** Git commit the reference points to. */
+  commit: GitCommit;
   /** Commit hash the reference points to. */
   hash: Scalars['String']['output'];
   /** Full reference name, e.g. refs/heads/main or refs/tags/v1.0. */
@@ -748,10 +750,12 @@ export type GitRefConnection = {
   totalCount: Scalars['Int']['output'];
 };
 
-/** The kind of git reference: a branch or a tag. */
+/** The kind of git reference: a branch, a tag, or a detached commit. */
 export enum GitRefType {
   /** A local branch (refs/heads/*). */
   Branch = 'BRANCH',
+  /** A detached HEAD pointing directly at a commit. */
+  Commit = 'COMMIT',
   /** An annotated or lightweight tag (refs/tags/*). */
   Tag = 'TAG'
 }
@@ -1006,11 +1010,11 @@ export type Repository = {
    */
   commits: GitCommitConnection;
   /**
-   * The commit pointed to by HEAD in the git repository.
-   * Null if HEAD cannot be resolved to a commit, for example in an empty or unborn
+   * The reference pointed to by HEAD in the git repository.
+   * Null if HEAD cannot be resolved, for example in an empty or unborn
    * repository, or if HEAD is missing or invalid.
    */
-  head?: Maybe<GitCommit>;
+  head?: Maybe<GitRef>;
   /** Look up an identity by id prefix. Returns null if no identity matches the prefix. */
   identity?: Maybe<Identity>;
   /**
@@ -1021,7 +1025,10 @@ export type Repository = {
   lastCommits: Array<GitLastCommit>;
   /** The name of the repository. Null for the default (unnamed) repository in a single-repo setup. */
   name?: Maybe<Scalars['String']['output']>;
-  /** All branches and tags, optionally filtered by type. */
+  /**
+   * All branches and tags, optionally filtered by type. BRANCH and TAG are
+   * the only accepted filter values; passing COMMIT returns an error.
+   */
   refs: GitRefConnection;
   /** Directory listing at path under ref. An empty path returns the root tree. */
   tree: Array<GitTreeEntry>;
