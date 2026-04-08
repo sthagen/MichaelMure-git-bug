@@ -12,7 +12,6 @@ import {
 } from "@tanstack/react-router";
 import { GitCommit } from "lucide-react";
 
-import type { RefsQueryRef } from "@/routes/$repo";
 import { CodeBreadcrumb } from "@/components/code/code-breadcrumb";
 import { RefSelector } from "@/components/code/ref-selector";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -29,7 +28,7 @@ function CodeLayout() {
   const { repo } = Route.useParams();
   const { ref: repoRef, refsRef } = Route.useRouteContext();
   const { data: refsData } = useReadQuery(refsRef);
-  const refs: RefsQueryRef[] = refsData?.repository?.refs?.nodes ?? [];
+  const refs = refsData?.repository?.refs;
   const repoName = refsData?.repository?.name ?? repoRef ?? "default-repo";
 
   // Read child route params (ref and splat path)
@@ -51,8 +50,7 @@ function CodeLayout() {
 
   const navigate = useNavigate();
 
-  function handleRefSelect(newRef: RefsQueryRef) {
-    const refName = newRef.shortName;
+  function handleRefSelect(refName: string) {
     if (viewMode === "commits") {
       void navigate({ to: "/$repo/commits/$ref", params: { repo, ref: refName }, search: { path: currentPath || undefined } });
     } else if (viewMode === "blob") {
@@ -100,7 +98,7 @@ function CodeLayout() {
               History
             </ButtonLink>
           )}
-          <RefSelector gitRefs={refs} currentRef={currentRef} onSelect={handleRefSelect} />
+          {refs && <RefSelector refs={refs} currentRef={currentRef} onSelect={handleRefSelect} />}
         </div>
       </div>
 

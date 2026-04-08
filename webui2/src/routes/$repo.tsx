@@ -11,23 +11,13 @@ export const REFS_QUERY = graphql(`
         shortName
       }
       refs {
-        nodes {
-          name
-          shortName
-          type
-          hash
-        }
+        ...RefSelectorRefs
       }
     }
   }
 `);
 
 export type RefsQueryData = ResultOf<typeof REFS_QUERY>;
-
-/** A single git ref as returned by the REFS_QUERY. */
-export type RefsQueryRef = NonNullable<
-  NonNullable<RefsQueryData["repository"]>["refs"]
->["nodes"][number];
 
 export const Route = createFileRoute("/$repo")({
   beforeLoad: ({ params: { repo }, context: { preloadQuery } }) => {

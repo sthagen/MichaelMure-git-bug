@@ -1,3 +1,5 @@
+import { useSuspenseFragment } from "@apollo/client/react";
+import type { FragmentType } from "@apollo/client/masking";
 import {
   useFloating,
   useClick,
@@ -14,20 +16,33 @@ import { GitBranch, Tag } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { GitRefType } from "@/__generated__/graphql";
-import type { RefsQueryRef } from "@/routes/$repo";
+import { graphql } from "@/__generated__/gql";
 import { Button } from "@/components/ui/button";
 import * as Listbox from "@/components/ui/listbox";
 import { cn } from "@/lib/utils";
 
+export const REF_SELECTOR_REFS_FRAGMENT = graphql(`
+  fragment RefSelectorRefs on GitRefConnection {
+    nodes {
+      name
+      shortName
+      type
+    }
+  }
+`);
+
 interface RefSelectorProps {
-  gitRefs: RefsQueryRef[];
+  refs: FragmentType<typeof REF_SELECTOR_REFS_FRAGMENT>;
   currentRef: string;
-  onSelect: (ref: RefsQueryRef) => void;
+  onSelect: (shortName: string) => void;
 }
 
 // Branch / tag selector dropdown for the code browser. Shown in two groups
 // (branches, tags) with an inline search filter.
-export function RefSelector({ gitRefs, currentRef, onSelect }: RefSelectorProps) {
+export function RefSelector({ refs: refsProp, currentRef, onSelect }: RefSelectorProps) {
+  const { data } = useSuspenseFragment({ fragment: REF_SELECTOR_REFS_FRAGMENT, from: refsProp });
+  const gitRefs = data.nodes;
+
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState("");
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -84,7 +99,7 @@ export function RefSelector({ gitRefs, currentRef, onSelect }: RefSelectorProps)
       e.preventDefault();
       const ref = flatItems[activeIndex];
       if (ref) {
-        onSelect(ref);
+        onSelect(ref.shortName);
         setOpen(false);
         setFilter("");
       }
@@ -136,21 +151,26 @@ export function RefSelector({ gitRefs, currentRef, onSelect }: RefSelectorProps)
                     {branches.map((ref) => {
                       const i = itemIndex++;
                       return (
-                        <RefItem
+                        <Listbox.Item
                           key={ref.name}
                           id={`ref-option-${i}`}
-                          ref_={ref}
-                          index={i}
+                          ref={(el) => {
+                            elementsRef.current[i] = el;
+                          }}
                           active={activeIndex === i}
                           selected={ref.shortName === currentRef}
-                          elementsRef={elementsRef}
-                          getItemProps={getItemProps}
-                          onSelect={() => {
-                            onSelect(ref);
-                            setOpen(false);
-                            setFilter("");
-                          }}
-                        />
+                          className={cn("text-xs", ref.shortName === currentRef && "font-medium")}
+                          {...getItemProps({
+                            onClick: () => {
+                              onSelect(ref.shortName);
+                              setOpen(false);
+                              setFilter("");
+                            },
+                          })}
+                        >
+                          <GitBranch className="text-muted-foreground size-3 shrink-0" />
+                          <span className="flex-1 truncate font-mono">{ref.shortName}</span>
+                        </Listbox.Item>
                       );
                     })}
                   </Listbox.Group>
@@ -161,21 +181,26 @@ export function RefSelector({ gitRefs, currentRef, onSelect }: RefSelectorProps)
                     {tags.map((ref) => {
                       const i = itemIndex++;
                       return (
-                        <RefItem
+                        <Listbox.Item
                           key={ref.name}
                           id={`ref-option-${i}`}
-                          ref_={ref}
-                          index={i}
+                          ref={(el) => {
+                            elementsRef.current[i] = el;
+                          }}
                           active={activeIndex === i}
                           selected={ref.shortName === currentRef}
-                          elementsRef={elementsRef}
-                          getItemProps={getItemProps}
-                          onSelect={() => {
-                            onSelect(ref);
-                            setOpen(false);
-                            setFilter("");
-                          }}
-                        />
+                          className={cn("text-xs", ref.shortName === currentRef && "font-medium")}
+                          {...getItemProps({
+                            onClick: () => {
+                              onSelect(ref.shortName);
+                              setOpen(false);
+                              setFilter("");
+                            },
+                          })}
+                        >
+                          <Tag className="text-muted-foreground size-3 shrink-0" />
+                          <span className="flex-1 truncate font-mono">{ref.shortName}</span>
+                        </Listbox.Item>
                       );
                     })}
                   </Listbox.Group>
@@ -187,45 +212,5 @@ export function RefSelector({ gitRefs, currentRef, onSelect }: RefSelectorProps)
         </FloatingPortal>
       )}
     </>
-  );
-}
-
-function RefItem({
-  id,
-  ref_,
-  index,
-  active,
-  selected,
-  elementsRef,
-  getItemProps,
-  onSelect,
-}: {
-  id: string;
-  ref_: RefsQueryRef;
-  index: number;
-  active: boolean;
-  selected: boolean;
-  elementsRef: React.MutableRefObject<(HTMLElement | null)[]>;
-  getItemProps: (props?: Record<string, unknown>) => Record<string, unknown>;
-  onSelect: () => void;
-}) {
-  return (
-    <Listbox.Item
-      id={id}
-      ref={(el) => {
-        elementsRef.current[index] = el;
-      }}
-      active={active}
-      selected={selected}
-      className={cn("text-xs", selected && "font-medium")}
-      {...getItemProps({ onClick: onSelect })}
-    >
-      {ref_.type === GitRefType.Branch ? (
-        <GitBranch className="text-muted-foreground size-3 shrink-0" />
-      ) : (
-        <Tag className="text-muted-foreground size-3 shrink-0" />
-      )}
-      <span className="flex-1 truncate font-mono">{ref_.shortName}</span>
-    </Listbox.Item>
   );
 }
