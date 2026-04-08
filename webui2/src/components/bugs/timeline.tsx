@@ -1,10 +1,11 @@
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useSuspenseFragment } from "@apollo/client/react";
+import type { FragmentType } from "@apollo/client/masking";
 import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Tag, GitPullRequestClosed, Pencil, CircleDot } from "lucide-react";
 import { useState } from "react";
 
-import { Status, type BugDetailQuery, BugDetailDocument } from "@/__generated__/graphql";
+import { Status, BugDetailDocument } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
 import { Markdown } from "@/components/content/markdown";
 import { Button } from "@/components/ui/button";
@@ -76,6 +77,30 @@ graphql(`
   }
 `);
 
+export const TIMELINE_ITEMS_FRAGMENT = graphql(`
+  fragment TimelineItems on BugTimelineItemConnection {
+    nodes {
+      __typename
+      id
+      ... on BugCreateTimelineItem {
+        ...BugCreateCommentFields
+      }
+      ... on BugAddCommentTimelineItem {
+        ...BugAddCommentFields
+      }
+      ... on BugLabelChangeTimelineItem {
+        ...LabelChangeFields
+      }
+      ... on BugSetStatusTimelineItem {
+        ...StatusChangeFields
+      }
+      ... on BugSetTitleTimelineItem {
+        ...TitleChangeFields
+      }
+    }
+  }
+`);
+
 const BUG_EDIT_COMMENT_MUTATION = graphql(`
   mutation BugEditComment($input: BugEditCommentInput!) {
     bugEditComment(input: $input) {
@@ -86,23 +111,29 @@ const BUG_EDIT_COMMENT_MUTATION = graphql(`
   }
 `);
 
-type TimelineNode = NonNullable<
-  NonNullable<NonNullable<BugDetailQuery["repository"]>["bug"]>["timeline"]["nodes"][number]
->;
+type TimelineData = ReturnType<
+  typeof useSuspenseFragment<typeof TIMELINE_ITEMS_FRAGMENT>
+>["data"];
+type TimelineNode = TimelineData["nodes"][number];
 
 interface TimelineProps {
   repo: string | null;
   bugPrefix: string;
-  items: TimelineNode[];
+  timeline: FragmentType<typeof TIMELINE_ITEMS_FRAGMENT>;
 }
 
 // Ordered sequence of events on a bug: comments (create and add-comment) and
 // inline events (label changes, status changes, title edits). Comment items
 // support inline editing for the logged-in user.
-export function Timeline({ repo, bugPrefix, items }: TimelineProps) {
+export function Timeline({ repo, bugPrefix, timeline }: TimelineProps) {
+  const { data } = useSuspenseFragment({
+    fragment: TIMELINE_ITEMS_FRAGMENT,
+    from: timeline,
+  });
+
   return (
     <div className="space-y-4">
-      {items.map((item) => {
+      {data.nodes.map((item) => {
         switch (item.__typename) {
           case "BugCreateTimelineItem":
           case "BugAddCommentTimelineItem":

@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Folder, File } from "lucide-react";
 
-import { GitObjectType, type GitTreeEntry } from "@/__generated__/graphql";
-
-export interface TreeEntryWithCommit extends GitTreeEntry {
+/** A single tree entry with optional last-commit metadata, merged from two queries. */
+export interface TreeEntryWithCommit {
+  name: string;
+  type: "BLOB" | "TREE" | "SYMLINK" | "SUBMODULE";
+  hash: string;
   lastCommit?: {
     hash: string;
     shortHash: string;
@@ -25,7 +27,7 @@ interface FileTreeProps {
 export function FileTree({ repo, currentRef, currentPath, entries }: FileTreeProps) {
   // Directories first, then files — each group alphabetical
   const sorted = entries.toSorted((a, b) => {
-    if (a.type !== b.type) return a.type === GitObjectType.Tree ? -1 : 1;
+    if (a.type !== b.type) return a.type === "TREE" ? -1 : 1;
     return a.name.localeCompare(b.name);
   });
 
@@ -77,7 +79,7 @@ function FileTreeRow({
   currentRef: string;
   currentPath: string;
 }) {
-  const isDir = entry.type === GitObjectType.Tree;
+  const isDir = entry.type === "TREE";
   const entryPath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
 
   const entryLink = isDir

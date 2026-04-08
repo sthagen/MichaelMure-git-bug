@@ -11,12 +11,7 @@ const BLOB_QUERY = graphql(`
   query CodePageBlob($repo: String, $ref: String!, $path: String!) {
     repository(ref: $repo) {
       blob(ref: $ref, path: $path) {
-        path
-        hash
-        text
-        size
-        isBinary
-        isTruncated
+        ...FileViewerBlob
       }
     }
   }
@@ -51,5 +46,7 @@ function BlobView() {
   const { blobRef } = Route.useLoaderData();
   const { data } = useReadQuery(blobRef);
 
-  return <FileViewer blob={data?.repository?.blob ?? null} />;
+  const blob = data?.repository?.blob;
+  if (!blob) return <BlobSkeleton />;
+  return <FileViewer blob={blob} />;
 }

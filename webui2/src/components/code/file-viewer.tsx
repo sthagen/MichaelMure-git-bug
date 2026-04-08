@@ -8,12 +8,26 @@ import { useState, useEffect, useCallback, Fragment, type ReactNode } from "reac
 import { jsx, jsxs } from "react/jsx-runtime";
 import type { ShikiTransformer } from "shiki/core";
 
-import type { GitBlob } from "@/__generated__/graphql";
+import { useSuspenseFragment } from "@apollo/client/react";
+import type { FragmentType } from "@apollo/client/masking";
+
+import { graphql } from "@/__generated__/gql";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getHighlighter, SHIKI_THEMES } from "@/lib/shiki";
 
 import styles from "./file-viewer.module.css";
+
+export const FILE_VIEWER_BLOB_FRAGMENT = graphql(`
+  fragment FileViewerBlob on GitBlob {
+    path
+    hash
+    text
+    size
+    isBinary
+    isTruncated
+  }
+`);
 
 interface LangEntry {
   id: string;
@@ -124,22 +138,14 @@ function buildHash(range: LineRange): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 interface FileViewerProps {
-  blob: GitBlob | null;
+  blob: FragmentType<typeof FILE_VIEWER_BLOB_FRAGMENT>;
 }
 
-export function FileViewer({ blob }: FileViewerProps) {
-  if (!blob) {
-    return (
-      <div className="divide-border border-border divide-y rounded-md border">
-        <div className="flex items-center gap-2 px-4 py-2">
-          <Skeleton className="h-4 w-48" />
-        </div>
-        <div className="p-4">
-          <Skeleton className="h-64 w-full" />
-        </div>
-      </div>
-    );
-  }
+export function FileViewer({ blob: blobProp }: FileViewerProps) {
+  const { data: blob } = useSuspenseFragment({
+    fragment: FILE_VIEWER_BLOB_FRAGMENT,
+    from: blobProp,
+  });
 
   const [highlighted, setHighlighted] = useState<{ node: ReactNode; lineCount: number } | null>(
     null,

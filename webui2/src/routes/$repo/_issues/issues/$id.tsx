@@ -17,25 +17,7 @@ const BUG_DETAIL_QUERY = graphql(`
           }
         }
         timeline(first: 250) {
-          nodes {
-            __typename
-            id
-            ... on BugCreateTimelineItem {
-              ...BugCreateCommentFields
-            }
-            ... on BugAddCommentTimelineItem {
-              ...BugAddCommentFields
-            }
-            ... on BugLabelChangeTimelineItem {
-              ...LabelChangeFields
-            }
-            ... on BugSetStatusTimelineItem {
-              ...StatusChangeFields
-            }
-            ... on BugSetTitleTimelineItem {
-              ...TitleChangeFields
-            }
-          }
+          ...TimelineItems
         }
       }
     }
@@ -110,7 +92,7 @@ function RouteComponent() {
       <div className="flex gap-8">
         {/* Timeline + comment box */}
         <div className="min-w-0 flex-1 space-y-4">
-          <Timeline repo={repo} bugPrefix={bug.humanId} items={bug.timeline.nodes} />
+          <Timeline repo={repo} bugPrefix={bug.humanId} timeline={bug.timeline} />
           <CommentBox bugPrefix={bug.humanId} bugStatus={bug.status} ref_={ref} />
         </div>
 
