@@ -171,7 +171,7 @@ export function Timeline({ repo, bugPrefix, timeline }: TimelineProps) {
 
 type CreateNode = Extract<TimelineNode, { __typename: "BugCreateTimelineItem" }>;
 type AddCommentNode = Extract<TimelineNode, { __typename: "BugAddCommentTimelineItem" }>;
-type CommentData = ResultOf<typeof BUG_CREATE_COMMENT_FRAGMENT>;
+type CommentData = ResultOf<typeof BUG_CREATE_COMMENT_FRAGMENT> | ResultOf<typeof BUG_ADD_COMMENT_FRAGMENT>;
 
 function CreateCommentItem({ item, bugPrefix, repo }: { item: CreateNode; bugPrefix: string; repo: string | null }) {
   const data = useFragment(BUG_CREATE_COMMENT_FRAGMENT, item);

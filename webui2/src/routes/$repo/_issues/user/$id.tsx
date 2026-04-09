@@ -46,6 +46,14 @@ const USER_PROFILE_QUERY = graphql(`
         }
         nodes {
           ...BugSummary
+          id
+          humanId
+          status
+          title
+          createdAt
+          labels { name ...LabelFields }
+          author { humanId ...IdentitySummary }
+          comments { totalCount }
         }
       }
     }

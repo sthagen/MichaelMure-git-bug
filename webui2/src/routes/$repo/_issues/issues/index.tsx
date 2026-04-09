@@ -32,6 +32,14 @@ const BUG_LIST_QUERY = graphql(`
         }
         nodes {
           ...BugSummary
+          id
+          humanId
+          status
+          title
+          createdAt
+          labels { name ...LabelFields }
+          author { humanId displayName ...IdentitySummary }
+          comments { totalCount }
         }
       }
     }
@@ -185,7 +193,7 @@ function RouteComponent() {
 
   // Apply structured filters → build query string → navigate
   function applyFilters(
-    status: StatusFilter,
+    status: StatusFilter | null,
     labels: string[],
     authorQuery: string | null,
     text: string,

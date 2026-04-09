@@ -10,10 +10,20 @@ const BUG_DETAIL_QUERY = graphql(`
     repository(ref: $ref) {
       bug(prefix: $prefix) {
         ...BugSummary
+        humanId
+        title
+        status
+        createdAt
+        labels { name ...LabelFields }
+        author { humanId displayName }
         lastEdit
         participants(first: 20) {
           nodes {
             ...IdentitySummary
+            id
+            humanId
+            displayName
+            avatarUrl
           }
         }
         timeline(first: 250) {
