@@ -201,10 +201,9 @@ export function FileViewer({ blob: blobProp }: FileViewerProps) {
       let lang = "text";
       if (entry) {
         try {
-          const langModule = await entry.load();
-          await highlighter.loadLanguage(
-            langModule as Parameters<typeof highlighter.loadLanguage>[0],
-          );
+          // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- dynamic shiki language import
+          const langModule = (await entry.load()) as Parameters<typeof highlighter.loadLanguage>[0];
+          await highlighter.loadLanguage(langModule);
           lang = entry.id;
         } catch {
           // Language not available — fall back to plain text
@@ -220,9 +219,11 @@ export function FileViewer({ blob: blobProp }: FileViewerProps) {
         transformers: [lineNumberTransformer()],
       });
 
+      // oxlint-disable-next-line typescript-eslint(no-unsafe-assignment) -- hast-util-to-jsx-runtime returns JSX.Element
       const node = toJsxRuntime(hast, { Fragment, jsx, jsxs });
       const lineCount = blob.text!.split("\n").length;
 
+      // oxlint-disable-next-line typescript-eslint(no-unsafe-assignment) -- node is ReactNode from toJsxRuntime
       setHighlighted({ node, lineCount });
     })();
 
@@ -297,8 +298,8 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
     <div
       className={styles["code-block"]}
       onClick={(e) => {
-        const target = e.target as HTMLElement;
-        const lineEl = target.closest("[data-line-number]");
+        if (!(e.target instanceof HTMLElement)) return;
+        const lineEl = e.target.closest("[data-line-number]");
         if (lineEl) {
           e.preventDefault();
           const lineNum = parseInt(lineEl.getAttribute("data-line-number")!, 10);

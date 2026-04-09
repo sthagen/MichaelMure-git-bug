@@ -36,8 +36,6 @@ const allLabels = allLabelsData.map(
   (l) => ({ ...l, ...makeFragmentData(l, LABEL_FIELDS_FRAGMENT) }),
 );
 
-type LabelColor = { R: number; G: number; B: number };
-type BrandedLabel = (typeof allLabels)[number];
 
 function LabelEditorDemo() {
   const [currentNames, setCurrentNames] = useState<Set<string>>(
