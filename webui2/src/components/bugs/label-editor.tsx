@@ -14,7 +14,7 @@ import {
 import { Settings2 } from "lucide-react";
 import { useRef, useState } from "react";
 
-import type { FragmentType } from "@apollo/client/masking";
+import type { FragmentType } from "@/__generated__/fragment-masking";
 import { BugDetailDocument } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
 import * as Listbox from "@/components/ui/listbox";

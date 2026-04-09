@@ -1,5 +1,4 @@
-import { useSuspenseFragment } from "@apollo/client/react";
-import type { FragmentType } from "@apollo/client/masking";
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import {
   useFloating,
   useClick,
@@ -40,7 +39,7 @@ interface RefSelectorProps {
 // Branch / tag selector dropdown for the code browser. Shown in two groups
 // (branches, tags) with an inline search filter.
 export function RefSelector({ refs: refsProp, currentRef, onSelect }: RefSelectorProps) {
-  const { data } = useSuspenseFragment({ fragment: REF_SELECTOR_REFS_FRAGMENT, from: refsProp });
+  const data = useFragment(REF_SELECTOR_REFS_FRAGMENT, refsProp);
   const gitRefs = data.nodes;
 
   const [open, setOpen] = useState(false);

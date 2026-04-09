@@ -1,5 +1,6 @@
-import { useMutation, useSuspenseFragment } from "@apollo/client/react";
-import type { FragmentType } from "@apollo/client/masking";
+import { useMutation } from "@apollo/client/react";
+import type { ResultOf } from "@graphql-typed-document-node/core";
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Tag, GitPullRequestClosed, Pencil, CircleDot } from "lucide-react";
@@ -14,9 +15,15 @@ import { LabelBadge } from "@/components/shared/label-badge";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
-graphql(`
+// ── Sub-fragments ────────────────────────────────────────────────────────────
+
+const BUG_CREATE_COMMENT_FRAGMENT = graphql(`
   fragment BugCreateCommentFields on BugCreateTimelineItem {
+    id
     author {
+      id
+      humanId
+      displayName
       ...IdentitySummary
     }
     message
@@ -26,9 +33,13 @@ graphql(`
   }
 `);
 
-graphql(`
+const BUG_ADD_COMMENT_FRAGMENT = graphql(`
   fragment BugAddCommentFields on BugAddCommentTimelineItem {
+    id
     author {
+      id
+      humanId
+      displayName
       ...IdentitySummary
     }
     message
@@ -38,7 +49,7 @@ graphql(`
   }
 `);
 
-graphql(`
+const LABEL_CHANGE_FRAGMENT = graphql(`
   fragment LabelChangeFields on BugLabelChangeTimelineItem {
     author {
       humanId
@@ -54,7 +65,7 @@ graphql(`
   }
 `);
 
-graphql(`
+const STATUS_CHANGE_FRAGMENT = graphql(`
   fragment StatusChangeFields on BugSetStatusTimelineItem {
     author {
       humanId
@@ -65,7 +76,7 @@ graphql(`
   }
 `);
 
-graphql(`
+const TITLE_CHANGE_FRAGMENT = graphql(`
   fragment TitleChangeFields on BugSetTitleTimelineItem {
     author {
       humanId
@@ -76,6 +87,8 @@ graphql(`
     was
   }
 `);
+
+// ── Connection-level fragment ────────────────────────────────────────────────
 
 export const TIMELINE_ITEMS_FRAGMENT = graphql(`
   fragment TimelineItems on BugTimelineItemConnection {
@@ -101,6 +114,8 @@ export const TIMELINE_ITEMS_FRAGMENT = graphql(`
   }
 `);
 
+// ── Mutation ─────────────────────────────────────────────────────────────────
+
 const BUG_EDIT_COMMENT_MUTATION = graphql(`
   mutation BugEditComment($input: BugEditCommentInput!) {
     bugEditComment(input: $input) {
@@ -111,10 +126,12 @@ const BUG_EDIT_COMMENT_MUTATION = graphql(`
   }
 `);
 
-type TimelineData = ReturnType<
-  typeof useSuspenseFragment<typeof TIMELINE_ITEMS_FRAGMENT>
->["data"];
+// ── Type helpers ─────────────────────────────────────────────────────────────
+
+type TimelineData = ResultOf<typeof TIMELINE_ITEMS_FRAGMENT>;
 type TimelineNode = TimelineData["nodes"][number];
+
+// ── Timeline ─────────────────────────────────────────────────────────────────
 
 interface TimelineProps {
   repo: string | null;
@@ -126,18 +143,16 @@ interface TimelineProps {
 // inline events (label changes, status changes, title edits). Comment items
 // support inline editing for the logged-in user.
 export function Timeline({ repo, bugPrefix, timeline }: TimelineProps) {
-  const { data } = useSuspenseFragment({
-    fragment: TIMELINE_ITEMS_FRAGMENT,
-    from: timeline,
-  });
+  const data = useFragment(TIMELINE_ITEMS_FRAGMENT, timeline);
 
   return (
     <div className="space-y-4">
       {data.nodes.map((item) => {
         switch (item.__typename) {
           case "BugCreateTimelineItem":
+            return <CreateCommentItem key={item.id} item={item} bugPrefix={bugPrefix} repo={repo} />;
           case "BugAddCommentTimelineItem":
-            return <CommentItem key={item.id} item={item} bugPrefix={bugPrefix} repo={repo} />;
+            return <AddCommentItem key={item.id} item={item} bugPrefix={bugPrefix} repo={repo} />;
           case "BugLabelChangeTimelineItem":
             return <LabelChangeItem key={item.id} item={item} repo={repo} />;
           case "BugSetStatusTimelineItem":
@@ -152,19 +167,28 @@ export function Timeline({ repo, bugPrefix, timeline }: TimelineProps) {
   );
 }
 
-// ── Comment (create or add-comment) ──────────────────────────────────────────
+// ── Comment items ────────────────────────────────────────────────────────────
 
-type CommentItem = Extract<
-  TimelineNode,
-  { __typename: "BugCreateTimelineItem" | "BugAddCommentTimelineItem" }
->;
+type CreateNode = Extract<TimelineNode, { __typename: "BugCreateTimelineItem" }>;
+type AddCommentNode = Extract<TimelineNode, { __typename: "BugAddCommentTimelineItem" }>;
+type CommentData = ResultOf<typeof BUG_CREATE_COMMENT_FRAGMENT>;
 
-function CommentItem({
-  item,
+function CreateCommentItem({ item, bugPrefix, repo }: { item: CreateNode; bugPrefix: string; repo: string | null }) {
+  const data = useFragment(BUG_CREATE_COMMENT_FRAGMENT, item);
+  return <CommentBody data={data} bugPrefix={bugPrefix} repo={repo} />;
+}
+
+function AddCommentItem({ item, bugPrefix, repo }: { item: AddCommentNode; bugPrefix: string; repo: string | null }) {
+  const data = useFragment(BUG_ADD_COMMENT_FRAGMENT, item);
+  return <CommentBody data={data} bugPrefix={bugPrefix} repo={repo} />;
+}
+
+function CommentBody({
+  data: item,
   bugPrefix,
   repo,
 }: {
-  item: CommentItem;
+  data: CommentData;
   bugPrefix: string;
   repo: string | null;
 }) {
@@ -258,11 +282,11 @@ function CommentItem({
   );
 }
 
-// ── Inline events ─────────────────────────────────────────────────────────────
+// ── Inline events ────────────────────────────────────────────────────────────
 
-type LabelChangeItem = Extract<TimelineNode, { __typename: "BugLabelChangeTimelineItem" }>;
-type StatusChangeItem = Extract<TimelineNode, { __typename: "BugSetStatusTimelineItem" }>;
-type TitleChangeItem = Extract<TimelineNode, { __typename: "BugSetTitleTimelineItem" }>;
+type LabelChangeNode = Extract<TimelineNode, { __typename: "BugLabelChangeTimelineItem" }>;
+type StatusChangeNode = Extract<TimelineNode, { __typename: "BugSetStatusTimelineItem" }>;
+type TitleChangeNode = Extract<TimelineNode, { __typename: "BugSetTitleTimelineItem" }>;
 
 function EventRow({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -273,42 +297,44 @@ function EventRow({ icon, children }: { icon: React.ReactNode; children: React.R
   );
 }
 
-function LabelChangeItem({ item, repo }: { item: LabelChangeItem; repo: string | null }) {
+function LabelChangeItem({ item, repo }: { item: LabelChangeNode; repo: string | null }) {
+  const data = useFragment(LABEL_CHANGE_FRAGMENT, item);
   return (
     <EventRow icon={<Tag className="size-4" />}>
       <span>
         <Link
           to="/$repo/user/$id"
-          params={{ repo: repo!, id: item.author.humanId }}
+          params={{ repo: repo!, id: data.author.humanId }}
           search={{ status: "open" as const, after: "" }}
           className="text-foreground font-medium hover:underline"
         >
-          {item.author.displayName}
+          {data.author.displayName}
         </Link>{" "}
-        {item.added.length > 0 && (
+        {data.added.length > 0 && (
           <>
             added{" "}
-            {item.added.map((l, i) => (
+            {data.added.map((l, i) => (
               <LabelBadge key={i} label={l} />
             ))}{" "}
           </>
         )}
-        {item.removed.length > 0 && (
+        {data.removed.length > 0 && (
           <>
             removed{" "}
-            {item.removed.map((l, i) => (
+            {data.removed.map((l, i) => (
               <LabelBadge key={i} label={l} />
             ))}{" "}
           </>
         )}
-        {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
+        {formatDistanceToNow(new Date(data.date), { addSuffix: true })}
       </span>
     </EventRow>
   );
 }
 
-function StatusChangeItem({ item, repo }: { item: StatusChangeItem; repo: string | null }) {
-  const isOpen = item.status === Status.Open;
+function StatusChangeItem({ item, repo }: { item: StatusChangeNode; repo: string | null }) {
+  const data = useFragment(STATUS_CHANGE_FRAGMENT, item);
+  const isOpen = data.status === Status.Open;
   return (
     <EventRow
       icon={
@@ -322,34 +348,35 @@ function StatusChangeItem({ item, repo }: { item: StatusChangeItem; repo: string
       <span>
         <Link
           to="/$repo/user/$id"
-          params={{ repo: repo!, id: item.author.humanId }}
+          params={{ repo: repo!, id: data.author.humanId }}
           search={{ status: "open" as const, after: "" }}
           className="text-foreground font-medium hover:underline"
         >
-          {item.author.displayName}
+          {data.author.displayName}
         </Link>{" "}
         {isOpen ? "reopened" : "closed"} this{" "}
-        {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
+        {formatDistanceToNow(new Date(data.date), { addSuffix: true })}
       </span>
     </EventRow>
   );
 }
 
-function TitleChangeItem({ item, repo }: { item: TitleChangeItem; repo: string | null }) {
+function TitleChangeItem({ item, repo }: { item: TitleChangeNode; repo: string | null }) {
+  const data = useFragment(TITLE_CHANGE_FRAGMENT, item);
   return (
     <EventRow icon={<Pencil className="size-4" />}>
       <span>
         <Link
           to="/$repo/user/$id"
-          params={{ repo: repo!, id: item.author.humanId }}
+          params={{ repo: repo!, id: data.author.humanId }}
           search={{ status: "open" as const, after: "" }}
           className="text-foreground font-medium hover:underline"
         >
-          {item.author.displayName}
+          {data.author.displayName}
         </Link>{" "}
-        changed the title from <span className="line-through">{item.was}</span> to{" "}
-        <span className="text-foreground font-medium">{item.title}</span>{" "}
-        {formatDistanceToNow(new Date(item.date), { addSuffix: true })}
+        changed the title from <span className="line-through">{data.was}</span> to{" "}
+        <span className="text-foreground font-medium">{data.title}</span>{" "}
+        {formatDistanceToNow(new Date(data.date), { addSuffix: true })}
       </span>
     </EventRow>
   );

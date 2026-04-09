@@ -20,6 +20,11 @@ const config: CodegenConfig = {
         defaultScalarType: "unknown",
         nonOptionalTypename: true,
         skipTypeNameForRoot: true,
+        // Generate masked inline fragment types for Apollo's data masking
+        inlineFragmentTypes: "mask",
+        customDirectives: {
+          apolloUnmask: true,
+        },
         scalars: {
           Time: "string",
           Hash: "string",

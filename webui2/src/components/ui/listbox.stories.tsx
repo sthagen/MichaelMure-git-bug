@@ -18,12 +18,10 @@ import { useRef, useState, useEffect } from "react";
 import { Button } from "./button";
 import * as Listbox from "./listbox";
 
-// We can't use `component:` for a namespace import, so we target Content as
-// the "primary" component just to give Storybook a title.
 const meta = {
-  title: "ui/Listbox",
+  component: Listbox.Content,
   parameters: { layout: "centered", a11y: { disable: true } },
-} satisfies Meta;
+} satisfies Meta<typeof Listbox.Content>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -20,8 +20,8 @@ type Documents = {
     "\n  mutation BugStatusOpen($input: BugStatusOpenInput!) {\n    bugStatusOpen(input: $input) {\n      bug {\n        id\n        status\n      }\n    }\n  }\n": typeof types.BugStatusOpenDocument,
     "\n  mutation BugStatusClose($input: BugStatusCloseInput!) {\n    bugStatusClose(input: $input) {\n      bug {\n        id\n        status\n      }\n    }\n  }\n": typeof types.BugStatusCloseDocument,
     "\n  mutation BugChangeLabels($input: BugChangeLabelInput) {\n    bugChangeLabels(input: $input) {\n      bug {\n        id\n        labels {\n          name\n          ...LabelFields\n        }\n      }\n    }\n  }\n": typeof types.BugChangeLabelsDocument,
-    "\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": typeof types.BugCreateCommentFieldsFragmentDoc,
-    "\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": typeof types.BugAddCommentFieldsFragmentDoc,
+    "\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": typeof types.BugCreateCommentFieldsFragmentDoc,
+    "\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": typeof types.BugAddCommentFieldsFragmentDoc,
     "\n  fragment LabelChangeFields on BugLabelChangeTimelineItem {\n    author {\n      humanId\n      displayName\n    }\n    date\n    added {\n      ...LabelFields\n    }\n    removed {\n      ...LabelFields\n    }\n  }\n": typeof types.LabelChangeFieldsFragmentDoc,
     "\n  fragment StatusChangeFields on BugSetStatusTimelineItem {\n    author {\n      humanId\n      displayName\n    }\n    date\n    status\n  }\n": typeof types.StatusChangeFieldsFragmentDoc,
     "\n  fragment TitleChangeFields on BugSetTitleTimelineItem {\n    author {\n      humanId\n      displayName\n    }\n    date\n    title\n    was\n  }\n": typeof types.TitleChangeFieldsFragmentDoc,
@@ -35,7 +35,7 @@ type Documents = {
     "\n  fragment IdentitySummary on Identity {\n    id\n    humanId\n    displayName\n    avatarUrl\n  }\n": typeof types.IdentitySummaryFragmentDoc,
     "\n  fragment BugSummary on Bug {\n    id\n    humanId\n    status\n    title\n    labels {\n      name\n      ...LabelFields\n    }\n    author {\n      ...IdentitySummary\n    }\n    createdAt\n    comments {\n      totalCount\n    }\n  }\n": typeof types.BugSummaryFragmentDoc,
     "\n  fragment LabelFields on Label {\n    name\n    color {\n      R\n      G\n      B\n    }\n  }\n": typeof types.LabelFieldsFragmentDoc,
-    "\n  query UserIdentity {\n    repository {\n      userIdentity {\n        id\n        humanId\n        name\n        displayName\n        avatarUrl\n        email\n        login\n      }\n    }\n  }\n": typeof types.UserIdentityDocument,
+    "\n  query UserIdentity {\n    repository {\n      userIdentity {\n        ...IdentitySummary\n        id\n        humanId\n        displayName\n        avatarUrl\n        name\n        email\n        login\n      }\n    }\n  }\n": typeof types.UserIdentityDocument,
     "\n  query CodePageRefs($repo: String) {\n    repository(ref: $repo) {\n      name\n      head {\n        shortName\n      }\n      refs {\n        ...RefSelectorRefs\n      }\n    }\n  }\n": typeof types.CodePageRefsDocument,
     "\n  query CodePageBlob($repo: String, $ref: String!, $path: String!) {\n    repository(ref: $repo) {\n      blob(ref: $ref, path: $path) {\n        ...FileViewerBlob\n      }\n    }\n  }\n": typeof types.CodePageBlobDocument,
     "\n  query CodePageTree($repo: String, $ref: String!, $path: String) {\n    repository(ref: $repo) {\n      tree(ref: $ref, path: $path) {\n        name\n        type\n        hash\n      }\n    }\n  }\n": typeof types.CodePageTreeDocument,
@@ -57,8 +57,8 @@ const documents: Documents = {
     "\n  mutation BugStatusOpen($input: BugStatusOpenInput!) {\n    bugStatusOpen(input: $input) {\n      bug {\n        id\n        status\n      }\n    }\n  }\n": types.BugStatusOpenDocument,
     "\n  mutation BugStatusClose($input: BugStatusCloseInput!) {\n    bugStatusClose(input: $input) {\n      bug {\n        id\n        status\n      }\n    }\n  }\n": types.BugStatusCloseDocument,
     "\n  mutation BugChangeLabels($input: BugChangeLabelInput) {\n    bugChangeLabels(input: $input) {\n      bug {\n        id\n        labels {\n          name\n          ...LabelFields\n        }\n      }\n    }\n  }\n": types.BugChangeLabelsDocument,
-    "\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": types.BugCreateCommentFieldsFragmentDoc,
-    "\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": types.BugAddCommentFieldsFragmentDoc,
+    "\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": types.BugCreateCommentFieldsFragmentDoc,
+    "\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n": types.BugAddCommentFieldsFragmentDoc,
     "\n  fragment LabelChangeFields on BugLabelChangeTimelineItem {\n    author {\n      humanId\n      displayName\n    }\n    date\n    added {\n      ...LabelFields\n    }\n    removed {\n      ...LabelFields\n    }\n  }\n": types.LabelChangeFieldsFragmentDoc,
     "\n  fragment StatusChangeFields on BugSetStatusTimelineItem {\n    author {\n      humanId\n      displayName\n    }\n    date\n    status\n  }\n": types.StatusChangeFieldsFragmentDoc,
     "\n  fragment TitleChangeFields on BugSetTitleTimelineItem {\n    author {\n      humanId\n      displayName\n    }\n    date\n    title\n    was\n  }\n": types.TitleChangeFieldsFragmentDoc,
@@ -72,7 +72,7 @@ const documents: Documents = {
     "\n  fragment IdentitySummary on Identity {\n    id\n    humanId\n    displayName\n    avatarUrl\n  }\n": types.IdentitySummaryFragmentDoc,
     "\n  fragment BugSummary on Bug {\n    id\n    humanId\n    status\n    title\n    labels {\n      name\n      ...LabelFields\n    }\n    author {\n      ...IdentitySummary\n    }\n    createdAt\n    comments {\n      totalCount\n    }\n  }\n": types.BugSummaryFragmentDoc,
     "\n  fragment LabelFields on Label {\n    name\n    color {\n      R\n      G\n      B\n    }\n  }\n": types.LabelFieldsFragmentDoc,
-    "\n  query UserIdentity {\n    repository {\n      userIdentity {\n        id\n        humanId\n        name\n        displayName\n        avatarUrl\n        email\n        login\n      }\n    }\n  }\n": types.UserIdentityDocument,
+    "\n  query UserIdentity {\n    repository {\n      userIdentity {\n        ...IdentitySummary\n        id\n        humanId\n        displayName\n        avatarUrl\n        name\n        email\n        login\n      }\n    }\n  }\n": types.UserIdentityDocument,
     "\n  query CodePageRefs($repo: String) {\n    repository(ref: $repo) {\n      name\n      head {\n        shortName\n      }\n      refs {\n        ...RefSelectorRefs\n      }\n    }\n  }\n": types.CodePageRefsDocument,
     "\n  query CodePageBlob($repo: String, $ref: String!, $path: String!) {\n    repository(ref: $repo) {\n      blob(ref: $ref, path: $path) {\n        ...FileViewerBlob\n      }\n    }\n  }\n": types.CodePageBlobDocument,
     "\n  query CodePageTree($repo: String, $ref: String!, $path: String) {\n    repository(ref: $repo) {\n      tree(ref: $ref, path: $path) {\n        name\n        type\n        hash\n      }\n    }\n  }\n": types.CodePageTreeDocument,
@@ -129,11 +129,11 @@ export function graphql(source: "\n  mutation BugChangeLabels($input: BugChangeL
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"): (typeof documents)["\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"];
+export function graphql(source: "\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"): (typeof documents)["\n  fragment BugCreateCommentFields on BugCreateTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"): (typeof documents)["\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    author {\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"];
+export function graphql(source: "\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"): (typeof documents)["\n  fragment BugAddCommentFields on BugAddCommentTimelineItem {\n    id\n    author {\n      id\n      humanId\n      displayName\n      ...IdentitySummary\n    }\n    message\n    createdAt\n    lastEdit\n    edited\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -189,7 +189,7 @@ export function graphql(source: "\n  fragment LabelFields on Label {\n    name\n
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query UserIdentity {\n    repository {\n      userIdentity {\n        id\n        humanId\n        name\n        displayName\n        avatarUrl\n        email\n        login\n      }\n    }\n  }\n"): (typeof documents)["\n  query UserIdentity {\n    repository {\n      userIdentity {\n        id\n        humanId\n        name\n        displayName\n        avatarUrl\n        email\n        login\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query UserIdentity {\n    repository {\n      userIdentity {\n        ...IdentitySummary\n        id\n        humanId\n        displayName\n        avatarUrl\n        name\n        email\n        login\n      }\n    }\n  }\n"): (typeof documents)["\n  query UserIdentity {\n    repository {\n      userIdentity {\n        ...IdentitySummary\n        id\n        humanId\n        displayName\n        avatarUrl\n        name\n        email\n        login\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

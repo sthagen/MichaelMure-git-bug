@@ -10,9 +10,9 @@ const commitsSearchSchema = v.object({
 });
 
 export const Route = createFileRoute("/$repo/_code/commits/$ref")({
-  component: CommitsView,
-  beforeLoad: () => ({ viewMode: "commits" as const }),
   validateSearch: (search) => v.parse(commitsSearchSchema, search),
+  beforeLoad: () => ({ viewMode: "commits" as const }),
+  component: CommitsView,
 });
 
 function CommitsView() {

@@ -9,7 +9,12 @@ const httpLink = new HttpLink({
 
 export const client = new ApolloClient({
   link: httpLink,
-  dataMasking: true,
+  // Data masking is off: fragment colocation is enforced at the type level
+  // via codegen's $fragmentRefs branding (inlineFragmentTypes: "mask").
+  // Components use codegen's useFragment (a zero-cost cast) to unmask.
+  // When @defer is needed, individual components can switch to Apollo's
+  // useSuspenseFragment — it works without dataMasking.
+  dataMasking: false,
 
   cache: new InMemoryCache({
     typePolicies: {

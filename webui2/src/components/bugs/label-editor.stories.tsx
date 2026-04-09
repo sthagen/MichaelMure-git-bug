@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 
-import { LabelBadge } from "@/components/shared/label-badge";
+import { makeFragmentData } from "@/__generated__/fragment-masking";
+import { withApollo, withCachedFragments } from "@/../.storybook/decorators";
+import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
 import { SectionHeading } from "@/components/shared/section-heading";
 import * as Listbox from "@/components/ui/listbox";
 import {
@@ -22,30 +24,38 @@ import { useRef } from "react";
 // The real LabelEditor depends on GraphQL mutations. For stories, we build a
 // self-contained version with the same UI but local state instead of mutations.
 
-const allLabels = [
-  { name: "bug", color: { R: 252, G: 41, B: 41 } },
-  { name: "enhancement", color: { R: 0, G: 150, B: 255 } },
-  { name: "documentation", color: { R: 0, G: 180, B: 80 } },
-  { name: "help wanted", color: { R: 255, G: 152, B: 0 } },
-  { name: "good first issue", color: { R: 124, G: 58, B: 237 } },
+const allLabelsData = [
+  { __typename: "Label" as const, name: "bug", color: { R: 252, G: 41, B: 41 } },
+  { __typename: "Label" as const, name: "enhancement", color: { R: 0, G: 150, B: 255 } },
+  { __typename: "Label" as const, name: "documentation", color: { R: 0, G: 180, B: 80 } },
+  { __typename: "Label" as const, name: "help wanted", color: { R: 255, G: 152, B: 0 } },
+  { __typename: "Label" as const, name: "good first issue", color: { R: 124, G: 58, B: 237 } },
 ];
 
+const allLabels = allLabelsData.map(
+  (l) => ({ ...l, ...makeFragmentData(l, LABEL_FIELDS_FRAGMENT) }),
+);
+
 type LabelColor = { R: number; G: number; B: number };
+type BrandedLabel = (typeof allLabels)[number];
 
 function LabelEditorDemo() {
-  const [current, setCurrent] = useState<Array<{ name: string; color: LabelColor }>>([
-    allLabels[0]!,
-    allLabels[2]!,
-  ]);
+  const [currentNames, setCurrentNames] = useState<Set<string>>(
+    new Set([allLabelsData[0]!.name, allLabelsData[2]!.name]),
+  );
 
-  const currentNames = new Set(current.map((l) => l.name));
+  const currentLabels = allLabels.filter((l) => currentNames.has(l.name));
 
-  function toggleLabel(label: { name: string; color: LabelColor }) {
-    if (currentNames.has(label.name)) {
-      setCurrent((prev) => prev.filter((l) => l.name !== label.name));
-    } else {
-      setCurrent((prev) => [...prev, label]);
-    }
+  function toggleLabel(label: { name: string }) {
+    setCurrentNames((prev) => {
+      const next = new Set(prev);
+      if (next.has(label.name)) {
+        next.delete(label.name);
+      } else {
+        next.add(label.name);
+      }
+      return next;
+    });
   }
 
   const [open, setOpen] = useState(false);
@@ -120,7 +130,7 @@ function LabelEditorDemo() {
                             : {}
                         }
                       />
-                      <LabelBadge name={label.name} color={label.color} />
+                      <LabelBadge label={label} />
                     </Listbox.Item>
                   );
                 })}
@@ -130,12 +140,12 @@ function LabelEditorDemo() {
         </FloatingPortal>
       )}
 
-      {current.length === 0 ? (
+      {currentLabels.length === 0 ? (
         <p className="text-muted-foreground text-sm">None yet</p>
       ) : (
         <div className="flex flex-wrap gap-1">
-          {current.map((label) => (
-            <LabelBadge key={label.name} name={label.name} color={label.color} />
+          {currentLabels.map((label) => (
+            <LabelBadge key={label.name} label={label} />
           ))}
         </div>
       )}
@@ -144,13 +154,17 @@ function LabelEditorDemo() {
 }
 
 const meta = {
-  title: "bugs/LabelEditor",
+  component: LabelEditorDemo,
+  decorators: [
+    withApollo,
+    withCachedFragments(
+      ...allLabelsData.map((l) => [LABEL_FIELDS_FRAGMENT, "LabelFields", l] as const),
+    ),
+  ],
   parameters: { layout: "centered", a11y: { disable: true } },
-} satisfies Meta;
+} satisfies Meta<typeof LabelEditorDemo>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: () => <LabelEditorDemo />,
-};
+export const Default: Story = {};

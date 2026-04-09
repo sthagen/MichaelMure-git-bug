@@ -8,8 +8,7 @@ import { useState, useEffect, useCallback, Fragment, type ReactNode } from "reac
 import { jsx, jsxs } from "react/jsx-runtime";
 import type { ShikiTransformer } from "shiki/core";
 
-import { useSuspenseFragment } from "@apollo/client/react";
-import type { FragmentType } from "@apollo/client/masking";
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 
 import { graphql } from "@/__generated__/gql";
 import { Button } from "@/components/ui/button";
@@ -142,10 +141,7 @@ interface FileViewerProps {
 }
 
 export function FileViewer({ blob: blobProp }: FileViewerProps) {
-  const { data: blob } = useSuspenseFragment({
-    fragment: FILE_VIEWER_BLOB_FRAGMENT,
-    from: blobProp,
-  });
+  const blob = useFragment(FILE_VIEWER_BLOB_FRAGMENT, blobProp);
 
   const [highlighted, setHighlighted] = useState<{ node: ReactNode; lineCount: number } | null>(
     null,

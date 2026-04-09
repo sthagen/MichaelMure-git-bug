@@ -1,5 +1,4 @@
-import { useSuspenseFragment } from "@apollo/client/react";
-import type { FragmentType } from "@apollo/client/masking";
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 
 import { graphql } from "@/__generated__/gql";
 import { cn } from "@/lib/utils";
@@ -30,7 +29,7 @@ interface AuthorAvatarProps {
 }
 
 export function AuthorAvatar({ author, className }: AuthorAvatarProps) {
-  const { data } = useSuspenseFragment({ fragment: IDENTITY_SUMMARY_FRAGMENT, from: author });
+  const data = useFragment(IDENTITY_SUMMARY_FRAGMENT, author);
 
   return (
     <Avatar className={cn("mt-1 size-8 shrink-0", className)}>

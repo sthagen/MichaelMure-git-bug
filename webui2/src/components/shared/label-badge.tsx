@@ -1,5 +1,4 @@
-import { useSuspenseFragment } from "@apollo/client/react";
-import type { FragmentType } from "@apollo/client/masking";
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { createLink, type LinkComponent } from "@tanstack/react-router";
 import * as React from "react";
 
@@ -32,7 +31,7 @@ const LabelBadge = React.forwardRef<
   HTMLSpanElement,
   LabelBadgeProps & Omit<React.HTMLAttributes<HTMLSpanElement>, "color">
 >(({ label, className, ...props }, ref) => {
-  const { data } = useSuspenseFragment({ fragment: LABEL_FIELDS_FRAGMENT, from: label });
+  const data = useFragment(LABEL_FIELDS_FRAGMENT, label);
   const bg = `rgb(${data.color.R},${data.color.G},${data.color.B})`;
   const text = contrastColor(data.color.R, data.color.G, data.color.B);
 
@@ -54,8 +53,8 @@ const CreatedLabelBadgeLink = createLink(
   React.forwardRef<
     HTMLAnchorElement,
     LabelBadgeProps & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "color">
-  >(({ from, className, ...props }, ref) => {
-    const { data } = useSuspenseFragment({ fragment: LABEL_FIELDS_FRAGMENT, from });
+  >(({ label, className, ...props }, ref) => {
+    const data = useFragment(LABEL_FIELDS_FRAGMENT, label);
     const bg = `rgb(${data.color.R},${data.color.G},${data.color.B})`;
     const text = contrastColor(data.color.R, data.color.G, data.color.B);
 

@@ -60,23 +60,117 @@ exports[`FileViewer/BinaryFile matches snapshot 1`] = `
 exports[`FileViewer/Loading matches snapshot 1`] = `
 <div>
   <div
-    class="divide-border border-border divide-y rounded-md border"
+    class="border-border overflow-hidden rounded-md border"
   >
     <div
-      class="flex items-center gap-2 px-4 py-2"
+      class="bg-muted/40 border-border flex items-center justify-between border-b px-4 py-2"
     >
       <div
-        class="animate-pulse rounded-md bg-muted h-4 w-48"
+        class="animate-pulse rounded-md bg-muted h-4 w-32"
         data-slot="skeleton"
       />
     </div>
     <div
-      class="p-4"
+      class="flex"
     >
       <div
-        class="animate-pulse rounded-md bg-muted h-64 w-full"
-        data-slot="skeleton"
-      />
+        class="flex flex-col items-end gap-1 px-3 py-3"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5 w-6"
+          data-slot="skeleton"
+        />
+      </div>
+      <div
+        class="flex flex-1 flex-col gap-1 py-3 pr-4"
+      >
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 30%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 77%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 64%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 51%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 38%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 85%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 72%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 59%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 46%;"
+        />
+        <div
+          class="animate-pulse rounded-md bg-muted h-3.5"
+          data-slot="skeleton"
+          style="width: 33%;"
+        />
+      </div>
     </div>
   </div>
 </div>

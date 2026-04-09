@@ -14,7 +14,7 @@ import {
 import { ArrowUpDown, ChevronDown, Tag, User, X } from "lucide-react";
 import { useMemo, useRef, useState, useCallback, useEffect } from "react";
 
-import type { FragmentType } from "@apollo/client/masking";
+import type { FragmentType } from "@/__generated__/fragment-masking";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as Listbox from "@/components/ui/listbox";
 import { useAuth } from "@/lib/auth";

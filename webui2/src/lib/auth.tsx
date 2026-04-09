@@ -11,11 +11,12 @@ export const USER_IDENTITY_QUERY = graphql(`
   query UserIdentity {
     repository {
       userIdentity {
+        ...IdentitySummary
         id
         humanId
-        name
         displayName
         avatarUrl
+        name
         email
         login
       }
@@ -23,17 +24,7 @@ export const USER_IDENTITY_QUERY = graphql(`
   }
 `);
 
-export interface AuthUser {
-  id: string;
-  humanId: string;
-  name: string | null;
-  displayName: string;
-  avatarUrl: string | null;
-  email: string | null;
-  login: string | null;
-}
-
-export function useAuth(): { user: AuthUser } {
+export function useAuth() {
   const { data } = useSuspenseQuery(USER_IDENTITY_QUERY);
-  return { user: data.repository!.userIdentity! as AuthUser };
+  return { user: data.repository!.userIdentity! };
 }
