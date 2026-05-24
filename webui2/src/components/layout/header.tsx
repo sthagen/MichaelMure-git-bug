@@ -4,19 +4,20 @@
 //   - Repo: shows Code + Issues nav links scoped to the current repo slug
 
 import { Link, useParams, useRouterState } from "@tanstack/react-router";
-import { Plus, Sun, Moon } from "lucide-react";
+import { Check, Contrast, Plus } from "lucide-react";
 
 import Logo from "@/assets/logo.svg?react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useAuth } from "@/lib/auth";
-import { useTheme } from "@/lib/theme";
+import { useTheme, THEMES } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const { user } = useAuth();
-  const { theme, toggle } = useTheme();
+  const { theme, setTheme } = useTheme();
 
   // Detect if we're inside a /$repo route and grab the slug.
   const params = useParams({ strict: false });
@@ -35,9 +36,38 @@ export function Header() {
         {repo && <RepoNav repo={repo} />}
 
         <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" size="icon-sm" onClick={toggle} title="Toggle theme">
-            {theme === "light" ? <Moon className="size-4" /> : <Sun className="size-4" />}
-          </Button>
+          {/* Theme picker */}
+          <Popover>
+            <PopoverTrigger
+              className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }))}
+              title="Change theme"
+            >
+              <Contrast className="size-4" />
+            </PopoverTrigger>
+            <PopoverContent side="bottom" align="end" className="w-40 gap-0 p-1">
+              {THEMES.map(({ value, label, bg }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setTheme(value)}
+                  className={cn(
+                    "flex w-full cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none transition-colors",
+                    theme === value
+                      ? "bg-accent text-accent-foreground"
+                      : "text-foreground hover:bg-accent hover:text-accent-foreground",
+                  )}
+                >
+                  {/* Color swatch representing the theme's background */}
+                  <span
+                    className="size-3.5 shrink-0 rounded-sm ring-1 ring-foreground/20"
+                    style={{ backgroundColor: bg }}
+                  />
+                  {label}
+                  {theme === value && <Check className="ml-auto size-3 shrink-0" />}
+                </button>
+              ))}
+            </PopoverContent>
+          </Popover>
 
           {user && repo && (
             <>
