@@ -2,7 +2,7 @@
 // Used by both FileViewer (codeToHast) and Markdown (rehype plugin).
 
 import { createHighlighterCore, type HighlighterCore } from "shiki/core";
-import { createOnigurumaEngine } from "shiki/engine/oniguruma";
+import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
 
 let highlighterPromise: Promise<HighlighterCore> | null = null;
 
@@ -33,7 +33,7 @@ export function getHighlighter(): Promise<HighlighterCore> {
         import("@shikijs/langs/graphql"),
         import("@shikijs/langs/diff"),
       ],
-      engine: createOnigurumaEngine(import("shiki/wasm")),
+      engine: createJavaScriptRegexEngine(),
     });
   }
   return highlighterPromise;
