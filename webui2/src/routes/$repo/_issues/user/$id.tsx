@@ -70,6 +70,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const profileSearchSchema = v.object({
   status: v.fallback(v.picklist(["open", "closed"]), "open"),
   after: v.fallback(v.string(), ""),
+  page: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(1)), 1),
+  prev: v.fallback(v.string(), ""), // comma-separated stack of previous page cursors
 });
 
 const PAGE_SIZE = 25;
@@ -78,7 +80,7 @@ export const Route = createFileRoute("/$repo/_issues/user/$id")({
   component: RouteComponent,
   pendingComponent: ProfileSkeleton,
   validateSearch: (search) => v.parse(profileSearchSchema, search),
-  loaderDeps: ({ search: { status, after } }) => ({ status, after }),
+  loaderDeps: ({ search: { status, after, page, prev } }) => ({ status, after, page, prev }),
   loader: async ({ context: { preloadQuery, ref }, params: { id }, deps: { status, after } }) => {
     const profileRef = preloadQuery(USER_PROFILE_QUERY, {
       variables: {
@@ -96,7 +98,7 @@ export const Route = createFileRoute("/$repo/_issues/user/$id")({
 
 function RouteComponent() {
   const { id, repo } = Route.useParams();
-  const { status: statusFilter, after } = Route.useSearch();
+  const { status: statusFilter, after, page, prev } = Route.useSearch();
   const { profileRef } = Route.useLoaderData();
   const { data } = useReadQuery(profileRef);
 
@@ -111,7 +113,8 @@ function RouteComponent() {
   const bugs = data?.repository?.bugs;
   const totalPages = Math.max(1, Math.ceil((bugs?.totalCount ?? 0) / PAGE_SIZE));
   const hasNext = bugs?.pageInfo.hasNextPage ?? false;
-  const hasPrev = !!after;
+  const hasPrev = page > 1;
+  const prevCursors = prev ? prev.split(",") : [];
 
   return (
     <div>
@@ -163,7 +166,7 @@ function RouteComponent() {
           <StatusTabs.Tab
             to="/$repo/user/$id"
             params={{ repo, id }}
-            search={{ status: "open", after: "" }}
+            search={{ status: "open", after: "", page: 1, prev: "" }}
             className={statusFilter === "open" ? "bg-accent text-accent-foreground" : ""}
           >
             <StatusTabs.OpenIndicator active={statusFilter === "open"} />
@@ -173,7 +176,7 @@ function RouteComponent() {
           <StatusTabs.Tab
             to="/$repo/user/$id"
             params={{ repo, id }}
-            search={{ status: "closed", after: "" }}
+            search={{ status: "closed", after: "", page: 1, prev: "" }}
             className={statusFilter === "closed" ? "bg-accent text-accent-foreground" : ""}
           >
             <StatusTabs.ClosedIndicator active={statusFilter === "closed"} />
@@ -216,14 +219,24 @@ function RouteComponent() {
             <Pagination.Previous
               to="/$repo/user/$id"
               params={{ repo, id }}
-              search={{ status: statusFilter, after: "" }}
+              search={{
+                status: statusFilter,
+                after: prevCursors.at(-1) ?? "",
+                page: page - 1,
+                prev: prevCursors.slice(0, -1).join(","),
+              }}
               disabled={!hasPrev}
             />
-            <Pagination.Info>Page {after ? 2 : 1} of {totalPages}</Pagination.Info>
+            <Pagination.Info>Page {page} of {totalPages}</Pagination.Info>
             <Pagination.Next
               to="/$repo/user/$id"
               params={{ repo, id }}
-              search={{ status: statusFilter, after: bugs?.pageInfo.endCursor ?? "" }}
+              search={{
+                status: statusFilter,
+                after: bugs?.pageInfo.endCursor ?? "",
+                page: page + 1,
+                prev: prev ? `${prev},${after}` : after,
+              }}
               disabled={!hasNext}
             />
           </Pagination.Root>

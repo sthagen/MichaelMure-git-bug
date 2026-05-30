@@ -60,13 +60,15 @@ import { buildBaseQuery, buildQueryString, parseQueryString } from "@/lib/query-
 const issuesSearchSchema = v.object({
   q: v.fallback(v.string(), "status:open"),
   after: v.fallback(v.string(), ""),
+  page: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(1)), 1),
+  prev: v.fallback(v.string(), ""), // comma-separated stack of previous page cursors
 });
 
 export const Route = createFileRoute("/$repo/_issues/issues/")({
   component: RouteComponent,
   pendingComponent: BugListSkeleton,
   validateSearch: (search) => v.parse(issuesSearchSchema, search),
-  loaderDeps: ({ search: { q, after } }) => ({ q, after }),
+  loaderDeps: ({ search: { q, after, page, prev } }) => ({ q, after, page, prev }),
   loader: async ({ context: { preloadQuery, ref }, deps: { q, after } }) => {
     const parsed = parseQueryString(q);
     const baseQuery = buildBaseQuery(parsed.labels, parsed.author, parsed.freeText);
@@ -89,7 +91,7 @@ const PAGE_SIZE = 25;
 function RouteComponent() {
   const { repo } = Route.useParams();
   const navigate = useNavigate({ from: "/$repo/issues/" });
-  const { q, after } = Route.useSearch();
+  const { q, after, page, prev } = Route.useSearch();
 
   // Parse the URL query into structured filter state for the dropdowns
   const parsed = parseQueryString(q);
@@ -183,12 +185,13 @@ function RouteComponent() {
   const totalCount = bugs?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const hasNext = bugs?.pageInfo.hasNextPage ?? false;
-  const hasPrev = !!after;
+  const hasPrev = page > 1;
+  const prevCursors = prev ? prev.split(",") : [];
 
   // Navigate to new search params (resets pagination)
   function setSearch(newQ: string) {
     setDraft(newQ);
-    void navigate({ search: { q: newQ, after: "" } });
+    void navigate({ search: { q: newQ, after: "", page: 1, prev: "" } });
   }
 
   // Apply structured filters → build query string → navigate
@@ -339,14 +342,24 @@ function RouteComponent() {
             <Pagination.Previous
               to="/$repo/issues"
               params={{ repo }}
-              search={{ q, after: "" }}
+              search={{
+                q,
+                after: prevCursors.at(-1) ?? "",
+                page: page - 1,
+                prev: prevCursors.slice(0, -1).join(","),
+              }}
               disabled={!hasPrev}
             />
-            <Pagination.Info>Page {after ? 2 : 1} of {totalPages}</Pagination.Info>
+            <Pagination.Info>Page {page} of {totalPages}</Pagination.Info>
             <Pagination.Next
               to="/$repo/issues"
               params={{ repo }}
-              search={{ q, after: bugs?.pageInfo.endCursor ?? "" }}
+              search={{
+                q,
+                after: bugs?.pageInfo.endCursor ?? "",
+                page: page + 1,
+                prev: prev ? `${prev},${after}` : after,
+              }}
               disabled={!hasNext}
             />
           </Pagination.Root>
