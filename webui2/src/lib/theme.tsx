@@ -4,10 +4,10 @@ export type Theme = "light" | "light-soft" | "dark-soft" | "dark";
 
 /** Metadata for each theme, used by the theme picker in the header. */
 export const THEMES: { value: Theme; label: string; bg: string; fg: string }[] = [
-  { value: "light", label: "Light", bg: "#ffffff", fg: "#1a1a1e" },
-  { value: "light-soft", label: "Light soft", bg: "#f2f3f7", fg: "#1a1a1e" },
-  { value: "dark-soft", label: "Dark soft", bg: "#22272e", fg: "#adb9c7" },
-  { value: "dark", label: "Dark", bg: "#0d1014", fg: "#fbfbfc" },
+  { value: "light", label: "Light", bg: "#ffffff", fg: "#1b1d28" },
+  { value: "light-soft", label: "Light soft", bg: "#eff0f6", fg: "#1b1d28" },
+  { value: "dark-soft", label: "Dark soft", bg: "#22272e", fg: "#adb8c4" },
+  { value: "dark", label: "Dark", bg: "#111318", fg: "#f4f5f8" },
 ];
 
 interface ThemeContextValue {
