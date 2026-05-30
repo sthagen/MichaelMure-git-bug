@@ -91,8 +91,8 @@ describe("QueryInput — autocomplete trigger", () => {
       getSuggestions,
     };
     render(<Harness providers={[provider]} />);
-    typeValue("label:bu");
-    await waitFor(() => expect(getSuggestions).toHaveBeenCalledWith("bu"));
+    typeValue("label:bug");
+    await waitFor(() => expect(getSuggestions).toHaveBeenCalledWith("bug"));
   });
 
   it("hides the dropdown when the provider returns no suggestions", async () => {
