@@ -91,7 +91,7 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
   const hasMessage = message.trim().length > 0;
 
   async function handleComment() {
-    await addComment({ variables: { input: { prefix: bugPrefix, message: message.trim() } } });
+    await addComment({ variables: { input: { prefix: bugPrefix, message: message.trim(), repoRef: ref_ } } });
     setMessage("");
     setPreview(false);
   }
@@ -99,17 +99,17 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
   async function handleToggleStatus() {
     if (isOpen) {
       if (hasMessage) {
-        await addAndClose({ variables: { input: { prefix: bugPrefix, message: message.trim() } } });
+        await addAndClose({ variables: { input: { prefix: bugPrefix, message: message.trim(), repoRef: ref_ } } });
       } else {
-        await statusClose({ variables: { input: { prefix: bugPrefix } } });
+        await statusClose({ variables: { input: { prefix: bugPrefix, repoRef: ref_ } } });
       }
     } else {
       if (hasMessage) {
         await addAndReopen({
-          variables: { input: { prefix: bugPrefix, message: message.trim() } },
+          variables: { input: { prefix: bugPrefix, message: message.trim(), repoRef: ref_ } },
         });
       } else {
-        await statusOpen({ variables: { input: { prefix: bugPrefix } } });
+        await statusOpen({ variables: { input: { prefix: bugPrefix, repoRef: ref_ } } });
       }
     }
     setMessage("");

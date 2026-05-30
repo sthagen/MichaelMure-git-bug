@@ -51,7 +51,7 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
   async function handleSave() {
     const trimmed = value.trim();
     if (trimmed && trimmed !== title) {
-      await setTitle({ variables: { input: { prefix: bugPrefix, title: trimmed } } });
+      await setTitle({ variables: { input: { prefix: bugPrefix, title: trimmed, repoRef: ref_ } } });
     }
     setEditing(false);
   }

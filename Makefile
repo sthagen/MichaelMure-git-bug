@@ -21,7 +21,7 @@ list-checks:
 
 .PHONY: build-webui
 build-webui:
-	cd webui2 && npm run build
+	cd webui2 && pnpm run build
 
 .PHONY: build
 build: build-webui

@@ -30,6 +30,7 @@ export const Route = createFileRoute("/$repo/_issues/issues/new")({
 function RouteComponent() {
   const navigate = useNavigate();
   const { repo } = Route.useParams();
+  const { ref } = Route.useRouteContext();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [createBug, { loading, error }] = useMutation(BUG_CREATE_MUTATION);
@@ -37,7 +38,7 @@ function RouteComponent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const result = await createBug({
-      variables: { input: { title: title.trim(), message: message.trim() } },
+      variables: { input: { title: title.trim(), message: message.trim(), repoRef: ref } },
     });
     const humanId = result.data?.bugCreate.bug.humanId;
     if (humanId) {

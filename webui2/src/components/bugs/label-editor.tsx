@@ -62,6 +62,7 @@ export function LabelEditor({ bugPrefix, currentLabels, ref_, validLabels }: Lab
       variables: {
         input: {
           prefix: bugPrefix,
+          repoRef: ref_,
           added: isSet ? [] : [name],
           Removed: isSet ? [name] : [],
         },
