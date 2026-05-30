@@ -100,7 +100,7 @@ export const FullTimeline: Story = {
 
 const createOnlyTimelineData = {
   __typename: "BugTimelineItemConnection" as const,
-  nodes: [baseTimelineData.nodes[0]],
+  nodes: [baseTimelineData.nodes[0]!],
 };
 
 const createOnlyTimeline = makeFragmentData(createOnlyTimelineData, TIMELINE_ITEMS_FRAGMENT);
@@ -147,7 +147,7 @@ export const EmptyMessage: Story = {
 const statusReopenTimelineData = {
   __typename: "BugTimelineItemConnection" as const,
   nodes: [
-    baseTimelineData.nodes[0],
+    baseTimelineData.nodes[0]!,
     {
       __typename: "BugSetStatusTimelineItem" as const,
       id: "status-close",

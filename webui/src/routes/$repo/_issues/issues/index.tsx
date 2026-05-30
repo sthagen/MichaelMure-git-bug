@@ -69,8 +69,8 @@ import { buildBaseQuery, buildQueryString, parseQueryString } from "@/lib/query-
 const issuesSearchSchema = v.object({
   q: v.fallback(v.string(), "status:open"),
   after: v.fallback(v.string(), ""),
-  page: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(1)), 1),
-  prev: v.fallback(v.string(), ""), // comma-separated stack of previous page cursors
+  page: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
+  prev: v.optional(v.string()), // comma-separated stack of previous page cursors
 });
 
 export const Route = createFileRoute("/$repo/_issues/issues/")({
@@ -100,7 +100,7 @@ const PAGE_SIZE = 25;
 function RouteComponent() {
   const { repo } = Route.useParams();
   const navigate = useNavigate({ from: "/$repo/issues/" });
-  const { q, after, page, prev } = Route.useSearch();
+  const { q, after, page = 1, prev = "" } = Route.useSearch();
 
   // Parse the URL query into structured filter state for the dropdowns
   const parsed = parseQueryString(q);
@@ -199,7 +199,7 @@ function RouteComponent() {
   // Navigate to new search params (resets pagination)
   function setSearch(newQ: string) {
     setDraft(newQ);
-    void navigate({ search: { q: newQ, after: "", page: 1, prev: "" } });
+    void navigate({ search: { q: newQ, after: "" } });
   }
 
   // Apply structured filters → build query string → navigate
@@ -353,8 +353,8 @@ function RouteComponent() {
               search={{
                 q,
                 after: prevCursors.at(-1) ?? "",
-                page: page - 1,
-                prev: prevCursors.slice(0, -1).join(","),
+                page: page - 1 > 1 ? page - 1 : undefined,
+                prev: prevCursors.slice(0, -1).join(",") || undefined,
               }}
               disabled={!hasPrev}
             />
@@ -368,7 +368,7 @@ function RouteComponent() {
                 q,
                 after: bugs?.pageInfo.endCursor ?? "",
                 page: page + 1,
-                prev: prev ? `${prev},${after}` : after,
+                prev: (prev ? `${prev},${after}` : after) || undefined,
               }}
               disabled={!hasNext}
             />

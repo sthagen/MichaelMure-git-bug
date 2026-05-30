@@ -6,31 +6,35 @@ import { makeFragmentData } from "@/__generated__/fragment-masking";
 
 import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "./label-badge";
 
-const bugData = { __typename: "Label" as const, name: "bug", color: { R: 252, G: 41, B: 41 } };
+const bugData = {
+  __typename: "Label" as const,
+  name: "bug",
+  color: { __typename: "Color" as const, R: 252, G: 41, B: 41 },
+};
 const enhancementData = {
   __typename: "Label" as const,
   name: "enhancement",
-  color: { R: 163, G: 230, B: 53 },
+  color: { __typename: "Color" as const, R: 163, G: 230, B: 53 },
 };
 const documentationData = {
   __typename: "Label" as const,
   name: "documentation",
-  color: { R: 30, G: 80, B: 160 },
+  color: { __typename: "Color" as const, R: 30, G: 80, B: 160 },
 };
 const helpWantedData = {
   __typename: "Label" as const,
   name: "help wanted",
-  color: { R: 0, G: 150, B: 136 },
+  color: { __typename: "Color" as const, R: 0, G: 150, B: 136 },
 };
 const wontfixData = {
   __typename: "Label" as const,
   name: "wontfix",
-  color: { R: 200, G: 200, B: 200 },
+  color: { __typename: "Color" as const, R: 200, G: 200, B: 200 },
 };
 const priorityData = {
   __typename: "Label" as const,
   name: "priority",
-  color: { R: 255, G: 152, B: 0 },
+  color: { __typename: "Color" as const, R: 255, G: 152, B: 0 },
 };
 
 const allLabelsData = [

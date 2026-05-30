@@ -78,8 +78,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 const profileSearchSchema = v.object({
   status: v.fallback(v.picklist(["open", "closed"]), "open"),
   after: v.fallback(v.string(), ""),
-  page: v.fallback(v.pipe(v.number(), v.integer(), v.minValue(1)), 1),
-  prev: v.fallback(v.string(), ""), // comma-separated stack of previous page cursors
+  page: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
+  prev: v.optional(v.string()), // comma-separated stack of previous page cursors
 });
 
 const PAGE_SIZE = 25;
@@ -106,7 +106,7 @@ export const Route = createFileRoute("/$repo/_issues/user/$id")({
 
 function RouteComponent() {
   const { id, repo } = Route.useParams();
-  const { status: statusFilter, after, page, prev } = Route.useSearch();
+  const { status: statusFilter, after, page = 1, prev = "" } = Route.useSearch();
   const { profileRef } = Route.useLoaderData();
   const { data } = useReadQuery(profileRef);
 
@@ -174,7 +174,7 @@ function RouteComponent() {
           <StatusTabs.Tab
             to="/$repo/user/$id"
             params={{ repo, id }}
-            search={{ status: "open", after: "", page: 1, prev: "" }}
+            search={{ status: "open", after: "" }}
             className={statusFilter === "open" ? "bg-accent text-accent-foreground" : ""}
           >
             <StatusTabs.OpenIndicator active={statusFilter === "open"} />
@@ -184,7 +184,7 @@ function RouteComponent() {
           <StatusTabs.Tab
             to="/$repo/user/$id"
             params={{ repo, id }}
-            search={{ status: "closed", after: "", page: 1, prev: "" }}
+            search={{ status: "closed", after: "" }}
             className={statusFilter === "closed" ? "bg-accent text-accent-foreground" : ""}
           >
             <StatusTabs.ClosedIndicator active={statusFilter === "closed"} />
@@ -228,8 +228,8 @@ function RouteComponent() {
               search={{
                 status: statusFilter,
                 after: prevCursors.at(-1) ?? "",
-                page: page - 1,
-                prev: prevCursors.slice(0, -1).join(","),
+                page: page - 1 > 1 ? page - 1 : undefined,
+                prev: prevCursors.slice(0, -1).join(",") || undefined,
               }}
               disabled={!hasPrev}
             />
@@ -243,7 +243,7 @@ function RouteComponent() {
                 status: statusFilter,
                 after: bugs?.pageInfo.endCursor ?? "",
                 page: page + 1,
-                prev: prev ? `${prev},${after}` : after,
+                prev: (prev ? `${prev},${after}` : after) || undefined,
               }}
               disabled={!hasNext}
             />

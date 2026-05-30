@@ -1,15 +1,22 @@
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { useAuth } from "@/lib/auth";
+import type { SortValue } from "@/lib/query-utils";
 
 import type { IdentityItem, LabelItem } from "./issue-filters";
 import { IssueFilters } from "./issue-filters";
 
 // ── Auth mock ─────────────────────────────────────────────────────────────────
 
+type MockUser = {
+  id: string;
+  humanId: string;
+  displayName: string;
+  avatarUrl: string | null;
+} | null;
 vi.mock("@/lib/auth", () => ({
-  useAuth: vi.fn(() => ({
+  useAuth: vi.fn<() => { user: MockUser }>(() => ({
     user: { id: "current-user-id", humanId: "cu1", displayName: "Current User", avatarUrl: null },
   })),
 }));
@@ -38,18 +45,19 @@ interface RenderProps {
   labels?: LabelItem[];
   identities?: IdentityItem[];
   selectedLabels?: string[];
-  onLabelsChange?: ReturnType<typeof vi.fn>;
+  onLabelsChange?: (labels: string[]) => void;
   selectedAuthorId?: string | null;
-  onAuthorChange?: ReturnType<typeof vi.fn>;
+  onAuthorChange?: (humanId: string | null, queryValue: string | null) => void;
   recentAuthorIds?: string[];
-  sort?: "creation-desc" | "creation-asc" | "edit-desc" | "edit-asc";
-  onSortChange?: ReturnType<typeof vi.fn>;
+  sort?: SortValue;
+  onSortChange?: (sort: SortValue) => void;
 }
 
 function renderFilters(props: RenderProps = {}) {
-  const onLabelsChange = props.onLabelsChange ?? vi.fn();
-  const onAuthorChange = props.onAuthorChange ?? vi.fn();
-  const onSortChange = props.onSortChange ?? vi.fn();
+  const onLabelsChange = props.onLabelsChange ?? vi.fn<(labels: string[]) => void>();
+  const onAuthorChange =
+    props.onAuthorChange ?? vi.fn<(humanId: string | null, queryValue: string | null) => void>();
+  const onSortChange = props.onSortChange ?? vi.fn<(sort: SortValue) => void>();
 
   render(
     <IssueFilters
@@ -71,15 +79,15 @@ function renderFilters(props: RenderProps = {}) {
 // floating-ui's useRole override leaves accessible names empty in happy-dom,
 // so we select trigger buttons by DOM order: Labels[0], Author[1], Sort[2].
 function openLabels() {
-  fireEvent.click(screen.getAllByRole("combobox")[0]);
+  fireEvent.click(screen.getAllByRole("combobox")[0]!);
 }
 
 function openAuthor() {
-  fireEvent.click(screen.getAllByRole("combobox")[1]);
+  fireEvent.click(screen.getAllByRole("combobox")[1]!);
 }
 
 function openSort() {
-  fireEvent.click(screen.getAllByRole("combobox")[2]);
+  fireEvent.click(screen.getAllByRole("combobox")[2]!);
 }
 
 function optionNames() {
@@ -99,7 +107,7 @@ describe("IssueFilters — label sorting", () => {
 
 describe("IssueFilters — identity sorting", () => {
   it("sorts identities by displayName before passing to AuthorFilter", () => {
-    vi.mocked(useAuth).mockReturnValueOnce({ user: null as never });
+    vi.mocked(useAuth).mockReturnValueOnce({ user: null });
     renderFilters({
       identities: [
         makeIdentity({ id: "u3", humanId: "h3", displayName: "Zara" }),
@@ -236,14 +244,14 @@ describe("AuthorFilter — priority pinning", () => {
   );
 
   it("pins the current user first", () => {
-    renderFilters({ identities: [OTHERS[0], CURRENT, OTHERS[1]] });
+    renderFilters({ identities: [OTHERS[0]!, CURRENT, OTHERS[1]!] });
     openAuthor();
     expect(optionNames()[0]).toContain("Current User");
   });
 
   it("pins the selected author second when different from current user", () => {
     renderFilters({
-      identities: [SELECTED, CURRENT, OTHERS[0]],
+      identities: [SELECTED, CURRENT, OTHERS[0]!],
       selectedAuthorId: "sel1",
     });
     openAuthor();
@@ -254,7 +262,7 @@ describe("AuthorFilter — priority pinning", () => {
 
   it("does not duplicate the current user if also the selected author", () => {
     renderFilters({
-      identities: [CURRENT, OTHERS[0]],
+      identities: [CURRENT, OTHERS[0]!],
       selectedAuthorId: CURRENT.humanId,
     });
     openAuthor();
@@ -265,7 +273,7 @@ describe("AuthorFilter — priority pinning", () => {
 
   it("pins recent authors after current user and selected", () => {
     renderFilters({
-      identities: [RECENT, CURRENT, OTHERS[0]],
+      identities: [RECENT, CURRENT, OTHERS[0]!],
       recentAuthorIds: [RECENT.humanId],
     });
     openAuthor();
@@ -341,7 +349,7 @@ describe("AuthorFilter — search", () => {
   ];
 
   beforeEach(() => {
-    vi.mocked(useAuth).mockReturnValue({ user: null as never });
+    vi.mocked(useAuth).mockReturnValue({ user: null });
   });
 
   it("filters by displayName", () => {
@@ -375,7 +383,7 @@ describe("AuthorFilter — search", () => {
   });
 
   it("bypasses the 8-item cap during search", () => {
-    vi.mocked(useAuth).mockReturnValue({ user: null as never });
+    vi.mocked(useAuth).mockReturnValue({ user: null });
     const many = Array.from({ length: 12 }, (_, i) =>
       makeIdentity({
         id: `u${i}`,
@@ -403,7 +411,7 @@ describe("AuthorFilter — search", () => {
 
 describe("AuthorFilter — onAuthorChange", () => {
   beforeEach(() => {
-    vi.mocked(useAuth).mockReturnValue({ user: null as never });
+    vi.mocked(useAuth).mockReturnValue({ user: null });
   });
 
   it("selects an author and passes their humanId and query value", () => {

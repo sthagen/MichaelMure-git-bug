@@ -13,10 +13,10 @@ import * as QueryInput from "./query-input";
 
 function Harness({
   providers = [] as CompletionProvider[],
-  onSubmit = vi.fn(),
+  onSubmit = vi.fn<() => void>(),
 }: {
   providers?: CompletionProvider[];
-  onSubmit?: ReturnType<typeof vi.fn>;
+  onSubmit?: () => void;
 }) {
   const [value, setValue] = useState("");
   return (

@@ -92,7 +92,7 @@ export const withApollo: Decorator = (Story) => (
 //   )]
 export function withCachedFragments(
   ...entries: Array<
-    [fragment: TypedDocumentNode, fragmentName: string, data: Record<string, unknown>]
+    readonly [fragment: TypedDocumentNode, fragmentName: string, data: Record<string, unknown>]
   >
 ): Decorator {
   return (Story) => {

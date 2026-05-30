@@ -1,4 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing/react";
+import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Suspense } from "react";
 import { describe, it, expect, vi } from "vitest";
@@ -16,8 +17,14 @@ import { useAuth } from "@/lib/auth";
 
 import { CommentBox } from "./comment-box";
 
+type MockUser = {
+  id: string;
+  humanId: string;
+  displayName: string;
+  avatarUrl: string | null;
+} | null;
 vi.mock("@/lib/auth", () => ({
-  useAuth: vi.fn(() => ({
+  useAuth: vi.fn<() => { user: MockUser }>(() => ({
     user: {
       id: "user-1",
       humanId: "u1",
@@ -38,7 +45,7 @@ const REFETCH_MOCK = {
 function renderCommentBox(props: { bugPrefix?: string; bugStatus?: Status; ref_?: string | null }) {
   const { bugPrefix = "bug1", bugStatus = Status.Open, ref_ = "myrepo" } = props;
   return render(
-    <MockedProvider addTypename={false} showWarnings={false}>
+    <MockedProvider showWarnings={false}>
       <Suspense>
         <CommentBox bugPrefix={bugPrefix} bugStatus={bugStatus} ref_={ref_} />
       </Suspense>
@@ -55,7 +62,7 @@ function typeComment(text: string) {
 
 describe("CommentBox — auth gate", () => {
   it("renders nothing when there is no logged-in user", async () => {
-    vi.mocked(useAuth).mockReturnValueOnce({ user: null as never });
+    vi.mocked(useAuth).mockReturnValueOnce({ user: null });
 
     const { container } = renderCommentBox({});
     expect(container.firstChild).toBeNull();
@@ -91,7 +98,7 @@ describe("CommentBox — mutation variables", () => {
   const MESSAGE = "my comment";
 
   function mockMutation(
-    document: typeof BugAddCommentDocument,
+    document: TypedDocumentNode<any, any>,
     resultData: Record<string, unknown>,
   ) {
     const matchVars = vi.fn().mockReturnValue(true);
@@ -108,7 +115,7 @@ describe("CommentBox — mutation variables", () => {
     });
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix={PREFIX} bugStatus={Status.Open} ref_={REPO} />
         </Suspense>
@@ -130,7 +137,7 @@ describe("CommentBox — mutation variables", () => {
     });
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix={PREFIX} bugStatus={Status.Open} ref_={null} />
         </Suspense>
@@ -152,7 +159,7 @@ describe("CommentBox — mutation variables", () => {
     });
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix={PREFIX} bugStatus={Status.Open} ref_={REPO} />
         </Suspense>
@@ -164,7 +171,7 @@ describe("CommentBox — mutation variables", () => {
 
     await waitFor(() => expect(matchVars).toHaveBeenCalled());
     expect(matchVars).toHaveBeenCalledWith({
-      input: expect.objectContaining({ message: "my comment" }),
+      input: { prefix: PREFIX, message: "my comment", repoRef: REPO },
     });
   });
 
@@ -174,7 +181,7 @@ describe("CommentBox — mutation variables", () => {
     });
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix={PREFIX} bugStatus={Status.Open} ref_={REPO} />
         </Suspense>
@@ -195,7 +202,7 @@ describe("CommentBox — mutation variables", () => {
     });
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix={PREFIX} bugStatus={Status.Open} ref_={REPO} />
         </Suspense>
@@ -217,7 +224,7 @@ describe("CommentBox — mutation variables", () => {
     });
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix={PREFIX} bugStatus={Status.Closed} ref_={REPO} />
         </Suspense>
@@ -238,7 +245,7 @@ describe("CommentBox — mutation variables", () => {
     });
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix={PREFIX} bugStatus={Status.Closed} ref_={REPO} />
         </Suspense>
@@ -266,7 +273,7 @@ describe("CommentBox — state transitions", () => {
     };
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <CommentBox bugPrefix="bug1" bugStatus={Status.Open} ref_="myrepo" />
         </Suspense>

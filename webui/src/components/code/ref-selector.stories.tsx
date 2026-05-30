@@ -10,13 +10,48 @@ import { RefSelector, REF_SELECTOR_REFS_FRAGMENT } from "./ref-selector";
 const sampleRefsData = {
   __typename: "GitRefConnection" as const,
   nodes: [
-    { name: "refs/heads/main", shortName: "main", type: GitRefType.Branch },
-    { name: "refs/heads/develop", shortName: "develop", type: GitRefType.Branch },
-    { name: "refs/heads/feature/auth", shortName: "feature/auth", type: GitRefType.Branch },
-    { name: "refs/heads/fix/login", shortName: "fix/login", type: GitRefType.Branch },
-    { name: "refs/tags/v1.0.0", shortName: "v1.0.0", type: GitRefType.Tag },
-    { name: "refs/tags/v1.1.0", shortName: "v1.1.0", type: GitRefType.Tag },
-    { name: "refs/tags/v2.0.0-rc1", shortName: "v2.0.0-rc1", type: GitRefType.Tag },
+    {
+      __typename: "GitRef" as const,
+      name: "refs/heads/main",
+      shortName: "main",
+      type: GitRefType.Branch,
+    },
+    {
+      __typename: "GitRef" as const,
+      name: "refs/heads/develop",
+      shortName: "develop",
+      type: GitRefType.Branch,
+    },
+    {
+      __typename: "GitRef" as const,
+      name: "refs/heads/feature/auth",
+      shortName: "feature/auth",
+      type: GitRefType.Branch,
+    },
+    {
+      __typename: "GitRef" as const,
+      name: "refs/heads/fix/login",
+      shortName: "fix/login",
+      type: GitRefType.Branch,
+    },
+    {
+      __typename: "GitRef" as const,
+      name: "refs/tags/v1.0.0",
+      shortName: "v1.0.0",
+      type: GitRefType.Tag,
+    },
+    {
+      __typename: "GitRef" as const,
+      name: "refs/tags/v1.1.0",
+      shortName: "v1.1.0",
+      type: GitRefType.Tag,
+    },
+    {
+      __typename: "GitRef" as const,
+      name: "refs/tags/v2.0.0-rc1",
+      shortName: "v2.0.0-rc1",
+      type: GitRefType.Tag,
+    },
   ],
 };
 

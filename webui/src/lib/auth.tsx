@@ -26,5 +26,5 @@ export const USER_IDENTITY_QUERY = graphql(`
 
 export function useAuth() {
   const { data } = useSuspenseQuery(USER_IDENTITY_QUERY);
-  return { user: data.repository!.userIdentity! };
+  return { user: data.repository?.userIdentity ?? null };
 }

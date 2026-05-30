@@ -2,12 +2,19 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 
 import type { FragmentType } from "@/__generated__/fragment-masking";
+import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { GitRefType } from "@/__generated__/graphql";
 
 import { RefSelector, REF_SELECTOR_REFS_FRAGMENT } from "./ref-selector";
 
 function makeRefs(nodes: { name: string; shortName: string; type: GitRefType }[]) {
-  return { nodes } as FragmentType<typeof REF_SELECTOR_REFS_FRAGMENT>;
+  return makeFragmentData(
+    {
+      __typename: "GitRefConnection" as const,
+      nodes: nodes.map((n) => ({ __typename: "GitRef" as const, ...n })),
+    },
+    REF_SELECTOR_REFS_FRAGMENT,
+  );
 }
 
 const DEFAULT_REFS = makeRefs([
@@ -21,10 +28,10 @@ function renderSelector(
   props: {
     refs?: FragmentType<typeof REF_SELECTOR_REFS_FRAGMENT>;
     currentRef?: string;
-    onSelect?: ReturnType<typeof vi.fn>;
+    onSelect?: (shortName: string) => void;
   } = {},
 ) {
-  const onSelect = props.onSelect ?? vi.fn();
+  const onSelect = props.onSelect ?? vi.fn<(shortName: string) => void>();
   render(
     <RefSelector
       refs={props.refs ?? DEFAULT_REFS}

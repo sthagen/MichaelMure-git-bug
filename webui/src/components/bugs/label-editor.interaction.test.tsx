@@ -1,3 +1,4 @@
+import type { MockedResponse } from "@apollo/client/testing";
 import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Suspense } from "react";
@@ -10,8 +11,14 @@ import { useAuth } from "@/lib/auth";
 
 import { LabelEditor } from "./label-editor";
 
+type MockUser = {
+  id: string;
+  humanId: string;
+  displayName: string;
+  avatarUrl: string | null;
+} | null;
 vi.mock("@/lib/auth", () => ({
-  useAuth: vi.fn(() => ({
+  useAuth: vi.fn<() => { user: MockUser }>(() => ({
     user: { id: "user-1", humanId: "u1", displayName: "Test User", avatarUrl: null },
   })),
 }));
@@ -34,7 +41,7 @@ function renderEditor(props: {
   currentLabels?: LabelData[];
   validLabels?: LabelData[];
   ref_?: string | null;
-  mocks?: object[];
+  mocks?: MockedResponse<any, any>[];
 }) {
   const {
     currentLabels = [],
@@ -44,7 +51,7 @@ function renderEditor(props: {
   } = props;
 
   return render(
-    <MockedProvider mocks={mocks} addTypename={false} showWarnings={false}>
+    <MockedProvider mocks={mocks} showWarnings={false}>
       <Suspense>
         <LabelEditor
           bugPrefix="bug1"
@@ -64,7 +71,7 @@ function openPopover() {
 
 describe("LabelEditor — display", () => {
   it("shows no gear icon when there is no logged-in user", async () => {
-    vi.mocked(useAuth).mockReturnValueOnce({ user: null as never });
+    vi.mocked(useAuth).mockReturnValueOnce({ user: null });
 
     renderEditor({});
     expect(screen.queryByRole("button")).toBeNull();
@@ -153,7 +160,7 @@ describe("LabelEditor — mutation variables", () => {
 
     await waitFor(() => expect(matchVars).toHaveBeenCalled());
     expect(matchVars).toHaveBeenCalledWith({
-      input: expect.objectContaining({ repoRef: null }),
+      input: { prefix: "bug1", repoRef: null, added: ["bug"], Removed: [] },
     });
   });
 });

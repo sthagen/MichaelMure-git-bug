@@ -1,3 +1,4 @@
+import type { MockedResponse } from "@apollo/client/testing";
 import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Suspense } from "react";
@@ -5,6 +6,7 @@ import { describe, it, expect, vi } from "vitest";
 
 import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { BugDetailDocument, BugEditCommentDocument } from "@/__generated__/graphql";
+import type { TimelineItemsFragment } from "@/__generated__/graphql";
 import { useAuth } from "@/lib/auth";
 
 import { Timeline, TIMELINE_ITEMS_FRAGMENT } from "./timeline";
@@ -23,8 +25,14 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
 
 // ── Auth mock ─────────────────────────────────────────────────────────────────
 
+type MockUser = {
+  id: string;
+  humanId: string;
+  displayName: string;
+  avatarUrl: string | null;
+} | null;
 vi.mock("@/lib/auth", () => ({
-  useAuth: vi.fn(() => ({
+  useAuth: vi.fn<() => { user: MockUser }>(() => ({
     user: { id: "user-1", humanId: "u1", displayName: "Test User", avatarUrl: null },
   })),
 }));
@@ -47,7 +55,16 @@ const AUTHOR_OTHER = {
   avatarUrl: null,
 };
 
-function makeAddComment(overrides: Record<string, unknown> = {}) {
+type AddCommentOverrides = Partial<{
+  id: string;
+  author: typeof AUTHOR_ME | typeof AUTHOR_OTHER;
+  message: string;
+  createdAt: string;
+  lastEdit: string | null;
+  edited: boolean;
+}>;
+
+function makeAddComment(overrides: AddCommentOverrides = {}) {
   return {
     __typename: "BugAddCommentTimelineItem" as const,
     id: "comment-1",
@@ -60,11 +77,9 @@ function makeAddComment(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function makeTimeline(nodes: object[]) {
-  return makeFragmentData(
-    { __typename: "BugTimelineItemConnection" as const, nodes },
-    TIMELINE_ITEMS_FRAGMENT,
-  );
+function makeTimeline(nodes: TimelineItemsFragment["nodes"]) {
+  const data = { __typename: "BugTimelineItemConnection" as const, nodes };
+  return makeFragmentData(data, TIMELINE_ITEMS_FRAGMENT);
 }
 
 const REFETCH_MOCK = {
@@ -73,9 +88,13 @@ const REFETCH_MOCK = {
   maxUsageCount: 10,
 };
 
-function renderTimeline(nodes: object[], mocks: object[] = [], repo: string | null = "myrepo") {
+function renderTimeline(
+  nodes: TimelineItemsFragment["nodes"],
+  mocks: MockedResponse<any, any>[] = [],
+  repo: string | null = "myrepo",
+) {
   return render(
-    <MockedProvider mocks={mocks} addTypename={false} showWarnings={false}>
+    <MockedProvider mocks={mocks} showWarnings={false}>
       <Suspense>
         <Timeline repo={repo} bugPrefix="bug1" timeline={makeTimeline(nodes)} />
       </Suspense>
@@ -97,7 +116,7 @@ describe("Timeline — edit button auth gate", () => {
   });
 
   it("hides Edit button when there is no logged-in user", async () => {
-    vi.mocked(useAuth).mockReturnValueOnce({ user: null as never });
+    vi.mocked(useAuth).mockReturnValueOnce({ user: null });
     renderTimeline([makeAddComment()]);
     expect(screen.queryByRole("button", { name: "Edit" })).toBeNull();
   });
@@ -234,7 +253,7 @@ describe("Timeline — mutation variables", () => {
 
     await waitFor(() => expect(matchVars).toHaveBeenCalled());
     expect(matchVars).toHaveBeenCalledWith({
-      input: expect.objectContaining({ repoRef: null }),
+      input: { targetPrefix: COMMENT_ID, message: "New", repoRef: null },
     });
   });
 });

@@ -10,13 +10,41 @@ import { IssueFilters, type LabelItem, type IdentityItem } from "./issue-filters
 import { LABEL_FIELDS_FRAGMENT } from "./label-badge";
 
 const sampleLabelsData = [
-  { __typename: "Label" as const, name: "bug", color: { R: 252, G: 41, B: 41 } },
-  { __typename: "Label" as const, name: "enhancement", color: { R: 0, G: 150, B: 255 } },
-  { __typename: "Label" as const, name: "documentation", color: { R: 0, G: 180, B: 80 } },
-  { __typename: "Label" as const, name: "help wanted", color: { R: 255, G: 152, B: 0 } },
-  { __typename: "Label" as const, name: "good first issue", color: { R: 124, G: 58, B: 237 } },
-  { __typename: "Label" as const, name: "duplicate", color: { R: 120, G: 120, B: 120 } },
-  { __typename: "Label" as const, name: "wontfix", color: { R: 180, G: 180, B: 180 } },
+  {
+    __typename: "Label" as const,
+    name: "bug",
+    color: { __typename: "Color" as const, R: 252, G: 41, B: 41 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "enhancement",
+    color: { __typename: "Color" as const, R: 0, G: 150, B: 255 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "documentation",
+    color: { __typename: "Color" as const, R: 0, G: 180, B: 80 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "help wanted",
+    color: { __typename: "Color" as const, R: 255, G: 152, B: 0 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "good first issue",
+    color: { __typename: "Color" as const, R: 124, G: 58, B: 237 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "duplicate",
+    color: { __typename: "Color" as const, R: 120, G: 120, B: 120 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "wontfix",
+    color: { __typename: "Color" as const, R: 180, G: 180, B: 180 },
+  },
 ];
 
 const sampleLabels: LabelItem[] = sampleLabelsData.map((l) => ({
@@ -142,5 +170,15 @@ function Interactive() {
 }
 
 export const InteractiveState: Story = {
+  args: {
+    labels: sampleLabels,
+    identities: sampleIdentities,
+    selectedLabels: [],
+    onLabelsChange: () => {},
+    selectedAuthorId: null,
+    onAuthorChange: () => {},
+    sort: "creation-desc",
+    onSortChange: () => {},
+  },
   render: () => <Interactive />,
 };

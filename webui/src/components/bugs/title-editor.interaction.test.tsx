@@ -8,8 +8,14 @@ import { useAuth } from "@/lib/auth";
 
 import { TitleEditor } from "./title-editor";
 
+type MockUser = {
+  id: string;
+  humanId: string;
+  displayName: string;
+  avatarUrl: string | null;
+} | null;
 vi.mock("@/lib/auth", () => ({
-  useAuth: vi.fn(() => ({
+  useAuth: vi.fn<() => { user: MockUser }>(() => ({
     user: { id: "user-1", humanId: "u1", displayName: "Test User", avatarUrl: null },
   })),
 }));
@@ -23,7 +29,7 @@ const REFETCH_MOCK = {
 function renderEditor(props: { title?: string; ref_?: string | null } = {}) {
   const { title = "Original title", ref_ = "myrepo" } = props;
   return render(
-    <MockedProvider addTypename={false} showWarnings={false}>
+    <MockedProvider showWarnings={false}>
       <Suspense>
         <TitleEditor bugPrefix="bug1" title={title} humanId="h1" ref_={ref_} />
       </Suspense>
@@ -44,7 +50,7 @@ describe("TitleEditor — display", () => {
   });
 
   it("hides the pencil button when no user is logged in", async () => {
-    vi.mocked(useAuth).mockReturnValueOnce({ user: null as never });
+    vi.mocked(useAuth).mockReturnValueOnce({ user: null });
 
     renderEditor();
     expect(screen.queryByTitle("Edit title")).toBeNull();
@@ -87,7 +93,7 @@ describe("TitleEditor — mutation variables", () => {
     };
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <TitleEditor bugPrefix={PREFIX} title="Old title" humanId="h1" ref_={REPO} />
         </Suspense>
@@ -112,7 +118,7 @@ describe("TitleEditor — mutation variables", () => {
     };
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <TitleEditor bugPrefix={PREFIX} title="Old title" humanId="h1" ref_={REPO} />
         </Suspense>
@@ -137,7 +143,7 @@ describe("TitleEditor — mutation variables", () => {
     };
 
     render(
-      <MockedProvider mocks={[mock, REFETCH_MOCK]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock, REFETCH_MOCK]} showWarnings={false}>
         <Suspense>
           <TitleEditor bugPrefix={PREFIX} title="Old" humanId="h1" ref_={null} />
         </Suspense>
@@ -162,7 +168,7 @@ describe("TitleEditor — mutation variables", () => {
     };
 
     render(
-      <MockedProvider mocks={[mock]} addTypename={false} showWarnings={false}>
+      <MockedProvider mocks={[mock]} showWarnings={false}>
         <Suspense>
           <TitleEditor bugPrefix={PREFIX} title="Same" humanId="h1" ref_={REPO} />
         </Suspense>

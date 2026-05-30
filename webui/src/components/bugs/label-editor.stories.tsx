@@ -25,11 +25,31 @@ import * as Listbox from "@/components/ui/listbox";
 // self-contained version with the same UI but local state instead of mutations.
 
 const allLabelsData = [
-  { __typename: "Label" as const, name: "bug", color: { R: 252, G: 41, B: 41 } },
-  { __typename: "Label" as const, name: "enhancement", color: { R: 0, G: 150, B: 255 } },
-  { __typename: "Label" as const, name: "documentation", color: { R: 0, G: 180, B: 80 } },
-  { __typename: "Label" as const, name: "help wanted", color: { R: 255, G: 152, B: 0 } },
-  { __typename: "Label" as const, name: "good first issue", color: { R: 124, G: 58, B: 237 } },
+  {
+    __typename: "Label" as const,
+    name: "bug",
+    color: { __typename: "Color" as const, R: 252, G: 41, B: 41 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "enhancement",
+    color: { __typename: "Color" as const, R: 0, G: 150, B: 255 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "documentation",
+    color: { __typename: "Color" as const, R: 0, G: 180, B: 80 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "help wanted",
+    color: { __typename: "Color" as const, R: 255, G: 152, B: 0 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "good first issue",
+    color: { __typename: "Color" as const, R: 124, G: 58, B: 237 },
+  },
 ];
 
 const allLabels = allLabelsData.map((l) => ({

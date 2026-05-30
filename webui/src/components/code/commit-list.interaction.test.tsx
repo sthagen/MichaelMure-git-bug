@@ -1,3 +1,4 @@
+import type { MockedResponse } from "@apollo/client/testing";
 import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -65,10 +66,10 @@ function makeQueryMock(
 
 function renderList(
   props: { repo?: string | null; ref_?: string; path?: string } = {},
-  mocks: object[] = [],
+  mocks: MockedResponse<any, any>[] = [],
 ) {
   return render(
-    <MockedProvider mocks={mocks} addTypename={false} showWarnings={false}>
+    <MockedProvider mocks={mocks} showWarnings={false}>
       <CommitList repo={props.repo ?? "myrepo"} ref_={props.ref_ ?? "main"} path={props.path} />
     </MockedProvider>,
   );

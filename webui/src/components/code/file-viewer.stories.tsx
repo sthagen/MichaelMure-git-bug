@@ -94,6 +94,7 @@ export const TruncatedFile: Story = {
 };
 
 export const Loading: Story = {
+  args: { blob: typescriptBlob },
   render: () => (
     <div className="border-border overflow-hidden rounded-md border">
       <div className="bg-muted/40 border-border flex items-center justify-between border-b px-4 py-2">

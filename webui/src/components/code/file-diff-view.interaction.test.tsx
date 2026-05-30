@@ -1,3 +1,4 @@
+import type { MockedResponse } from "@apollo/client/testing";
 import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
@@ -6,7 +7,13 @@ import { FileDiffDocument } from "@/__generated__/graphql";
 
 import { FileDiffView } from "./file-diff-view";
 
-const BASE = { repo: "myrepo", hash: "abc123", path: "src/foo.ts", status: "MODIFIED" };
+const BASE = {
+  repo: "myrepo" as string | null,
+  hash: "abc123",
+  path: "src/foo.ts",
+  oldPath: undefined as string | undefined,
+  status: "MODIFIED",
+};
 
 const HUNK = {
   oldStart: 1,
@@ -30,9 +37,9 @@ function makeDiffMock(diff: Record<string, unknown>) {
   };
 }
 
-function renderView(props: Partial<typeof BASE> = {}, mocks: object[] = []) {
+function renderView(props: Partial<typeof BASE> = {}, mocks: MockedResponse<any, any>[] = []) {
   return render(
-    <MockedProvider mocks={mocks} addTypename={false} showWarnings={false}>
+    <MockedProvider mocks={mocks} showWarnings={false}>
       <FileDiffView {...BASE} {...props} />
     </MockedProvider>,
   );
