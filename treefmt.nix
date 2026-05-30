@@ -33,7 +33,6 @@
       settings = {
         end-of-line = "lf";
         number = true;
-        wrap = 80;
       };
     };
 
