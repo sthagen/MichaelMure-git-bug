@@ -35,6 +35,10 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
+      - name: Install webui dependencies
+        run: pnpm install
+        working-directory: webui
+
       - name: Build
         run: make
 
