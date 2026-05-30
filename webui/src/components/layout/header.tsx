@@ -99,7 +99,7 @@ const navLinkBase = "rounded-md px-3 py-1.5 text-sm font-medium transition-color
 const navLinkActive = "bg-accent text-accent-foreground";
 const navLinkInactive = "text-muted-foreground hover:bg-accent hover:text-accent-foreground";
 
-function RepoNav({ repo }: { repo: string }) {
+export function RepoNav({ repo }: { repo: string }) {
   // Determine which section is active from the matched route IDs.
   // The _code layout match means we're in the code browser; _issues means issues.
   const matchedIds = useRouterState({

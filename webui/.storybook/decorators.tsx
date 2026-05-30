@@ -25,9 +25,25 @@ const router = createRouter({
   history: createMemoryHistory({ initialEntries: ["/"] }),
 });
 
+// Router with a /$repo route, starting at /_
+// Used for components that call useParams() and need params.repo to be set.
+const repoRoot = createRootRoute();
+const repoRoute = createRoute({ getParentRoute: () => repoRoot, path: "/$repo" });
+const repoCatchAll = createRoute({ getParentRoute: () => repoRoot, path: "$" });
+repoRoot.addChildren([repoRoute, repoCatchAll]);
+const repoRouter = createRouter({
+  routeTree: repoRoot,
+  history: createMemoryHistory({ initialEntries: ["/_"] }),
+});
+
 // Wraps a story in a TanStack Router context so components using <Link> render.
 export const withRouter: Decorator = (Story) => (
   <RouterProvider router={router} defaultComponent={() => <Story />} />
+);
+
+// Like withRouter but starts at /_  so useParams() returns { repo: "_" }.
+export const withRepoRouter: Decorator = (Story) => (
+  <RouterProvider router={repoRouter} defaultComponent={() => <Story />} />
 );
 
 // Mock Apollo client for stories.
@@ -64,8 +80,8 @@ const mockApolloClient = new ApolloClient({
       // can normalize and cache the mock data passed via `from`.
       Label: { keyFields: ["name"] },
       GitBlob: { keyFields: ["hash"] },
-      GitRefConnection: { keyFields: [] },
-      BugTimelineItemConnection: { keyFields: [] },
+      GitRefConnection: { keyFields: [], fields: { nodes: { merge: false } } },
+      BugTimelineItemConnection: { keyFields: [], fields: { nodes: { merge: false } } },
     },
   }),
   dataMasking: false,

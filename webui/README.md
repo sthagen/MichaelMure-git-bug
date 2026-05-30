@@ -22,7 +22,7 @@ Node 22 is required. If you use asdf, `.tool-versions` pins the right version au
 ## Routes
 
 | Path                           | Page                                         |
-|--------------------------------|----------------------------------------------|
+| ------------------------------ | -------------------------------------------- |
 | `/`                            | Repo picker — auto-redirects for single repo |
 | `/$repo/tree/$ref/...path`     | Code browser — directory listing             |
 | `/$repo/blob/$ref/...path`     | Code browser — file viewer                   |
@@ -85,7 +85,11 @@ import { graphql } from "@/__generated__/gql";
 graphql(`
   fragment LabelFields on Label {
     name
-    color { R G B }
+    color {
+      R
+      G
+      B
+    }
   }
 `);
 ```
@@ -161,7 +165,7 @@ Every presentational component has stories. Stories use the CSF3 format with `sa
 Tests run via [Vitest 4](https://vitest.dev/) with two projects:
 
 | Project       | Environment           | What it does                                                                       |
-|---------------|-----------------------|------------------------------------------------------------------------------------|
+| ------------- | --------------------- | ---------------------------------------------------------------------------------- |
 | **storybook** | Chromium (Playwright) | Smoke tests every story + a11y checks (axe-core) + play function interaction tests |
 | **snapshot**  | happy-dom             | DOM snapshot tests via portable stories API                                        |
 
@@ -206,7 +210,7 @@ export const MyInteraction: Story = {
 ## Tooling
 
 | Tool                                                                           | Purpose                                                  |
-|--------------------------------------------------------------------------------|----------------------------------------------------------|
+| ------------------------------------------------------------------------------ | -------------------------------------------------------- |
 | [oxlint](https://oxc.rs)                                                       | Linter with type-aware rules + storybook/router plugins  |
 | [oxfmt](https://oxc.rs)                                                        | Formatter with import + Tailwind class sorting           |
 | [Storybook 10](https://storybook.js.org)                                       | Component development + visual testing                   |
