@@ -1,7 +1,12 @@
+import "@testing-library/jest-dom/vitest";
+import { cleanup } from "@testing-library/react";
 import { setProjectAnnotations } from "@storybook/react-vite";
-import { beforeAll, vi } from "vitest";
+import { afterEach, beforeAll, vi } from "vitest";
 
 import * as previewAnnotations from "./preview";
+
+// RTL does not auto-cleanup without globals:true — register it explicitly.
+afterEach(cleanup);
 
 // Apply Storybook decorators/parameters from preview.ts to portable stories
 // used by the snapshot test project.

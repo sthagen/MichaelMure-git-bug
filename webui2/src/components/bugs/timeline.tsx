@@ -197,7 +197,7 @@ function CommentBody({
   const [editValue, setEditValue] = useState(item.message ?? "");
 
   const [editComment, { loading }] = useMutation(BUG_EDIT_COMMENT_MUTATION, {
-    refetchQueries: [{ query: BugDetailDocument, variables: { prefix: bugPrefix } }],
+    refetchQueries: [{ query: BugDetailDocument, variables: { ref: repo, prefix: bugPrefix } }],
   });
 
   function handleSave() {
@@ -206,7 +206,7 @@ function CommentBody({
       return;
     }
     void editComment({
-      variables: { input: { targetPrefix: item.id, message: editValue } },
+      variables: { input: { targetPrefix: item.id, message: editValue.trim(), repoRef: repo } },
     }).then(() => setEditing(false));
   }
 
