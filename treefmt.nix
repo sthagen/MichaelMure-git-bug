@@ -68,6 +68,7 @@
       "doc/md/*" # generated via //doc:generate.go
       "misc/completion/*/*"
       "Makefile"
+      "webui/pnpm-lock.yaml"
     ]
     ++ excludes;
 
