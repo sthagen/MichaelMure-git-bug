@@ -56,7 +56,7 @@ export function parseQueryString(input: string): {
   for (const token of tokenizeQuery(input)) {
     if (token === "status:open") status = "open";
     else if (token === "status:closed") status = "closed";
-    else if (token.startsWith("label:")) labels.push(token.slice(6));
+    else if (token.startsWith("label:")) labels.push(token.slice(6).replace(/^"|"$/g, ""));
     else if (token.startsWith("author:")) author = token.slice(7).replace(/^"|"$/g, "");
     else if (token.startsWith("sort:")) {
       const val = token.slice(5);
