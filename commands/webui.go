@@ -35,6 +35,7 @@ type webUIOptions struct {
 	open      bool
 	noOpen    bool
 	readOnly  bool
+	dev       bool
 	logErrors bool
 	query     string
 }
@@ -64,6 +65,7 @@ Available git config:
 	flags.BoolVar(&options.open, "open", false, "Automatically open the web UI in the default browser")
 	flags.BoolVar(&options.noOpen, "no-open", false, "Prevent the automatic opening of the web UI in the default browser")
 	flags.BoolVar(&options.readOnly, "read-only", false, "Whether to run the web UI in read-only mode")
+	flags.BoolVar(&options.dev, "dev", false, "Enable development mode (enables --log-errors, GraphQL playground, relaxed WebSocket origin check)")
 	flags.BoolVar(&options.logErrors, "log-errors", false, "Whether to log errors")
 	flags.StringVarP(&options.query, "query", "q", "", "The query to open in the web UI bug list")
 
@@ -92,14 +94,19 @@ func setupRoutes(env *execenv.Env, opts webUIOptions) (*mux.Router, func() error
 	}
 
 	var errOut io.Writer
-	if opts.logErrors {
+	if opts.dev || opts.logErrors {
 		errOut = env.Err
 	}
 
-	router.Path("/playground").Handler(playground.Handler("git-bug", "/graphql"))
-	router.Path("/graphql").Handler(graphql.NewHandler(mrc, errOut))
+	if opts.dev {
+		router.Path("/playground").Handler(playground.Handler("git-bug", "/graphql"))
+	}
+	router.Path("/graphql").Handler(graphql.NewHandler(mrc, errOut, opts.dev))
 	router.Path("/gitfile/{repo}/{rest:.+}").Handler(httpapi.NewGitFileHandler(mrc))
-	router.Path("/upload/{repo}").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
+	if !opts.readOnly {
+		router.Path("/upload/{repo}").Methods("POST").
+			Handler(auth.RequireAuth(httpapi.NewGitUploadFileHandler(mrc)))
+	}
 	router.PathPrefix("/").Handler(webui.NewHandler())
 
 	return router, mrc.Close, nil
