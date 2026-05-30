@@ -1,8 +1,0 @@
-query BugCount($query: String) {
-  repository {
-    name
-    bugs: allBugs(query: $query) {
-      totalCount
-    }
-  }
-}

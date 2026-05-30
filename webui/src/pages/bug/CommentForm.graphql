@@ -1,7 +1,0 @@
-mutation AddComment($input: BugAddCommentInput!) {
-  bugAddComment(input: $input) {
-    operation {
-      id
-    }
-  }
-}

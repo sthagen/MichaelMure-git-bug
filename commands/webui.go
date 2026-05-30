@@ -24,7 +24,7 @@ import (
 	"github.com/git-bug/git-bug/commands/execenv"
 	"github.com/git-bug/git-bug/entities/identity"
 	"github.com/git-bug/git-bug/repository"
-	"github.com/git-bug/git-bug/webui2"
+	"github.com/git-bug/git-bug/webui"
 )
 
 const webUIOpenConfigKey = "git-bug.webui.open"
@@ -100,7 +100,7 @@ func setupRoutes(env *execenv.Env, opts webUIOptions) (*mux.Router, func() error
 	router.Path("/graphql").Handler(graphql.NewHandler(mrc, errOut))
 	router.Path("/gitfile/{repo}/{rest:.+}").Handler(httpapi.NewGitFileHandler(mrc))
 	router.Path("/upload/{repo}").Methods("POST").Handler(httpapi.NewGitUploadFileHandler(mrc))
-	router.PathPrefix("/").Handler(webui2.NewHandler())
+	router.PathPrefix("/").Handler(webui.NewHandler())
 
 	return router, mrc.Close, nil
 }

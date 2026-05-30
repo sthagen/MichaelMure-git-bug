@@ -1,25 +1,22 @@
-import * as React from 'react';
-import { Route, Routes } from 'react-router';
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 
-import Layout from './components/Header';
-import BugPage from './pages/bug';
-import IdentityPage from './pages/identity';
-import ListPage from './pages/list';
-import NewBugPage from './pages/new/NewBugPage';
-import NotFoundPage from './pages/notfound/NotFoundPage';
+import { preloadQuery } from "@/lib/apollo";
 
-export default function App() {
-  return (
-    <React.StrictMode>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<ListPage />} />
-          <Route path="/new" element={<NewBugPage />} />
-          <Route path="/bug/:id" element={<BugPage />} />
-          <Route path="/user/:id" element={<IdentityPage />} />
-          <Route element={<NotFoundPage />} />
-        </Routes>
-      </Layout>
-    </React.StrictMode>
-  );
+import { routeTree } from "./routeTree.gen";
+
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  scrollRestoration: true,
+  context: { preloadQuery },
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+export function App() {
+  return <RouterProvider router={router} />;
 }

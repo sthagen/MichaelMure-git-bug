@@ -17,3 +17,15 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# vite build cache
+/.vite
+
+# tanstack router plugin cache
+/.tanstack
+
+# typescript build info
+*.tsbuildinfo
+
+# storybook build output
+/storybook-static
