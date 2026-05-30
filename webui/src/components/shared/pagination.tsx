@@ -2,9 +2,8 @@ import { createLink, type LinkComponent } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
-
 import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface RootProps {
   children: React.ReactNode;
@@ -35,7 +34,11 @@ export function Info({ children }: InfoProps) {
 // Previous/Next are createLink-wrapped so they work as router links.
 const PreviousComponent = React.forwardRef<
   HTMLAnchorElement,
-  { className?: string; children?: React.ReactNode; disabled?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>
+  {
+    className?: string;
+    children?: React.ReactNode;
+    disabled?: boolean;
+  } & React.AnchorHTMLAttributes<HTMLAnchorElement>
 >(({ className, children, disabled, ...props }, ref) => (
   <a
     ref={ref}
@@ -62,7 +65,11 @@ export const Previous: LinkComponent<typeof PreviousComponent> = (props) => (
 
 const NextComponent = React.forwardRef<
   HTMLAnchorElement,
-  { className?: string; children?: React.ReactNode; disabled?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>
+  {
+    className?: string;
+    children?: React.ReactNode;
+    disabled?: boolean;
+  } & React.AnchorHTMLAttributes<HTMLAnchorElement>
 >(({ className, children, disabled, ...props }, ref) => (
   <a
     ref={ref}

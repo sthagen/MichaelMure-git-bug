@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, userEvent, within } from "storybook/test";
 import { useState } from "react";
+import { expect, userEvent, within } from "storybook/test";
 
+import { withRouter } from "@/../.storybook/decorators";
 import { Markdown } from "@/components/content/markdown";
 import { Textarea } from "@/components/ui/textarea";
-import { withRouter } from "@/../.storybook/decorators";
 
 import * as WritePreview from "./write-preview";
 
@@ -47,7 +47,11 @@ export const Controlled: Story = {
     const [message, setMessage] = useState("");
     const [preview, setPreview] = useState(false);
     return (
-      <WritePreview.Root hasContent={!!message.trim()} preview={preview} onPreviewChange={setPreview}>
+      <WritePreview.Root
+        hasContent={!!message.trim()}
+        preview={preview}
+        onPreviewChange={setPreview}
+      >
         <WritePreview.Tabs className="mb-2" />
         <WritePreview.WriteSlot>
           <Textarea
@@ -73,7 +77,10 @@ export const Empty: Story = {
     <WritePreview.Root hasContent={false}>
       <WritePreview.Tabs className="mb-2" />
       <WritePreview.WriteSlot>
-        <Textarea placeholder="Preview is disabled until you type something…" className="min-h-[120px]" />
+        <Textarea
+          placeholder="Preview is disabled until you type something…"
+          className="min-h-[120px]"
+        />
       </WritePreview.WriteSlot>
       <WritePreview.PreviewSlot>
         <div className="min-h-[120px] px-4 py-3">Nothing to preview</div>

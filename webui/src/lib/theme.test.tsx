@@ -91,17 +91,13 @@ describe("ThemeProvider — CSS classes on <html>", () => {
   it("adds the theme class to document.documentElement on mount", async () => {
     localStorage.setItem("theme", "dark");
     renderProvider();
-    await waitFor(() =>
-      expect(document.documentElement.classList.contains("dark")).toBe(true),
-    );
+    await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(true));
   });
 
   it("does NOT add a class for the 'light' theme", async () => {
     localStorage.setItem("theme", "light");
     renderProvider();
-    await waitFor(() =>
-      expect(screen.getByTestId("theme")).toHaveTextContent("light"),
-    );
+    await waitFor(() => expect(screen.getByTestId("theme")).toHaveTextContent("light"));
     THEME_CLASSES.forEach((cls) =>
       expect(document.documentElement.classList.contains(cls)).toBe(false),
     );
@@ -110,9 +106,7 @@ describe("ThemeProvider — CSS classes on <html>", () => {
   it("removes the old class when the theme changes", async () => {
     localStorage.setItem("theme", "dark");
     renderProvider();
-    await waitFor(() =>
-      expect(document.documentElement.classList.contains("dark")).toBe(true),
-    );
+    await waitFor(() => expect(document.documentElement.classList.contains("dark")).toBe(true));
     fireEvent.click(screen.getByRole("button", { name: "light-soft" }));
     await waitFor(() =>
       expect(document.documentElement.classList.contains("light-soft")).toBe(true),
@@ -127,9 +121,7 @@ describe("ThemeProvider — CSS classes on <html>", () => {
       expect(document.documentElement.classList.contains("dark-soft")).toBe(true),
     );
     fireEvent.click(screen.getByRole("button", { name: "light" }));
-    await waitFor(() =>
-      expect(screen.getByTestId("theme")).toHaveTextContent("light"),
-    );
+    await waitFor(() => expect(screen.getByTestId("theme")).toHaveTextContent("light"));
     THEME_CLASSES.forEach((cls) =>
       expect(document.documentElement.classList.contains(cls)).toBe(false),
     );

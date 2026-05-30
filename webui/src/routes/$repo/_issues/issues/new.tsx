@@ -4,12 +4,12 @@ import { useState } from "react";
 
 import { graphql } from "@/__generated__/gql";
 import { Markdown } from "@/components/content/markdown";
+import * as WritePreview from "@/components/shared/write-preview";
 import { BackLink } from "@/components/ui/back-link";
 import { Button } from "@/components/ui/button";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import * as WritePreview from "@/components/shared/write-preview";
 
 const BUG_CREATE_MUTATION = graphql(`
   mutation BugCreate($input: BugCreateInput!) {

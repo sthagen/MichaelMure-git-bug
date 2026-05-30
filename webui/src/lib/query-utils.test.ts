@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  buildBaseQuery,
-  buildQueryString,
-  parseQueryString,
-  tokenizeQuery,
-} from "./query-utils";
+import { buildBaseQuery, buildQueryString, parseQueryString, tokenizeQuery } from "./query-utils";
 
 // ─── tokenizeQuery ────────────────────────────────────────────────────────────
 
@@ -243,7 +238,13 @@ describe("roundtrip", () => {
       freeText: "crash on login",
       sort: "edit-asc" as const,
     };
-    const q = buildQueryString(input.status, input.labels, input.author, input.freeText, input.sort);
+    const q = buildQueryString(
+      input.status,
+      input.labels,
+      input.author,
+      input.freeText,
+      input.sort,
+    );
     const parsed = parseQueryString(q);
     expect(parsed).toEqual(input);
   });

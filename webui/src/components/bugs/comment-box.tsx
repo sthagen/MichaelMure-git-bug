@@ -1,13 +1,13 @@
 import { useMutation } from "@apollo/client/react";
 import { useState } from "react";
 
-import { Status, BugDetailDocument } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
+import { Status, BugDetailDocument } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/markdown";
-import { Button } from "@/components/ui/button";
 import * as CommentCard from "@/components/shared/comment-card";
-import { Textarea } from "@/components/ui/textarea";
 import * as WritePreview from "@/components/shared/write-preview";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
 const BUG_ADD_COMMENT_MUTATION = graphql(`
@@ -80,9 +80,14 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
   const refetch = { refetchQueries: [{ query: BugDetailDocument, ...refetchVars }] };
 
   const [addComment, { loading: addingComment }] = useMutation(BUG_ADD_COMMENT_MUTATION, refetch);
-  const [addAndClose, { loading: addingAndClosing }] = useMutation(BUG_ADD_COMMENT_AND_CLOSE_MUTATION, refetch);
-  const [addAndReopen, { loading: addingAndReopening }] =
-    useMutation(BUG_ADD_COMMENT_AND_REOPEN_MUTATION, refetch);
+  const [addAndClose, { loading: addingAndClosing }] = useMutation(
+    BUG_ADD_COMMENT_AND_CLOSE_MUTATION,
+    refetch,
+  );
+  const [addAndReopen, { loading: addingAndReopening }] = useMutation(
+    BUG_ADD_COMMENT_AND_REOPEN_MUTATION,
+    refetch,
+  );
   const [statusClose, { loading: closing }] = useMutation(BUG_STATUS_CLOSE_MUTATION, refetch);
   const [statusOpen, { loading: reopening }] = useMutation(BUG_STATUS_OPEN_MUTATION, refetch);
 
@@ -91,7 +96,9 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
   const hasMessage = message.trim().length > 0;
 
   async function handleComment() {
-    await addComment({ variables: { input: { prefix: bugPrefix, message: message.trim(), repoRef: ref_ } } });
+    await addComment({
+      variables: { input: { prefix: bugPrefix, message: message.trim(), repoRef: ref_ } },
+    });
     setMessage("");
     setPreview(false);
   }
@@ -99,7 +106,9 @@ export function CommentBox({ bugPrefix, bugStatus, ref_ }: CommentBoxProps) {
   async function handleToggleStatus() {
     if (isOpen) {
       if (hasMessage) {
-        await addAndClose({ variables: { input: { prefix: bugPrefix, message: message.trim(), repoRef: ref_ } } });
+        await addAndClose({
+          variables: { input: { prefix: bugPrefix, message: message.trim(), repoRef: ref_ } },
+        });
       } else {
         await statusClose({ variables: { input: { prefix: bugPrefix, repoRef: ref_ } } });
       }

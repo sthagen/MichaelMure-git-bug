@@ -27,35 +27,30 @@ Content.displayName = "Listbox.Content";
 
 const ScrollArea = forwardRef<HTMLDivElement, ComponentProps<"div">>(
   ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("max-h-64 overflow-y-auto p-1", className)}
-      {...props}
-    />
+    <div ref={ref} className={cn("max-h-64 overflow-y-auto p-1", className)} {...props} />
   ),
 );
 ScrollArea.displayName = "Listbox.ScrollArea";
 
 // ── Search ───────────────────────────────────────────────────────────────────
 
-const SearchInput = forwardRef<
-  HTMLInputElement,
-  ComponentProps<"input">
->(({ className, ...props }, ref) => (
-  <div className="border-border flex items-center gap-2 border-b px-3 py-2">
-    <Search className="text-muted-foreground size-3.5 shrink-0" />
-    <input
-      ref={ref}
-      type="text"
-      autoFocus
-      className={cn(
-        "placeholder:text-muted-foreground w-full bg-transparent text-sm outline-hidden",
-        className,
-      )}
-      {...props}
-    />
-  </div>
-));
+const SearchInput = forwardRef<HTMLInputElement, ComponentProps<"input">>(
+  ({ className, ...props }, ref) => (
+    <div className="border-border flex items-center gap-2 border-b px-3 py-2">
+      <Search className="text-muted-foreground size-3.5 shrink-0" />
+      <input
+        ref={ref}
+        type="text"
+        autoFocus
+        className={cn(
+          "placeholder:text-muted-foreground w-full bg-transparent text-sm outline-hidden",
+          className,
+        )}
+        {...props}
+      />
+    </div>
+  ),
+);
 SearchInput.displayName = "Listbox.Search";
 
 // ── Group ────────────────────────────────────────────────────────────────────
@@ -67,12 +62,7 @@ function Group({ className, ...props }: ComponentProps<"div">) {
 // ── GroupLabel ────────────────────────────────────────────────────────────────
 
 function GroupLabel({ className, ...props }: ComponentProps<"div">) {
-  return (
-    <div
-      className={cn("text-muted-foreground px-2 py-1 text-xs", className)}
-      {...props}
-    />
-  );
+  return <div className={cn("text-muted-foreground px-2 py-1 text-xs", className)} {...props} />;
 }
 
 // ── Item ─────────────────────────────────────────────────────────────────────
@@ -141,4 +131,14 @@ function FooterButton({ className, ...props }: ComponentProps<"button">) {
 
 // ── Export ────────────────────────────────────────────────────────────────────
 
-export { Content, ScrollArea, SearchInput as Search, Group, GroupLabel, Item, Empty, Footer, FooterButton };
+export {
+  Content,
+  ScrollArea,
+  SearchInput as Search,
+  Group,
+  GroupLabel,
+  Item,
+  Empty,
+  Footer,
+  FooterButton,
+};

@@ -1,7 +1,8 @@
+import { InMemoryCache } from "@apollo/client/cache";
 import { ApolloClient, ApolloLink, Observable } from "@apollo/client/core";
 import { ApolloProvider } from "@apollo/client/react";
-import { InMemoryCache } from "@apollo/client/cache";
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
+import type { Decorator } from "@storybook/react-vite";
 import {
   createMemoryHistory,
   createRootRoute,
@@ -9,7 +10,6 @@ import {
   createRouter,
   RouterProvider,
 } from "@tanstack/react-router";
-import type { Decorator } from "@storybook/react-vite";
 import { Suspense } from "react";
 
 // Catch-all route so any <Link to="..."> resolves without errors.
@@ -35,27 +35,28 @@ export const withRouter: Decorator = (Story) => (
 // - useSuspenseQuery for useAuth() hits the mock link
 const mockApolloClient = new ApolloClient({
   link: new ApolloLink(
-    (operation) => new Observable((observer) => {
-      const data: Record<string, unknown> = {};
-      // Provide mock data for the UserIdentity query used by useAuth()
-      if (operation.operationName === "UserIdentity") {
-        data.repository = {
-          __typename: "Repository",
-          userIdentity: {
-            __typename: "Identity",
-            id: "mock-user",
-            humanId: "mock1",
-            name: "Mock User",
-            displayName: "Mock User",
-            avatarUrl: null,
-            email: null,
-            login: null,
-          },
-        };
-      }
-      observer.next({ data });
-      observer.complete();
-    }),
+    (operation) =>
+      new Observable((observer) => {
+        const data: Record<string, unknown> = {};
+        // Provide mock data for the UserIdentity query used by useAuth()
+        if (operation.operationName === "UserIdentity") {
+          data.repository = {
+            __typename: "Repository",
+            userIdentity: {
+              __typename: "Identity",
+              id: "mock-user",
+              humanId: "mock1",
+              name: "Mock User",
+              displayName: "Mock User",
+              avatarUrl: null,
+              email: null,
+              login: null,
+            },
+          };
+        }
+        observer.next({ data });
+        observer.complete();
+      }),
   ),
   cache: new InMemoryCache({
     typePolicies: {
@@ -90,7 +91,9 @@ export const withApollo: Decorator = (Story) => (
 //     [MY_FRAGMENT, "MyFragment", anotherMockData],
 //   )]
 export function withCachedFragments(
-  ...entries: Array<[fragment: TypedDocumentNode, fragmentName: string, data: Record<string, unknown>]>
+  ...entries: Array<
+    [fragment: TypedDocumentNode, fragmentName: string, data: Record<string, unknown>]
+  >
 ): Decorator {
   return (Story) => {
     for (const [fragment, fragmentName, data] of entries) {

@@ -1,8 +1,9 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import compression from "vite-plugin-compression";
 import svgr from "vite-plugin-svgr";
@@ -18,7 +19,12 @@ export default defineConfig({
     svgr(),
     tailwindcss(),
     react(),
-    compression({ algorithm: "gzip", ext: ".gz", filter: /\.(js|css|html|json|svg)$/i, deleteOriginFile: true }),
+    compression({
+      algorithm: "gzip",
+      ext: ".gz",
+      filter: /\.(js|css|html|json|svg)$/i,
+      deleteOriginFile: true,
+    }),
   ],
   resolve: {
     alias: {

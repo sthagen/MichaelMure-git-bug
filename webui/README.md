@@ -21,17 +21,17 @@ Node 22 is required. If you use asdf, `.tool-versions` pins the right version au
 
 ## Routes
 
-| Path                           | Page                                           |
-| ------------------------------ | ---------------------------------------------- |
-| `/`                            | Repo picker — auto-redirects for single repo   |
-| `/$repo/tree/$ref/...path`     | Code browser — directory listing               |
-| `/$repo/blob/$ref/...path`     | Code browser — file viewer                     |
-| `/$repo/commits/$ref?path=...` | Commit history (optionally scoped to a path)   |
-| `/$repo/commit/$hash`          | Commit detail with collapsible file diffs       |
-| `/$repo/issues`                | Issue list with search, filters, pagination     |
-| `/$repo/issues/new`            | New issue form                                 |
-| `/$repo/issues/$id`            | Issue detail and timeline                      |
-| `/$repo/user/$id`              | User profile with their issues                 |
+| Path                           | Page                                         |
+| ------------------------------ | -------------------------------------------- |
+| `/`                            | Repo picker — auto-redirects for single repo |
+| `/$repo/tree/$ref/...path`     | Code browser — directory listing             |
+| `/$repo/blob/$ref/...path`     | Code browser — file viewer                   |
+| `/$repo/commits/$ref?path=...` | Commit history (optionally scoped to a path) |
+| `/$repo/commit/$hash`          | Commit detail with collapsible file diffs    |
+| `/$repo/issues`                | Issue list with search, filters, pagination  |
+| `/$repo/issues/new`            | New issue form                               |
+| `/$repo/issues/$id`            | Issue detail and timeline                    |
+| `/$repo/user/$id`              | User profile with their issues               |
 
 `_` is the URL segment for the default (unnamed) repository. Named repositories use their registered name.
 
@@ -95,7 +95,7 @@ import type { LabelFieldsFragment } from "@/__generated__/graphql";
 import { LabelBadge } from "@/components/shared/label-badge";
 
 // Spread fragment data directly onto the component
-<LabelBadge {...label} />
+<LabelBadge {...label} />;
 ```
 
 After changing any `.graphql` file, regenerate typed hooks:
@@ -111,11 +111,13 @@ Routes use [TanStack Router](https://tanstack.com/router) with file-based routin
 Pathless layout routes (`_code.tsx`, `_issues.tsx`) group child routes that share data loading or layout without adding URL segments.
 
 The router context provides:
+
 - `preloadQuery` — Apollo `createQueryPreloader` for data loading in route loaders
 - `ref` — normalized repo slug (null for default repo), set by `$repo.tsx` `beforeLoad`
 - `labelsRef`, `identitiesRef` — preloaded shared queries, set by `_issues.tsx` `beforeLoad`
 
 Custom link components:
+
 - `ButtonLink` — `createLink()`-wrapped anchor with button styling and preload-on-intent
 - `BackLink` — uses `router.history.back()` when possible, falls back to a typed Link
 - `LabelBadgeLink` — `createLink()`-wrapped label badge for filter navigation
@@ -156,10 +158,10 @@ Every presentational component has stories. Stories use the CSF3 format with `sa
 
 Tests run via [Vitest 4](https://vitest.dev/) with two projects:
 
-| Project | Environment | What it does |
-| --- | --- | --- |
+| Project       | Environment           | What it does                                                                       |
+| ------------- | --------------------- | ---------------------------------------------------------------------------------- |
 | **storybook** | Chromium (Playwright) | Smoke tests every story + a11y checks (axe-core) + play function interaction tests |
-| **snapshot** | happy-dom | DOM snapshot tests via portable stories API |
+| **snapshot**  | happy-dom             | DOM snapshot tests via portable stories API                                        |
 
 ```bash
 pnpm test                          # Run all tests
@@ -201,15 +203,15 @@ export const MyInteraction: Story = {
 
 ## Tooling
 
-| Tool | Purpose |
-| --- | --- |
-| [oxlint](https://oxc.rs) | Linter with type-aware rules + storybook/router plugins |
-| [oxfmt](https://oxc.rs) | Formatter with import + Tailwind class sorting |
-| [Storybook 10](https://storybook.js.org) | Component development + visual testing |
-| [Vitest 4](https://vitest.dev) | Test runner (browser + happy-dom) |
-| [@storybook/addon-a11y](https://storybook.js.org/addons/@storybook/addon-a11y) | Accessibility testing via axe-core |
-| [valibot](https://valibot.dev) | Runtime validation for search params and fetch responses |
-| [@tsconfig/bases](https://github.com/tsconfig/bases) | Shared tsconfig presets (vite-react + strictest) |
+| Tool                                                                           | Purpose                                                  |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| [oxlint](https://oxc.rs)                                                       | Linter with type-aware rules + storybook/router plugins  |
+| [oxfmt](https://oxc.rs)                                                        | Formatter with import + Tailwind class sorting           |
+| [Storybook 10](https://storybook.js.org)                                       | Component development + visual testing                   |
+| [Vitest 4](https://vitest.dev)                                                 | Test runner (browser + happy-dom)                        |
+| [@storybook/addon-a11y](https://storybook.js.org/addons/@storybook/addon-a11y) | Accessibility testing via axe-core                       |
+| [valibot](https://valibot.dev)                                                 | Runtime validation for search params and fetch responses |
+| [@tsconfig/bases](https://github.com/tsconfig/bases)                           | Shared tsconfig presets (vite-react + strictest)         |
 
 ```bash
 pnpm lint        # oxlint (type-aware, 0 warnings target)

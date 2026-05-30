@@ -1,11 +1,12 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Suspense } from "react";
+import { describe, it, expect, vi } from "vitest";
 
 import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { BugDetailDocument, BugEditCommentDocument } from "@/__generated__/graphql";
 import { useAuth } from "@/lib/auth";
+
 import { Timeline, TIMELINE_ITEMS_FRAGMENT } from "./timeline";
 
 // Replace TanStack Router's Link with a plain <a> — timeline uses it only for
@@ -202,10 +203,7 @@ describe("Timeline — mutation variables", () => {
       result: { data: { bugEditComment: { bug: { id: "1" } } } },
     };
 
-    renderTimeline(
-      [makeAddComment({ id: COMMENT_ID, message: "Old" })],
-      [mock, REFETCH_MOCK],
-    );
+    renderTimeline([makeAddComment({ id: COMMENT_ID, message: "Old" })], [mock, REFETCH_MOCK]);
 
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "New" } });

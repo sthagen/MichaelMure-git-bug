@@ -1,17 +1,21 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 
 import { FileDiffDocument } from "@/__generated__/graphql";
+
 import { FileDiffView } from "./file-diff-view";
 
 const BASE = { repo: "myrepo", hash: "abc123", path: "src/foo.ts", status: "MODIFIED" };
 
 const HUNK = {
-  oldStart: 1, oldLines: 2, newStart: 1, newLines: 2,
+  oldStart: 1,
+  oldLines: 2,
+  newStart: 1,
+  newLines: 2,
   lines: [
     { type: "DELETED", content: "old line", oldLine: 1, newLine: 0 },
-    { type: "ADDED",   content: "new line", oldLine: 0, newLine: 1 },
+    { type: "ADDED", content: "new line", oldLine: 0, newLine: 1 },
   ],
 };
 
@@ -63,7 +67,13 @@ describe("FileDiffView — collapsed", () => {
   });
 
   it("does NOT fire the query before expanding", () => {
-    const { matchVars, mock } = makeDiffMock({ path: "src/foo.ts", isBinary: false, isNew: false, isDelete: false, hunks: [] });
+    const { matchVars, mock } = makeDiffMock({
+      path: "src/foo.ts",
+      isBinary: false,
+      isNew: false,
+      isDelete: false,
+      hunks: [],
+    });
     renderView({}, [mock]);
     expect(matchVars).not.toHaveBeenCalled();
   });
@@ -73,7 +83,13 @@ describe("FileDiffView — collapsed", () => {
 
 describe("FileDiffView — lazy fetch", () => {
   it("fires the query on first expand with correct variables", async () => {
-    const { matchVars, mock } = makeDiffMock({ path: "src/foo.ts", isBinary: false, isNew: false, isDelete: false, hunks: [] });
+    const { matchVars, mock } = makeDiffMock({
+      path: "src/foo.ts",
+      isBinary: false,
+      isNew: false,
+      isDelete: false,
+      hunks: [],
+    });
     renderView({}, [mock]);
 
     expand();
@@ -83,7 +99,13 @@ describe("FileDiffView — lazy fetch", () => {
   });
 
   it("does NOT fire the query again on collapse and re-expand", async () => {
-    const { matchVars, mock } = makeDiffMock({ path: "src/foo.ts", isBinary: false, isNew: false, isDelete: false, hunks: [] });
+    const { matchVars, mock } = makeDiffMock({
+      path: "src/foo.ts",
+      isBinary: false,
+      isNew: false,
+      isDelete: false,
+      hunks: [],
+    });
     renderView({}, [mock]);
 
     expand();
@@ -97,7 +119,13 @@ describe("FileDiffView — lazy fetch", () => {
   });
 
   it("passes null repoRef (default repo) when repo is null", async () => {
-    const { matchVars, mock } = makeDiffMock({ path: "src/foo.ts", isBinary: false, isNew: false, isDelete: false, hunks: [] });
+    const { matchVars, mock } = makeDiffMock({
+      path: "src/foo.ts",
+      isBinary: false,
+      isNew: false,
+      isDelete: false,
+      hunks: [],
+    });
     renderView({ repo: null }, [mock]);
 
     expand();
@@ -111,7 +139,13 @@ describe("FileDiffView — lazy fetch", () => {
 
 describe("FileDiffView — render states", () => {
   it("shows loading indicator while query is in flight", () => {
-    const { mock } = makeDiffMock({ path: "f", isBinary: false, isNew: false, isDelete: false, hunks: [] });
+    const { mock } = makeDiffMock({
+      path: "f",
+      isBinary: false,
+      isNew: false,
+      isDelete: false,
+      hunks: [],
+    });
     renderView({}, [mock]);
     expand();
     expect(screen.getByText("Loading diff…")).toBeInTheDocument();
@@ -128,14 +162,26 @@ describe("FileDiffView — render states", () => {
   });
 
   it("shows 'Binary file' for binary diffs", async () => {
-    const { mock } = makeDiffMock({ path: "img.png", isBinary: true, isNew: false, isDelete: false, hunks: [] });
+    const { mock } = makeDiffMock({
+      path: "img.png",
+      isBinary: true,
+      isNew: false,
+      isDelete: false,
+      hunks: [],
+    });
     renderView({ path: "img.png" }, [mock]);
     expand();
     await waitFor(() => expect(screen.getByText("Binary file")).toBeInTheDocument());
   });
 
   it("shows 'No changes' when hunks are empty and file is not binary", async () => {
-    const { mock } = makeDiffMock({ path: "src/foo.ts", isBinary: false, isNew: false, isDelete: false, hunks: [] });
+    const { mock } = makeDiffMock({
+      path: "src/foo.ts",
+      isBinary: false,
+      isNew: false,
+      isDelete: false,
+      hunks: [],
+    });
     renderView({}, [mock]);
     expand();
     await waitFor(() => expect(screen.getByText("No changes")).toBeInTheDocument());
@@ -143,7 +189,10 @@ describe("FileDiffView — render states", () => {
 
   it("renders diff hunk lines", async () => {
     const { mock } = makeDiffMock({
-      path: "src/foo.ts", isBinary: false, isNew: false, isDelete: false,
+      path: "src/foo.ts",
+      isBinary: false,
+      isNew: false,
+      isDelete: false,
       hunks: [HUNK],
     });
     renderView({}, [mock]);

@@ -1,17 +1,17 @@
 import { useMutation } from "@apollo/client/react";
 import type { ResultOf } from "@graphql-typed-document-node/core";
-import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { Link } from "@tanstack/react-router";
 import { formatDistanceToNow } from "date-fns";
 import { Tag, GitPullRequestClosed, Pencil, CircleDot } from "lucide-react";
 import { useState } from "react";
 
-import { Status, BugDetailDocument } from "@/__generated__/graphql";
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { graphql } from "@/__generated__/gql";
+import { Status, BugDetailDocument } from "@/__generated__/graphql";
 import { Markdown } from "@/components/content/markdown";
-import { Button } from "@/components/ui/button";
 import * as CommentCard from "@/components/shared/comment-card";
 import { LabelBadge } from "@/components/shared/label-badge";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth";
 
@@ -150,7 +150,9 @@ export function Timeline({ repo, bugPrefix, timeline }: TimelineProps) {
       {data.nodes.map((item) => {
         switch (item.__typename) {
           case "BugCreateTimelineItem":
-            return <CreateCommentItem key={item.id} item={item} bugPrefix={bugPrefix} repo={repo} />;
+            return (
+              <CreateCommentItem key={item.id} item={item} bugPrefix={bugPrefix} repo={repo} />
+            );
           case "BugAddCommentTimelineItem":
             return <AddCommentItem key={item.id} item={item} bugPrefix={bugPrefix} repo={repo} />;
           case "BugLabelChangeTimelineItem":
@@ -171,14 +173,32 @@ export function Timeline({ repo, bugPrefix, timeline }: TimelineProps) {
 
 type CreateNode = Extract<TimelineNode, { __typename: "BugCreateTimelineItem" }>;
 type AddCommentNode = Extract<TimelineNode, { __typename: "BugAddCommentTimelineItem" }>;
-type CommentData = ResultOf<typeof BUG_CREATE_COMMENT_FRAGMENT> | ResultOf<typeof BUG_ADD_COMMENT_FRAGMENT>;
+type CommentData =
+  | ResultOf<typeof BUG_CREATE_COMMENT_FRAGMENT>
+  | ResultOf<typeof BUG_ADD_COMMENT_FRAGMENT>;
 
-function CreateCommentItem({ item, bugPrefix, repo }: { item: CreateNode; bugPrefix: string; repo: string | null }) {
+function CreateCommentItem({
+  item,
+  bugPrefix,
+  repo,
+}: {
+  item: CreateNode;
+  bugPrefix: string;
+  repo: string | null;
+}) {
   const data = useFragment(BUG_CREATE_COMMENT_FRAGMENT, item);
   return <CommentBody data={data} bugPrefix={bugPrefix} repo={repo} />;
 }
 
-function AddCommentItem({ item, bugPrefix, repo }: { item: AddCommentNode; bugPrefix: string; repo: string | null }) {
+function AddCommentItem({
+  item,
+  bugPrefix,
+  repo,
+}: {
+  item: AddCommentNode;
+  bugPrefix: string;
+  repo: string | null;
+}) {
   const data = useFragment(BUG_ADD_COMMENT_FRAGMENT, item);
   return <CommentBody data={data} bugPrefix={bugPrefix} repo={repo} />;
 }

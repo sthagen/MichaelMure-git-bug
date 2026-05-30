@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
 import type { ResultOf } from "@graphql-typed-document-node/core";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { graphql } from "@/__generated__/gql";
 

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { withApollo, withCachedFragments } from "@/../.storybook/decorators";
+import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { FileViewer, FILE_VIEWER_BLOB_FRAGMENT } from "./file-viewer";

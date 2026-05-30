@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Search } from "lucide-react";
-import { expect, screen, userEvent, within } from "storybook/test";
 import { useState } from "react";
+import { expect, screen, userEvent, within } from "storybook/test";
 
 import type { CompletionProvider } from "./query-input";
 import * as QueryInput from "./query-input";
@@ -69,13 +69,10 @@ export const Default: Story = {
   render: () => {
     const [value, setValue] = useState("status:open");
     return (
-      <QueryInput.Root
-        value={value}
-        onChange={setValue}
-        onSubmit={() => {}}
-        providers={providers}
-      >
-        <QueryInput.Icon><Search /></QueryInput.Icon>
+      <QueryInput.Root value={value} onChange={setValue} onSubmit={() => {}} providers={providers}>
+        <QueryInput.Icon>
+          <Search />
+        </QueryInput.Icon>
         <QueryInput.Input placeholder="status:open author:… label:…" />
         <QueryInput.Completions />
       </QueryInput.Root>
@@ -86,15 +83,12 @@ export const Default: Story = {
 export const WithFilters: Story = {
   args: { children: null, value: "", onChange: () => {}, onSubmit: () => {} },
   render: () => {
-    const [value, setValue] = useState('status:open label:bug author:janedoe fix login');
+    const [value, setValue] = useState("status:open label:bug author:janedoe fix login");
     return (
-      <QueryInput.Root
-        value={value}
-        onChange={setValue}
-        onSubmit={() => {}}
-        providers={providers}
-      >
-        <QueryInput.Icon><Search /></QueryInput.Icon>
+      <QueryInput.Root value={value} onChange={setValue} onSubmit={() => {}} providers={providers}>
+        <QueryInput.Icon>
+          <Search />
+        </QueryInput.Icon>
         <QueryInput.Input placeholder="status:open author:… label:…" />
         <QueryInput.Completions />
       </QueryInput.Root>
@@ -108,7 +102,9 @@ export const SyntaxOnly: Story = {
     const [value, setValue] = useState("status:open label:bug");
     return (
       <QueryInput.Root value={value} onChange={setValue} onSubmit={() => {}}>
-        <QueryInput.Icon><Search /></QueryInput.Icon>
+        <QueryInput.Icon>
+          <Search />
+        </QueryInput.Icon>
         <QueryInput.Input placeholder="Search…" />
       </QueryInput.Root>
     );
@@ -142,7 +138,9 @@ export const AsyncCompletions: Story = {
         onSubmit={() => {}}
         providers={asyncProviders}
       >
-        <QueryInput.Icon><Search /></QueryInput.Icon>
+        <QueryInput.Icon>
+          <Search />
+        </QueryInput.Icon>
         <QueryInput.Input placeholder="Type label: to see async loading…" />
         <QueryInput.Completions />
       </QueryInput.Root>
@@ -155,13 +153,10 @@ export const AutocompleteInteraction: Story = {
   render: () => {
     const [value, setValue] = useState("");
     return (
-      <QueryInput.Root
-        value={value}
-        onChange={setValue}
-        onSubmit={() => {}}
-        providers={providers}
-      >
-        <QueryInput.Icon><Search /></QueryInput.Icon>
+      <QueryInput.Root value={value} onChange={setValue} onSubmit={() => {}} providers={providers}>
+        <QueryInput.Icon>
+          <Search />
+        </QueryInput.Icon>
         <QueryInput.Input placeholder="Type label: to test autocomplete…" />
         <QueryInput.Completions />
       </QueryInput.Root>

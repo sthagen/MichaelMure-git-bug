@@ -15,11 +15,11 @@ import { Settings2 } from "lucide-react";
 import { useRef, useState } from "react";
 
 import type { FragmentType } from "@/__generated__/fragment-masking";
-import { BugDetailDocument } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
-import * as Listbox from "@/components/ui/listbox";
+import { BugDetailDocument } from "@/__generated__/graphql";
 import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
 import { SectionHeading } from "@/components/shared/section-heading";
+import * as Listbox from "@/components/ui/listbox";
 import { useAuth } from "@/lib/auth";
 
 const BUG_CHANGE_LABELS_MUTATION = graphql(`
@@ -42,7 +42,11 @@ interface LabelEditorProps {
   /** Current repo slug, passed as `ref` in refetch query variables. */
   ref_?: string | null;
   /** Pre-fetched valid labels for the repository. */
-  validLabels: Array<{ name: string; color: { R: number; G: number; B: number } } & FragmentType<typeof LABEL_FIELDS_FRAGMENT>>;
+  validLabels: Array<
+    { name: string; color: { R: number; G: number; B: number } } & FragmentType<
+      typeof LABEL_FIELDS_FRAGMENT
+    >
+  >;
 }
 
 // Gear-icon popover in the BugDetailPage sidebar for adding/removing labels.

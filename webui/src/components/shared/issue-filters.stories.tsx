@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { fn } from "storybook/test";
 import { useState } from "react";
+import { fn } from "storybook/test";
 
-import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { withApollo, withCachedFragments } from "@/../.storybook/decorators";
+import { makeFragmentData } from "@/__generated__/fragment-masking";
 import type { SortValue } from "@/lib/query-utils";
 
 import { IssueFilters, type LabelItem, type IdentityItem } from "./issue-filters";
@@ -19,16 +19,57 @@ const sampleLabelsData = [
   { __typename: "Label" as const, name: "wontfix", color: { R: 180, G: 180, B: 180 } },
 ];
 
-const sampleLabels: LabelItem[] = sampleLabelsData.map(
-  (l) => ({ ...l, ...makeFragmentData(l, LABEL_FIELDS_FRAGMENT) }),
-);
+const sampleLabels: LabelItem[] = sampleLabelsData.map((l) => ({
+  ...l,
+  ...makeFragmentData(l, LABEL_FIELDS_FRAGMENT),
+}));
 
 const sampleIdentities: IdentityItem[] = [
-  { id: "u1", humanId: "abc1", displayName: "Jane Doe", login: "janedoe", name: "Jane Doe", email: "jane@example.com", avatarUrl: null },
-  { id: "u2", humanId: "abc2", displayName: "John Smith", login: "jsmith", name: "John Smith", email: "john@example.com", avatarUrl: null },
-  { id: "u3", humanId: "abc3", displayName: "Alice Wonder", login: "alice", name: "Alice Wonder", email: "alice@example.com", avatarUrl: null },
-  { id: "u4", humanId: "abc4", displayName: "Bob Builder", login: "bob", name: "Bob Builder", email: "bob@example.com", avatarUrl: null },
-  { id: "u5", humanId: "abc5", displayName: "Carol Tester", login: "carol", name: "Carol Tester", email: "carol@example.com", avatarUrl: null },
+  {
+    id: "u1",
+    humanId: "abc1",
+    displayName: "Jane Doe",
+    login: "janedoe",
+    name: "Jane Doe",
+    email: "jane@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u2",
+    humanId: "abc2",
+    displayName: "John Smith",
+    login: "jsmith",
+    name: "John Smith",
+    email: "john@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u3",
+    humanId: "abc3",
+    displayName: "Alice Wonder",
+    login: "alice",
+    name: "Alice Wonder",
+    email: "alice@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u4",
+    humanId: "abc4",
+    displayName: "Bob Builder",
+    login: "bob",
+    name: "Bob Builder",
+    email: "bob@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u5",
+    humanId: "abc5",
+    displayName: "Carol Tester",
+    login: "carol",
+    name: "Carol Tester",
+    email: "carol@example.com",
+    avatarUrl: null,
+  },
 ];
 
 const meta = {
@@ -93,7 +134,8 @@ function Interactive() {
         onSortChange={setSort}
       />
       <div className="text-muted-foreground text-xs">
-        Labels: {selectedLabels.join(", ") || "none"} · Author: {selectedAuthorId ?? "none"} · Sort: {sort}
+        Labels: {selectedLabels.join(", ") || "none"} · Author: {selectedAuthorId ?? "none"} · Sort:{" "}
+        {sort}
       </div>
     </div>
   );

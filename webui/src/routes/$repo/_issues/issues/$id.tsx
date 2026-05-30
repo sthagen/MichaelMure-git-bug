@@ -14,8 +14,14 @@ const BUG_DETAIL_QUERY = graphql(`
         title
         status
         createdAt
-        labels { name ...LabelFields }
-        author { humanId displayName }
+        labels {
+          name
+          ...LabelFields
+        }
+        author {
+          humanId
+          displayName
+        }
         lastEdit
         participants(first: 20) {
           nodes {
@@ -34,13 +40,13 @@ const BUG_DETAIL_QUERY = graphql(`
   }
 `);
 import { LabelEditor } from "@/components/bugs/label-editor";
-import { StatusBadge } from "@/components/shared/status-badge";
 import { Timeline } from "@/components/bugs/timeline";
 import { TitleEditor } from "@/components/bugs/title-editor";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BackLink } from "@/components/ui/back-link";
 import { EmptyState } from "@/components/shared/empty-state";
 import { SectionHeading } from "@/components/shared/section-heading";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BackLink } from "@/components/ui/back-link";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 

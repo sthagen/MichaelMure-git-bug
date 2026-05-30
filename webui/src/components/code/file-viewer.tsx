@@ -9,7 +9,6 @@ import { jsx, jsxs } from "react/jsx-runtime";
 import type { ShikiTransformer } from "shiki/core";
 
 import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
-
 import { graphql } from "@/__generated__/gql";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -108,9 +107,7 @@ function lineNumberTransformer(): ShikiTransformer {
     // Remove whitespace text nodes between .line spans — they create
     // empty anonymous rows when using display: block.
     code(node) {
-      node.children = node.children.filter(
-        (c) => !(c.type === "text" && c.value.trim() === ""),
-      );
+      node.children = node.children.filter((c) => !(c.type === "text" && c.value.trim() === ""));
     },
   };
 }
@@ -246,12 +243,7 @@ export function FileViewer({ blob: blobProp }: FileViewerProps) {
           {lineCount.toLocaleString()} lines · {formatBytes(blob.size)}
           {blob.isTruncated && " · truncated"}
         </span>
-        <Button
-          variant="ghost"
-          size="icon-xs"
-          onClick={copyToClipboard}
-          title="Copy"
-        >
+        <Button variant="ghost" size="icon-xs" onClick={copyToClipboard} title="Copy">
           <Copy className="size-3.5" />
         </Button>
       </div>
@@ -261,10 +253,7 @@ export function FileViewer({ blob: blobProp }: FileViewerProps) {
           Binary file — {formatBytes(blob.size)}
         </div>
       ) : (
-        <CodeBlock
-          selectedRange={selectedRange}
-          onLineClick={handleLineClick}
-        >
+        <CodeBlock selectedRange={selectedRange} onLineClick={handleLineClick}>
           {highlighted.node}
         </CodeBlock>
       )}
@@ -291,7 +280,9 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
       selectors.push(`.${lineClass}:nth-child(${i})`);
     }
     const rule = selectors.join(",");
-    return <style>{`${rule}{background-color:rgba(255,235,59,0.3)}:root.dark ${rule}{background-color:rgba(255,235,59,0.15)}`}</style>;
+    return (
+      <style>{`${rule}{background-color:rgba(255,235,59,0.3)}:root.dark ${rule}{background-color:rgba(255,235,59,0.15)}`}</style>
+    );
   })();
 
   return (
@@ -308,9 +299,7 @@ function CodeBlock({ selectedRange, onLineClick, children }: CodeBlockProps) {
       }}
     >
       {highlightStyle}
-      <div className={styles["code-content"]}>
-        {children}
-      </div>
+      <div className={styles["code-content"]}>{children}</div>
     </div>
   );
 }

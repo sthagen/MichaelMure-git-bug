@@ -1,8 +1,9 @@
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 
 import { CommitListDocument } from "@/__generated__/graphql";
+
 import { CommitList } from "./commit-list";
 
 // Link uses TanStack Router — replace with a plain anchor for these tests.
@@ -10,8 +11,18 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   const mod = await importOriginal<typeof import("@tanstack/react-router")>();
   return {
     ...mod,
-    Link: ({ children, className, to }: { children: React.ReactNode; className?: string; to: string }) => (
-      <a href={to} className={className}>{children}</a>
+    Link: ({
+      children,
+      className,
+      to,
+    }: {
+      children: React.ReactNode;
+      className?: string;
+      to: string;
+    }) => (
+      <a href={to} className={className}>
+        {children}
+      </a>
     ),
   };
 });
@@ -52,7 +63,10 @@ function makeQueryMock(
   };
 }
 
-function renderList(props: { repo?: string | null; ref_?: string; path?: string } = {}, mocks: object[] = []) {
+function renderList(
+  props: { repo?: string | null; ref_?: string; path?: string } = {},
+  mocks: object[] = [],
+) {
   return render(
     <MockedProvider mocks={mocks} addTypename={false} showWarnings={false}>
       <CommitList repo={props.repo ?? "myrepo"} ref_={props.ref_ ?? "main"} path={props.path} />
@@ -69,9 +83,7 @@ describe("CommitList — loading", () => {
     // Skeleton elements are present while loading
     expect(document.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0);
     // Wait for skeleton to disappear (query resolved) so cleanup doesn't throw
-    await waitFor(() =>
-      expect(document.querySelectorAll(".animate-pulse").length).toBe(0),
-    );
+    await waitFor(() => expect(document.querySelectorAll(".animate-pulse").length).toBe(0));
   });
 });
 
@@ -144,11 +156,10 @@ describe("CommitList — pagination", () => {
     });
 
     await waitFor(() => expect(variablesMatcher).toHaveBeenCalled());
-    expect(variablesMatcher).toHaveBeenCalledWith(
-      expect.objectContaining({ after: "cursor-1" }),
-    );
+    expect(variablesMatcher).toHaveBeenCalledWith(expect.objectContaining({ after: "cursor-1" }));
     // Drain: wait for fetchMore to fully settle (response delivered + React flushed)
-    await act(async () => { await new Promise((r) => setTimeout(r, 20)); });
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 20));
+    });
   });
-
 });

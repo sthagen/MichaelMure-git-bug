@@ -20,8 +20,12 @@ function Harness({
   return (
     <Root hasContent={hasContent} preview={preview} onPreviewChange={onPreviewChange}>
       <Tabs />
-      <WriteSlot><span>write content</span></WriteSlot>
-      <PreviewSlot><span>preview content</span></PreviewSlot>
+      <WriteSlot>
+        <span>write content</span>
+      </WriteSlot>
+      <PreviewSlot>
+        <span>preview content</span>
+      </PreviewSlot>
     </Root>
   );
 }

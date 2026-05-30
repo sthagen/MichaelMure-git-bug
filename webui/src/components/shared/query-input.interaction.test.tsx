@@ -3,8 +3,8 @@
 // async loading state, stale-request cancellation, and submit on Enter.
 
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
 import { useState } from "react";
+import { describe, it, expect, vi } from "vitest";
 
 import type { CompletionProvider, Suggestion } from "./query-input";
 import * as QueryInput from "./query-input";
@@ -140,12 +140,17 @@ describe("QueryInput — async completions", () => {
     const provider: CompletionProvider = {
       prefix: "label:",
       highlightClass: "text-blue-500",
-      getSuggestions: () => new Promise<Suggestion[]>((r) => { resolve = r; }),
+      getSuggestions: () =>
+        new Promise<Suggestion[]>((r) => {
+          resolve = r;
+        }),
     };
     render(<Harness providers={[provider]} />);
     typeValue("label:");
     await waitFor(() => expect(screen.getByText(/loading/i)).toBeInTheDocument());
-    await act(async () => { resolve([{ value: "bug", label: "bug" }]); });
+    await act(async () => {
+      resolve([{ value: "bug", label: "bug" }]);
+    });
     expect(screen.getByRole("option", { name: /bug/ })).toBeInTheDocument();
   });
 
@@ -159,7 +164,9 @@ describe("QueryInput — async completions", () => {
         callCount++;
         if (callCount === 1) {
           // First call: returns a slow promise we control
-          return new Promise<Suggestion[]>((r) => { resolveFirst = r; });
+          return new Promise<Suggestion[]>((r) => {
+            resolveFirst = r;
+          });
         }
         // Second call: returns immediately with different results
         return [{ value: "feature", label: q === "f" ? "feature" : "other" }];
@@ -171,10 +178,14 @@ describe("QueryInput — async completions", () => {
     await waitFor(() => expect(screen.getByText(/loading/i)).toBeInTheDocument());
 
     typeValue("label:f"); // call 2 — cancels call 1, resolves immediately
-    await waitFor(() => expect(screen.getByRole("option", { name: /feature/ })).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: /feature/ })).toBeInTheDocument(),
+    );
 
     // Resolving the stale promise must NOT inject "bug" into the UI
-    await act(async () => { resolveFirst([{ value: "bug", label: "bug" }]); });
+    await act(async () => {
+      resolveFirst([{ value: "bug", label: "bug" }]);
+    });
     await new Promise((r) => setTimeout(r, 30));
     expect(screen.queryByRole("option", { name: /bug/ })).toBeNull();
   });

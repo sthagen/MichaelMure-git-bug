@@ -2,8 +2,8 @@ import { useMutation } from "@apollo/client/react";
 import { Pencil } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
-import { BugDetailDocument } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
+import { BugDetailDocument } from "@/__generated__/graphql";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth";
@@ -51,7 +51,9 @@ export function TitleEditor({ bugPrefix, title, humanId, ref_ }: TitleEditorProp
   async function handleSave() {
     const trimmed = value.trim();
     if (trimmed && trimmed !== title) {
-      await setTitle({ variables: { input: { prefix: bugPrefix, title: trimmed, repoRef: ref_ } } });
+      await setTitle({
+        variables: { input: { prefix: bugPrefix, title: trimmed, repoRef: ref_ } },
+      });
     }
     setEditing(false);
   }

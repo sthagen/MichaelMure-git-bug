@@ -2,6 +2,7 @@ import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { useAuth } from "@/lib/auth";
+
 import type { IdentityItem, LabelItem } from "./issue-filters";
 import { IssueFilters } from "./issue-filters";
 
@@ -19,15 +20,13 @@ function makeLabel(name: string, R = 255, G = 0, B = 0): LabelItem {
   return { name, color: { R, G, B } } as LabelItem;
 }
 
-function makeIdentity(overrides: Partial<IdentityItem> & { id: string; humanId: string; displayName: string }): IdentityItem {
+function makeIdentity(
+  overrides: Partial<IdentityItem> & { id: string; humanId: string; displayName: string },
+): IdentityItem {
   return { name: null, email: null, login: null, avatarUrl: null, ...overrides };
 }
 
-const DEFAULT_LABELS = [
-  makeLabel("zebra"),
-  makeLabel("alpha"),
-  makeLabel("bug"),
-];
+const DEFAULT_LABELS = [makeLabel("zebra"), makeLabel("alpha"), makeLabel("bug")];
 
 const DEFAULT_IDENTITIES: IdentityItem[] = [
   makeIdentity({ id: "u1", humanId: "h1", displayName: "Alice" }),
@@ -225,7 +224,11 @@ describe("LabelFilter — callbacks", () => {
 // ── AuthorFilter — visibleIdentities priority ─────────────────────────────────
 
 describe("AuthorFilter — priority pinning", () => {
-  const CURRENT = makeIdentity({ id: "current-user-id", humanId: "cu1", displayName: "Current User" });
+  const CURRENT = makeIdentity({
+    id: "current-user-id",
+    humanId: "cu1",
+    displayName: "Current User",
+  });
   const SELECTED = makeIdentity({ id: "sel-id", humanId: "sel1", displayName: "Selected Author" });
   const RECENT = makeIdentity({ id: "rec-id", humanId: "rec1", displayName: "Recent Author" });
   const OTHERS = Array.from({ length: 6 }, (_, i) =>
@@ -311,9 +314,30 @@ describe("AuthorFilter — priority pinning", () => {
 
 describe("AuthorFilter — search", () => {
   const IDENTITIES = [
-    makeIdentity({ id: "u1", humanId: "h1", displayName: "Alice Smith", name: "Alice Smith", login: "asmith", email: "alice@example.com" }),
-    makeIdentity({ id: "u2", humanId: "h2", displayName: "Bob Jones", name: "Bob Jones", login: "bjones", email: "bob@example.com" }),
-    makeIdentity({ id: "u3", humanId: "h3", displayName: "Carol White", name: "Carol White", login: null, email: null }),
+    makeIdentity({
+      id: "u1",
+      humanId: "h1",
+      displayName: "Alice Smith",
+      name: "Alice Smith",
+      login: "asmith",
+      email: "alice@example.com",
+    }),
+    makeIdentity({
+      id: "u2",
+      humanId: "h2",
+      displayName: "Bob Jones",
+      name: "Bob Jones",
+      login: "bjones",
+      email: "bob@example.com",
+    }),
+    makeIdentity({
+      id: "u3",
+      humanId: "h3",
+      displayName: "Carol White",
+      name: "Carol White",
+      login: null,
+      email: null,
+    }),
   ];
 
   beforeEach(() => {
@@ -323,7 +347,9 @@ describe("AuthorFilter — search", () => {
   it("filters by displayName", () => {
     renderFilters({ identities: IDENTITIES });
     openAuthor();
-    fireEvent.change(screen.getByPlaceholderText("Search authors…"), { target: { value: "alice" } });
+    fireEvent.change(screen.getByPlaceholderText("Search authors…"), {
+      target: { value: "alice" },
+    });
     expect(optionNames().some((n) => n?.includes("Alice"))).toBe(true);
     expect(optionNames().some((n) => n?.includes("Bob"))).toBe(false);
   });
@@ -331,7 +357,9 @@ describe("AuthorFilter — search", () => {
   it("filters by login", () => {
     renderFilters({ identities: IDENTITIES });
     openAuthor();
-    fireEvent.change(screen.getByPlaceholderText("Search authors…"), { target: { value: "bjones" } });
+    fireEvent.change(screen.getByPlaceholderText("Search authors…"), {
+      target: { value: "bjones" },
+    });
     expect(optionNames().some((n) => n?.includes("Bob"))).toBe(true);
     expect(optionNames().some((n) => n?.includes("Alice"))).toBe(false);
   });
@@ -339,7 +367,9 @@ describe("AuthorFilter — search", () => {
   it("filters by email", () => {
     renderFilters({ identities: IDENTITIES });
     openAuthor();
-    fireEvent.change(screen.getByPlaceholderText("Search authors…"), { target: { value: "alice@example" } });
+    fireEvent.change(screen.getByPlaceholderText("Search authors…"), {
+      target: { value: "alice@example" },
+    });
     expect(optionNames().some((n) => n?.includes("Alice"))).toBe(true);
     expect(optionNames().some((n) => n?.includes("Bob"))).toBe(false);
   });
@@ -347,7 +377,11 @@ describe("AuthorFilter — search", () => {
   it("bypasses the 8-item cap during search", () => {
     vi.mocked(useAuth).mockReturnValue({ user: null as never });
     const many = Array.from({ length: 12 }, (_, i) =>
-      makeIdentity({ id: `u${i}`, humanId: `h${i}`, displayName: `User ${String(i).padStart(2, "0")}` }),
+      makeIdentity({
+        id: `u${i}`,
+        humanId: `h${i}`,
+        displayName: `User ${String(i).padStart(2, "0")}`,
+      }),
     );
     renderFilters({ identities: many });
     openAuthor();
@@ -358,7 +392,9 @@ describe("AuthorFilter — search", () => {
   it("shows 'No authors found' when search matches nothing", () => {
     renderFilters({ identities: IDENTITIES });
     openAuthor();
-    fireEvent.change(screen.getByPlaceholderText("Search authors…"), { target: { value: "zzznomatch" } });
+    fireEvent.change(screen.getByPlaceholderText("Search authors…"), {
+      target: { value: "zzznomatch" },
+    });
     expect(screen.getByText("No authors found")).toBeInTheDocument();
   });
 });
@@ -401,7 +437,15 @@ describe("AuthorFilter — onAuthorChange", () => {
 
   it("prefers login over name as the query value", () => {
     const { onAuthorChange } = renderFilters({
-      identities: [makeIdentity({ id: "u1", humanId: "h1", displayName: "Alice", login: "alice", name: "Alice Smith" })],
+      identities: [
+        makeIdentity({
+          id: "u1",
+          humanId: "h1",
+          displayName: "Alice",
+          login: "alice",
+          name: "Alice Smith",
+        }),
+      ],
     });
     openAuthor();
     fireEvent.click(screen.getByRole("option", { name: /alice/i }));
@@ -411,7 +455,15 @@ describe("AuthorFilter — onAuthorChange", () => {
   it("skips empty-string login and falls through to name", () => {
     // This is the || vs ?? bug: empty login="" must not be returned as the query value
     const { onAuthorChange } = renderFilters({
-      identities: [makeIdentity({ id: "u1", humanId: "h1", displayName: "Alice", login: "", name: "Alice Smith" })],
+      identities: [
+        makeIdentity({
+          id: "u1",
+          humanId: "h1",
+          displayName: "Alice",
+          login: "",
+          name: "Alice Smith",
+        }),
+      ],
     });
     openAuthor();
     fireEvent.click(screen.getByRole("option", { name: /alice/i }));
@@ -420,7 +472,9 @@ describe("AuthorFilter — onAuthorChange", () => {
 
   it("falls through to humanId when login and name are both empty/null", () => {
     const { onAuthorChange } = renderFilters({
-      identities: [makeIdentity({ id: "u1", humanId: "h1", displayName: "Alice", login: null, name: null })],
+      identities: [
+        makeIdentity({ id: "u1", humanId: "h1", displayName: "Alice", login: null, name: null }),
+      ],
     });
     openAuthor();
     fireEvent.click(screen.getByRole("option", { name: /alice/i }));

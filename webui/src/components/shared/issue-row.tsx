@@ -1,7 +1,7 @@
 import { CircleDot, CircleCheck, MessageSquare } from "lucide-react";
 
-import { Status } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
+import { Status } from "@/__generated__/graphql";
 import { cn } from "@/lib/utils";
 
 graphql(`
@@ -53,9 +53,7 @@ export function StatusIcon({ status }: StatusIconProps) {
     <Icon
       className={cn(
         "mt-0.5 size-4 shrink-0",
-        isOpen
-          ? "text-green-600 dark:text-green-400"
-          : "text-purple-600 dark:text-purple-400",
+        isOpen ? "text-green-600 dark:text-green-400" : "text-purple-600 dark:text-purple-400",
       )}
     />
   );

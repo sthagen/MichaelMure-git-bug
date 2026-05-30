@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { GitObjectType } from "@/__generated__/graphql";
 import { withRouter } from "@/../.storybook/decorators";
+import { GitObjectType } from "@/__generated__/graphql";
 
 import { FileTree } from "./file-tree";
 

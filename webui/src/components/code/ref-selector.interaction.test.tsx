@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 
 import type { FragmentType } from "@/__generated__/fragment-masking";
 import { GitRefType } from "@/__generated__/graphql";
+
 import { RefSelector, REF_SELECTOR_REFS_FRAGMENT } from "./ref-selector";
 
 function makeRefs(nodes: { name: string; shortName: string; type: GitRefType }[]) {
@@ -10,17 +11,19 @@ function makeRefs(nodes: { name: string; shortName: string; type: GitRefType }[]
 }
 
 const DEFAULT_REFS = makeRefs([
-  { name: "refs/heads/main",    shortName: "main",    type: GitRefType.Branch },
+  { name: "refs/heads/main", shortName: "main", type: GitRefType.Branch },
   { name: "refs/heads/develop", shortName: "develop", type: GitRefType.Branch },
-  { name: "refs/tags/v1.0",     shortName: "v1.0",    type: GitRefType.Tag },
-  { name: "refs/tags/v2.0",     shortName: "v2.0",    type: GitRefType.Tag },
+  { name: "refs/tags/v1.0", shortName: "v1.0", type: GitRefType.Tag },
+  { name: "refs/tags/v2.0", shortName: "v2.0", type: GitRefType.Tag },
 ]);
 
-function renderSelector(props: {
-  refs?: FragmentType<typeof REF_SELECTOR_REFS_FRAGMENT>;
-  currentRef?: string;
-  onSelect?: ReturnType<typeof vi.fn>;
-} = {}) {
+function renderSelector(
+  props: {
+    refs?: FragmentType<typeof REF_SELECTOR_REFS_FRAGMENT>;
+    currentRef?: string;
+    onSelect?: ReturnType<typeof vi.fn>;
+  } = {},
+) {
   const onSelect = props.onSelect ?? vi.fn();
   render(
     <RefSelector

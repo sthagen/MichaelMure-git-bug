@@ -1,10 +1,11 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Suspense } from "react";
+import { describe, it, expect, vi } from "vitest";
 
 import { BugSetTitleDocument, BugDetailDocument } from "@/__generated__/graphql";
 import { useAuth } from "@/lib/auth";
+
 import { TitleEditor } from "./title-editor";
 
 vi.mock("@/lib/auth", () => ({

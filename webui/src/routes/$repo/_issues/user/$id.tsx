@@ -51,16 +51,24 @@ const USER_PROFILE_QUERY = graphql(`
           status
           title
           createdAt
-          labels { name ...LabelFields }
-          author { humanId ...IdentitySummary }
-          comments { totalCount }
+          labels {
+            name
+            ...LabelFields
+          }
+          author {
+            humanId
+            ...IdentitySummary
+          }
+          comments {
+            totalCount
+          }
         }
       }
     }
   }
 `);
-import { LabelBadge } from "@/components/shared/label-badge";
 import { EmptyState } from "@/components/shared/empty-state";
+import { LabelBadge } from "@/components/shared/label-badge";
 import * as Pagination from "@/components/shared/pagination";
 import * as StatusTabs from "@/components/shared/status-tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -185,9 +193,7 @@ function RouteComponent() {
           </StatusTabs.Tab>
         </StatusTabs.Root>
 
-        {bugs?.nodes.length === 0 && (
-          <EmptyState>No {statusFilter} issues.</EmptyState>
-        )}
+        {bugs?.nodes.length === 0 && <EmptyState>No {statusFilter} issues.</EmptyState>}
 
         {bugs?.nodes.map((bug) => (
           <IssueRow.Root key={bug.id}>
@@ -227,7 +233,9 @@ function RouteComponent() {
               }}
               disabled={!hasPrev}
             />
-            <Pagination.Info>Page {page} of {totalPages}</Pagination.Info>
+            <Pagination.Info>
+              Page {page} of {totalPages}
+            </Pagination.Info>
             <Pagination.Next
               to="/$repo/user/$id"
               params={{ repo, id }}

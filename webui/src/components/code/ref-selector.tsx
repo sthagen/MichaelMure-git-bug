@@ -1,4 +1,3 @@
-import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import {
   useFloating,
   useClick,
@@ -14,8 +13,9 @@ import {
 import { GitBranch, Tag } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { GitRefType } from "@/__generated__/graphql";
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { graphql } from "@/__generated__/gql";
+import { GitRefType } from "@/__generated__/graphql";
 import { Button } from "@/components/ui/button";
 import * as Listbox from "@/components/ui/listbox";
 import { cn } from "@/lib/utils";
@@ -78,9 +78,7 @@ export function RefSelector({ refs: refsProp, currentRef, onSelect }: RefSelecto
     listNav,
   ]);
 
-  const filtered = gitRefs.filter((r) =>
-    r.shortName.toLowerCase().includes(filter.toLowerCase()),
-  );
+  const filtered = gitRefs.filter((r) => r.shortName.toLowerCase().includes(filter.toLowerCase()));
   const branches = filtered.filter((r) => r.type === GitRefType.Branch);
   const tags = filtered.filter((r) => r.type === GitRefType.Tag);
 

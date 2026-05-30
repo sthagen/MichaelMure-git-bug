@@ -63,7 +63,11 @@ function SimpleSelect() {
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
-    click, dismiss, role, listNav, typeahead,
+    click,
+    dismiss,
+    role,
+    listNav,
+    typeahead,
   ]);
 
   return (
@@ -81,23 +85,24 @@ function SimpleSelect() {
       {open && (
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false}>
-            <Listbox.Content
-              ref={refs.setFloating}
-              style={floatingStyles}
-              {...getFloatingProps()}
-            >
+            <Listbox.Content ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
               <Listbox.ScrollArea>
                 {fruits.map((fruit, i) => {
                   labelsRef.current[i] = fruit;
                   return (
                     <Listbox.Item
                       key={fruit}
-                      ref={(el) => { elementsRef.current[i] = el; }}
+                      ref={(el) => {
+                        elementsRef.current[i] = el;
+                      }}
                       active={activeIndex === i}
                       selected={selected === fruit}
                       tabIndex={activeIndex === i ? 0 : -1}
                       {...getItemProps({
-                        onClick: () => { setSelected(fruit); setOpen(false); },
+                        onClick: () => {
+                          setSelected(fruit);
+                          setOpen(false);
+                        },
                       })}
                     >
                       {fruit}
@@ -161,7 +166,10 @@ function MultiSelectWithSearch() {
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
-    click, dismiss, role, listNav,
+    click,
+    dismiss,
+    role,
+    listNav,
   ]);
 
   const filtered = search.trim()
@@ -173,9 +181,7 @@ function MultiSelectWithSearch() {
   }, [filtered.length]);
 
   function toggle(name: string) {
-    setSelected((prev) =>
-      prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name],
-    );
+    setSelected((prev) => (prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]));
   }
 
   return (
@@ -194,11 +200,7 @@ function MultiSelectWithSearch() {
       {open && (
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false} initialFocus={searchRef}>
-            <Listbox.Content
-              ref={refs.setFloating}
-              style={floatingStyles}
-              {...getFloatingProps()}
-            >
+            <Listbox.Content ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
               <Listbox.Search
                 ref={searchRef}
                 placeholder="Search tags…"
@@ -217,7 +219,9 @@ function MultiSelectWithSearch() {
                 {filtered.map((tag, i) => (
                   <Listbox.Item
                     key={tag.name}
-                    ref={(el) => { elementsRef.current[i] = el; }}
+                    ref={(el) => {
+                      elementsRef.current[i] = el;
+                    }}
                     active={activeIndex === i}
                     selected={selected.includes(tag.name)}
                     {...getItemProps({ onClick: () => toggle(tag.name) })}
@@ -286,7 +290,10 @@ function GroupedSelect() {
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
-    click, dismiss, role, listNav,
+    click,
+    dismiss,
+    role,
+    listNav,
   ]);
 
   const q = filter.toLowerCase();
@@ -331,7 +338,10 @@ function GroupedSelect() {
                   if (e.key === "Enter" && activeIndex != null) {
                     e.preventDefault();
                     const item = allFiltered[activeIndex];
-                    if (item) { setSelected(item); setOpen(false); }
+                    if (item) {
+                      setSelected(item);
+                      setOpen(false);
+                    }
                   }
                 }}
                 className="text-xs"
@@ -345,12 +355,17 @@ function GroupedSelect() {
                       return (
                         <Listbox.Item
                           key={b}
-                          ref={(el) => { elementsRef.current[i] = el; }}
+                          ref={(el) => {
+                            elementsRef.current[i] = el;
+                          }}
                           active={activeIndex === i}
                           selected={selected === b}
                           className="font-mono text-xs"
                           {...getItemProps({
-                            onClick: () => { setSelected(b); setOpen(false); },
+                            onClick: () => {
+                              setSelected(b);
+                              setOpen(false);
+                            },
                           })}
                         >
                           <GitBranch className="text-muted-foreground size-3 shrink-0" />
@@ -368,12 +383,17 @@ function GroupedSelect() {
                       return (
                         <Listbox.Item
                           key={t}
-                          ref={(el) => { elementsRef.current[i] = el; }}
+                          ref={(el) => {
+                            elementsRef.current[i] = el;
+                          }}
                           active={activeIndex === i}
                           selected={selected === t}
                           className="font-mono text-xs"
                           {...getItemProps({
-                            onClick: () => { setSelected(t); setOpen(false); },
+                            onClick: () => {
+                              setSelected(t);
+                              setOpen(false);
+                            },
                           })}
                         >
                           <Tag className="text-muted-foreground size-3 shrink-0" />

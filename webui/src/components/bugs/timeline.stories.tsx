@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { withApollo, withCachedFragments, withRouter } from "@/../.storybook/decorators";
 import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { Status } from "@/__generated__/graphql";
-import { withApollo, withCachedFragments, withRouter } from "@/../.storybook/decorators";
 
 import { Timeline, TIMELINE_ITEMS_FRAGMENT } from "./timeline";
 
@@ -106,7 +106,9 @@ const createOnlyTimelineData = {
 const createOnlyTimeline = makeFragmentData(createOnlyTimelineData, TIMELINE_ITEMS_FRAGMENT);
 
 export const CreateOnly: Story = {
-  decorators: [withCachedFragments([TIMELINE_ITEMS_FRAGMENT, "TimelineItems", createOnlyTimelineData])],
+  decorators: [
+    withCachedFragments([TIMELINE_ITEMS_FRAGMENT, "TimelineItems", createOnlyTimelineData]),
+  ],
   args: {
     repo: "_",
     bugPrefix: "abc123",
@@ -132,7 +134,9 @@ const emptyMessageTimelineData = {
 const emptyMessageTimeline = makeFragmentData(emptyMessageTimelineData, TIMELINE_ITEMS_FRAGMENT);
 
 export const EmptyMessage: Story = {
-  decorators: [withCachedFragments([TIMELINE_ITEMS_FRAGMENT, "TimelineItems", emptyMessageTimelineData])],
+  decorators: [
+    withCachedFragments([TIMELINE_ITEMS_FRAGMENT, "TimelineItems", emptyMessageTimelineData]),
+  ],
   args: {
     repo: "_",
     bugPrefix: "abc123",
@@ -164,7 +168,9 @@ const statusReopenTimelineData = {
 const statusReopenTimeline = makeFragmentData(statusReopenTimelineData, TIMELINE_ITEMS_FRAGMENT);
 
 export const StatusReopen: Story = {
-  decorators: [withCachedFragments([TIMELINE_ITEMS_FRAGMENT, "TimelineItems", statusReopenTimelineData])],
+  decorators: [
+    withCachedFragments([TIMELINE_ITEMS_FRAGMENT, "TimelineItems", statusReopenTimelineData]),
+  ],
   args: {
     repo: "_",
     bugPrefix: "abc123",

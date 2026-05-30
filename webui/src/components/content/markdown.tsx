@@ -2,7 +2,6 @@ import rehypeShikiFromHighlighter from "@shikijs/rehype/core";
 import { Link } from "@tanstack/react-router";
 import { useMemo, useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import type { PluggableList } from "unified";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeRaw from "rehype-raw";
@@ -11,6 +10,7 @@ import rehypeSlug from "rehype-slug";
 import remarkEmoji from "remark-emoji";
 import remarkGfm from "remark-gfm";
 import type { HighlighterCore } from "shiki/core";
+import type { PluggableList } from "unified";
 
 import { getHighlighter, SHIKI_THEMES } from "@/lib/shiki";
 import { cn } from "@/lib/utils";
@@ -87,7 +87,9 @@ function useShikiHighlighter(): HighlighterCore | null {
     void getHighlighter().then((h) => {
       if (!cancelled) setHighlighter(h);
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
   return highlighter;
 }
@@ -195,7 +197,13 @@ export function Markdown({ content, className, repoContext }: MarkdownProps) {
           rehypeRaw,
           [rehypeSanitize, sanitizeSchema],
           ...(highlighter
-            ? [[rehypeShikiFromHighlighter, highlighter, { themes: SHIKI_THEMES, defaultColor: false }] as PluggableList[number]]
+            ? [
+                [
+                  rehypeShikiFromHighlighter,
+                  highlighter,
+                  { themes: SHIKI_THEMES, defaultColor: false },
+                ] as PluggableList[number],
+              ]
             : []),
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "append" }],

@@ -59,7 +59,7 @@ export function Header() {
                 >
                   {/* Color swatch representing the theme's background */}
                   <span
-                    className="size-3.5 shrink-0 rounded-sm ring-1 ring-foreground/20"
+                    className="ring-foreground/20 size-3.5 shrink-0 rounded-sm ring-1"
                     style={{ backgroundColor: bg }}
                   />
                   {label}

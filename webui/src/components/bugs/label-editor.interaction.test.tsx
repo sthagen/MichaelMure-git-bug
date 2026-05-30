@@ -1,12 +1,13 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Suspense } from "react";
+import { describe, it, expect, vi } from "vitest";
 
-import { BugChangeLabelsDocument, BugDetailDocument } from "@/__generated__/graphql";
 import type { FragmentType } from "@/__generated__/fragment-masking";
+import { BugChangeLabelsDocument, BugDetailDocument } from "@/__generated__/graphql";
 import type { LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
 import { useAuth } from "@/lib/auth";
+
 import { LabelEditor } from "./label-editor";
 
 vi.mock("@/lib/auth", () => ({

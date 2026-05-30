@@ -119,8 +119,7 @@ function parseSegments(
     // Then check static syntax rules
     if (!highlightClass) {
       for (const rule of syntaxRules) {
-        const matches =
-          typeof rule.match === "string" ? token === rule.match : rule.match(token);
+        const matches = typeof rule.match === "string" ? token === rule.match : rule.match(token);
         if (matches) {
           highlightClass = rule.highlightClass;
           break;
@@ -299,10 +298,7 @@ export function Root({
     focusItemOnOpen: false,
   });
 
-  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
-    dismiss,
-    listNav,
-  ]);
+  const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([dismiss, listNav]);
 
   // Fetch suggestions when completion changes
   useEffect(() => {
@@ -450,8 +446,16 @@ interface InputProps {
 }
 
 export function Input({ placeholder, className }: InputProps) {
-  const { value, segments, inputRef, handleChange, handleKeyDown, handleSelect, activeIndex, suggestions } =
-    useQueryInput();
+  const {
+    value,
+    segments,
+    inputRef,
+    handleChange,
+    handleKeyDown,
+    handleSelect,
+    activeIndex,
+    suggestions,
+  } = useQueryInput();
 
   return (
     <>
@@ -474,9 +478,7 @@ export function Input({ placeholder, className }: InputProps) {
         onSelect={handleSelect}
         role="combobox"
         aria-expanded={suggestions.length > 0}
-        aria-activedescendant={
-          activeIndex != null ? `query-option-${activeIndex}` : undefined
-        }
+        aria-activedescendant={activeIndex != null ? `query-option-${activeIndex}` : undefined}
         className={cn(
           "caret-foreground placeholder:text-muted-foreground relative w-full bg-transparent py-2 pr-3 pl-9 font-mono text-sm text-transparent outline-hidden placeholder:font-sans",
           className,
@@ -506,11 +508,7 @@ export function Completions() {
 
   return (
     <FloatingPortal>
-      <Listbox.Content
-        ref={floatingRef}
-        style={floatingStyles}
-        {...getFloatingProps()}
-      >
+      <Listbox.Content ref={floatingRef} style={floatingStyles} {...getFloatingProps()}>
         {loading && suggestions.length === 0 && (
           <div className="text-muted-foreground px-3 py-2 text-sm">Loading…</div>
         )}

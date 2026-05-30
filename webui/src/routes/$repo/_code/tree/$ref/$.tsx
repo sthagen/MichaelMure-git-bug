@@ -3,8 +3,8 @@
 import { useQuery, useReadQuery } from "@apollo/client/react";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { GitObjectType } from "@/__generated__/graphql";
 import { graphql } from "@/__generated__/gql";
+import { GitObjectType } from "@/__generated__/graphql";
 import { FileTree } from "@/components/code/file-tree";
 import { Markdown } from "@/components/content/markdown";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,12 +22,7 @@ const TREE_QUERY = graphql(`
 `);
 
 const LAST_COMMITS_QUERY = graphql(`
-  query CodePageLastCommits(
-    $repo: String
-    $ref: String!
-    $path: String
-    $names: [String!]!
-  ) {
+  query CodePageLastCommits($repo: String, $ref: String!, $path: String, $names: [String!]!) {
     repository(ref: $repo) {
       lastCommits(ref: $ref, path: $path, names: $names) {
         name
@@ -73,10 +68,7 @@ export const Route = createFileRoute("/$repo/_code/tree/$ref/$")({
   component: TreeView,
   pendingComponent: TreeSkeleton,
   beforeLoad: () => ({ viewMode: "tree" as const }),
-  loader: async ({
-    context: { preloadQuery, ref },
-    params: { ref: gitRef, _splat: path },
-  }) => {
+  loader: async ({ context: { preloadQuery, ref }, params: { ref: gitRef, _splat: path } }) => {
     const treeRef = preloadQuery(TREE_QUERY, {
       variables: { repo: ref, ref: gitRef, ...(path ? { path } : {}) },
     });
@@ -111,9 +103,7 @@ function TreeView() {
   }));
 
   const readmeEntry = entries.find(
-    (e) =>
-      e.type === GitObjectType.Blob &&
-      /^readme(\.md|\.txt|\.rst)?$/i.test(e.name),
+    (e) => e.type === GitObjectType.Blob && /^readme(\.md|\.txt|\.rst)?$/i.test(e.name),
   );
   const readmePath = readmeEntry
     ? currentPath
@@ -136,9 +126,7 @@ function TreeView() {
       />
       {readme && (
         <div className="rounded-md border">
-          <div className="text-muted-foreground border-b px-4 py-2 text-xs font-medium">
-            README
-          </div>
+          <div className="text-muted-foreground border-b px-4 py-2 text-xs font-medium">README</div>
           <div className="px-6 py-4">
             <Markdown
               content={readme}

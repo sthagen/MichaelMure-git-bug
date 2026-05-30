@@ -1,9 +1,7 @@
 import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
-
 import { graphql } from "@/__generated__/gql";
-import { cn } from "@/lib/utils";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 export const IDENTITY_SUMMARY_FRAGMENT = graphql(`
   fragment IdentitySummary on Identity {

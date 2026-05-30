@@ -37,21 +37,30 @@ const BUG_LIST_QUERY = graphql(`
           status
           title
           createdAt
-          labels { name ...LabelFields }
-          author { humanId displayName ...IdentitySummary }
-          comments { totalCount }
+          labels {
+            name
+            ...LabelFields
+          }
+          author {
+            humanId
+            displayName
+            ...IdentitySummary
+          }
+          comments {
+            totalCount
+          }
         }
       }
     }
   }
 `);
-import * as IssueRow from "@/components/shared/issue-row";
-import * as StatusTabs from "@/components/shared/status-tabs";
-import { LabelBadgeLink } from "@/components/shared/label-badge";
 import { EmptyState } from "@/components/shared/empty-state";
+import * as IssueRow from "@/components/shared/issue-row";
+import { LabelBadgeLink } from "@/components/shared/label-badge";
 import * as Pagination from "@/components/shared/pagination";
 import * as QueryInput from "@/components/shared/query-input";
 import type { CompletionProvider } from "@/components/shared/query-input";
+import * as StatusTabs from "@/components/shared/status-tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SortValue, StatusFilter } from "@/lib/query-utils";
@@ -173,8 +182,7 @@ function RouteComponent() {
               return {
                 value: qv.includes(" ") ? `"${qv}"` : qv,
                 label: a.displayName,
-                description:
-                  a.login && a.login !== a.displayName ? `@${a.login}` : undefined,
+                description: a.login && a.login !== a.displayName ? `@${a.login}` : undefined,
               };
             }),
       },
@@ -226,7 +234,9 @@ function RouteComponent() {
           onSubmit={handleSearch}
           providers={completionProviders}
         >
-          <QueryInput.Icon><Search /></QueryInput.Icon>
+          <QueryInput.Icon>
+            <Search />
+          </QueryInput.Icon>
           <QueryInput.Input placeholder="status:open author:… label:…" />
           <QueryInput.Completions />
         </QueryInput.Root>
@@ -282,9 +292,7 @@ function RouteComponent() {
         </div>
 
         {/* Bug rows */}
-        {bugs?.nodes.length === 0 && (
-          <EmptyState>No {statusFilter ?? ""} issues found.</EmptyState>
-        )}
+        {bugs?.nodes.length === 0 && <EmptyState>No {statusFilter ?? ""} issues found.</EmptyState>}
 
         {bugs?.nodes.map((bug) => (
           <IssueRow.Root key={bug.id} className="hover:bg-muted/30">
@@ -350,7 +358,9 @@ function RouteComponent() {
               }}
               disabled={!hasPrev}
             />
-            <Pagination.Info>Page {page} of {totalPages}</Pagination.Info>
+            <Pagination.Info>
+              Page {page} of {totalPages}
+            </Pagination.Info>
             <Pagination.Next
               to="/$repo/issues"
               params={{ repo }}

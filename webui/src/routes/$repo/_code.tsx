@@ -52,7 +52,11 @@ function CodeLayout() {
 
   function handleRefSelect(refName: string) {
     if (viewMode === "commits") {
-      void navigate({ to: "/$repo/commits/$ref", params: { repo, ref: refName }, search: { path: currentPath || undefined } });
+      void navigate({
+        to: "/$repo/commits/$ref",
+        params: { repo, ref: refName },
+        search: { path: currentPath || undefined },
+      });
     } else if (viewMode === "blob") {
       void navigate({
         to: "/$repo/blob/$ref/$",

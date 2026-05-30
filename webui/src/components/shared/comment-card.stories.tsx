@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { makeFragmentData } from "@/__generated__/fragment-masking";
 import { withApollo, withCachedFragments } from "@/../.storybook/decorators";
+import { makeFragmentData } from "@/__generated__/fragment-masking";
 
 import * as CommentCard from "./comment-card";
 import { IDENTITY_SUMMARY_FRAGMENT } from "./comment-card";

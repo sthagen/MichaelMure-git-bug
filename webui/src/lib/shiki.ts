@@ -9,10 +9,7 @@ let highlighterPromise: Promise<HighlighterCore> | null = null;
 export function getHighlighter(): Promise<HighlighterCore> {
   if (!highlighterPromise) {
     highlighterPromise = createHighlighterCore({
-      themes: [
-        import("@shikijs/themes/github-light"),
-        import("@shikijs/themes/github-dark"),
-      ],
+      themes: [import("@shikijs/themes/github-light"), import("@shikijs/themes/github-dark")],
       // Pre-load common languages for Markdown code blocks.
       // FileViewer also loads additional languages on demand via loadLanguage().
       langs: [

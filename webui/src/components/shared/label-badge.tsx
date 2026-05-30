@@ -1,7 +1,7 @@
-import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { createLink, type LinkComponent } from "@tanstack/react-router";
 import * as React from "react";
 
+import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { graphql } from "@/__generated__/gql";
 
 export const LABEL_FIELDS_FRAGMENT = graphql(`

@@ -26,7 +26,13 @@ interface RootProps {
   onPreviewChange?: (v: boolean) => void;
 }
 
-export function Root({ children, className, hasContent = false, preview, onPreviewChange }: RootProps) {
+export function Root({
+  children,
+  className,
+  hasContent = false,
+  preview,
+  onPreviewChange,
+}: RootProps) {
   const [internalPreview, setInternalPreview] = useState(false);
   const isControlled = preview !== undefined;
 

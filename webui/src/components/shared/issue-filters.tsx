@@ -15,13 +15,12 @@ import { ArrowUpDown, ChevronDown, Tag, User, X } from "lucide-react";
 import { useMemo, useRef, useState, useCallback, useEffect } from "react";
 
 import type { FragmentType } from "@/__generated__/fragment-masking";
+import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import * as Listbox from "@/components/ui/listbox";
 import { useAuth } from "@/lib/auth";
 import { SORT_OPTIONS, type SortValue } from "@/lib/query-utils";
 import { cn } from "@/lib/utils";
-
-import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
 
 // Max authors shown in the non-searching state. We intentionally cap this to
 // avoid a giant list — the current-user + recently-seen pattern covers the
@@ -195,11 +194,7 @@ function SortFilter({
       {open && (
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false}>
-            <Listbox.Content
-              ref={refs.setFloating}
-              style={floatingStyles}
-              {...getFloatingProps()}
-            >
+            <Listbox.Content ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
               <Listbox.ScrollArea>
                 {SORT_OPTIONS.map((opt, i) => {
                   labelsRef.current[i] = opt.label;
@@ -334,11 +329,7 @@ function LabelFilter({
       {open && (
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false} initialFocus={searchRef}>
-            <Listbox.Content
-              ref={refs.setFloating}
-              style={floatingStyles}
-              {...getFloatingProps()}
-            >
+            <Listbox.Content ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
               <Listbox.Search
                 ref={searchRef}
                 placeholder="Search labels…"
@@ -559,11 +550,7 @@ function AuthorFilter({
       {open && (
         <FloatingPortal>
           <FloatingFocusManager context={context} modal={false} initialFocus={searchRef}>
-            <Listbox.Content
-              ref={refs.setFloating}
-              style={floatingStyles}
-              {...getFloatingProps()}
-            >
+            <Listbox.Content ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
               <Listbox.Search
                 ref={searchRef}
                 placeholder="Search authors…"
@@ -575,9 +562,7 @@ function AuthorFilter({
                 }
               />
               <Listbox.ScrollArea>
-                {visibleIdentities.length === 0 && (
-                  <Listbox.Empty>No authors found</Listbox.Empty>
-                )}
+                {visibleIdentities.length === 0 && <Listbox.Empty>No authors found</Listbox.Empty>}
                 {visibleIdentities.map((identity, i) => {
                   const active = selectedAuthorId === identity.humanId;
                   return (

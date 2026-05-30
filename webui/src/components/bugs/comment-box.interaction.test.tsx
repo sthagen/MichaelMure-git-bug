@@ -1,7 +1,7 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing/react";
-import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Suspense } from "react";
+import { describe, it, expect, vi } from "vitest";
 
 import {
   BugAddCommentDocument,
@@ -13,6 +13,7 @@ import {
   Status,
 } from "@/__generated__/graphql";
 import { useAuth } from "@/lib/auth";
+
 import { CommentBox } from "./comment-box";
 
 vi.mock("@/lib/auth", () => ({
@@ -34,11 +35,7 @@ const REFETCH_MOCK = {
   maxUsageCount: 10,
 };
 
-function renderCommentBox(props: {
-  bugPrefix?: string;
-  bugStatus?: Status;
-  ref_?: string | null;
-}) {
+function renderCommentBox(props: { bugPrefix?: string; bugStatus?: Status; ref_?: string | null }) {
   const { bugPrefix = "bug1", bugStatus = Status.Open, ref_ = "myrepo" } = props;
   return render(
     <MockedProvider addTypename={false} showWarnings={false}>
@@ -93,7 +90,10 @@ describe("CommentBox — mutation variables", () => {
   const REPO = "myrepo";
   const MESSAGE = "my comment";
 
-  function mockMutation(document: typeof BugAddCommentDocument, resultData: Record<string, unknown>) {
+  function mockMutation(
+    document: typeof BugAddCommentDocument,
+    resultData: Record<string, unknown>,
+  ) {
     const matchVars = vi.fn().mockReturnValue(true);
     const mock = {
       request: { query: document, variables: matchVars },

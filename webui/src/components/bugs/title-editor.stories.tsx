@@ -23,7 +23,8 @@ export const Default: Story = {
 export const LongTitle: Story = {
   args: {
     bugPrefix: "def456",
-    title: "Very long issue title that spans multiple lines and tests how the component handles overflow in the layout",
+    title:
+      "Very long issue title that spans multiple lines and tests how the component handles overflow in the layout",
     humanId: "d4e5f6",
   },
 };

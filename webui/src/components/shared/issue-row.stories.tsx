@@ -1,17 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { formatDistanceToNow } from "date-fns";
 
+import { withApollo, withCachedFragments, withRouter } from "@/../.storybook/decorators";
 import { makeFragmentData } from "@/__generated__/fragment-masking";
 import type { BugSummaryFragment } from "@/__generated__/graphql";
 import { Status } from "@/__generated__/graphql";
-import { withApollo, withCachedFragments, withRouter } from "@/../.storybook/decorators";
 
 import * as IssueRow from "./issue-row";
 import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "./label-badge";
 
 const bugLabel = { __typename: "Label" as const, name: "bug", color: { R: 252, G: 41, B: 41 } };
-const priorityLabel = { __typename: "Label" as const, name: "priority", color: { R: 255, G: 152, B: 0 } };
-const enhancementLabel = { __typename: "Label" as const, name: "enhancement", color: { R: 163, G: 230, B: 53 } };
+const priorityLabel = {
+  __typename: "Label" as const,
+  name: "priority",
+  color: { R: 255, G: 152, B: 0 },
+};
+const enhancementLabel = {
+  __typename: "Label" as const,
+  name: "enhancement",
+  color: { R: 163, G: 230, B: 53 },
+};
 
 const allLabelsData = [bugLabel, priorityLabel, enhancementLabel];
 
@@ -25,7 +33,13 @@ const openBug: BugSummaryFragment = {
     makeFragmentData(bugLabel, LABEL_FIELDS_FRAGMENT),
     makeFragmentData(priorityLabel, LABEL_FIELDS_FRAGMENT),
   ],
-  author: { __typename: "Identity", id: "u1", humanId: "user1", displayName: "Jane Doe", avatarUrl: null },
+  author: {
+    __typename: "Identity",
+    id: "u1",
+    humanId: "user1",
+    displayName: "Jane Doe",
+    avatarUrl: null,
+  },
   createdAt: new Date(Date.now() - 3600 * 1000).toISOString(),
   comments: { totalCount: 3 },
 };
@@ -36,7 +50,13 @@ const closedBug: BugSummaryFragment = {
   status: Status.Closed,
   title: "Add dark mode support",
   labels: [makeFragmentData(enhancementLabel, LABEL_FIELDS_FRAGMENT)],
-  author: { __typename: "Identity", id: "u2", humanId: "user2", displayName: "Bob Smith", avatarUrl: null },
+  author: {
+    __typename: "Identity",
+    id: "u2",
+    humanId: "user2",
+    displayName: "Bob Smith",
+    avatarUrl: null,
+  },
   createdAt: new Date(Date.now() - 86400 * 1000).toISOString(),
   comments: { totalCount: 12 },
 };
@@ -47,7 +67,13 @@ const noLabelsBug: BugSummaryFragment = {
   status: Status.Open,
   title: "Simple issue with no labels",
   labels: [],
-  author: { __typename: "Identity", id: "u3", humanId: "user3", displayName: "Alice Wu", avatarUrl: null },
+  author: {
+    __typename: "Identity",
+    id: "u3",
+    humanId: "user3",
+    displayName: "Alice Wu",
+    avatarUrl: null,
+  },
   createdAt: new Date(Date.now() - 7200 * 1000).toISOString(),
   comments: { totalCount: 0 },
 };

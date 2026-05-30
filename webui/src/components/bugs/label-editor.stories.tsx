@@ -1,11 +1,3 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useState } from "react";
-
-import { makeFragmentData } from "@/__generated__/fragment-masking";
-import { withApollo, withCachedFragments } from "@/../.storybook/decorators";
-import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
-import { SectionHeading } from "@/components/shared/section-heading";
-import * as Listbox from "@/components/ui/listbox";
 import {
   useFloating,
   useClick,
@@ -18,8 +10,16 @@ import {
   FloatingPortal,
   FloatingFocusManager,
 } from "@floating-ui/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Settings2 } from "lucide-react";
+import { useState } from "react";
 import { useRef } from "react";
+
+import { withApollo, withCachedFragments } from "@/../.storybook/decorators";
+import { makeFragmentData } from "@/__generated__/fragment-masking";
+import { LabelBadge, LABEL_FIELDS_FRAGMENT } from "@/components/shared/label-badge";
+import { SectionHeading } from "@/components/shared/section-heading";
+import * as Listbox from "@/components/ui/listbox";
 
 // The real LabelEditor depends on GraphQL mutations. For stories, we build a
 // self-contained version with the same UI but local state instead of mutations.
@@ -32,10 +32,10 @@ const allLabelsData = [
   { __typename: "Label" as const, name: "good first issue", color: { R: 124, G: 58, B: 237 } },
 ];
 
-const allLabels = allLabelsData.map(
-  (l) => ({ ...l, ...makeFragmentData(l, LABEL_FIELDS_FRAGMENT) }),
-);
-
+const allLabels = allLabelsData.map((l) => ({
+  ...l,
+  ...makeFragmentData(l, LABEL_FIELDS_FRAGMENT),
+}));
 
 function LabelEditorDemo() {
   const [currentNames, setCurrentNames] = useState<Set<string>>(
@@ -78,7 +78,10 @@ function LabelEditorDemo() {
   });
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
-    click, dismiss, role, listNav,
+    click,
+    dismiss,
+    role,
+    listNav,
   ]);
 
   return (
@@ -112,7 +115,9 @@ function LabelEditorDemo() {
                   return (
                     <Listbox.Item
                       key={label.name}
-                      ref={(el) => { elementsRef.current[i] = el; }}
+                      ref={(el) => {
+                        elementsRef.current[i] = el;
+                      }}
                       active={activeIndex === i}
                       selected={active}
                       tabIndex={activeIndex === i ? 0 : -1}
@@ -120,11 +125,15 @@ function LabelEditorDemo() {
                     >
                       <span
                         className={`size-2 rounded-full border-2 transition-colors ${
-                          active ? "border-transparent" : "border-muted-foreground/40 bg-transparent"
+                          active
+                            ? "border-transparent"
+                            : "border-muted-foreground/40 bg-transparent"
                         }`}
                         style={
                           active
-                            ? { backgroundColor: `rgb(${label.color.R},${label.color.G},${label.color.B})` }
+                            ? {
+                                backgroundColor: `rgb(${label.color.R},${label.color.G},${label.color.B})`,
+                              }
                             : {}
                         }
                       />
