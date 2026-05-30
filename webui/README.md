@@ -1,6 +1,6 @@
-# webui2
+# webui
 
-New web interface for git-bug. Built with Vite 8 + React 19 + TypeScript 6 + Tailwind v4 + shadcn/ui + TanStack Router + Apollo Client 4.
+Web interface for git-bug. Built with Vite 8 + React 19 + TypeScript 6 + Tailwind v4 + shadcn/ui + TanStack Router + Apollo Client 4.
 
 ## Quickstart
 
@@ -22,7 +22,7 @@ Node 22 is required. If you use asdf, `.tool-versions` pins the right version au
 ## Routes
 
 | Path                           | Page                                         |
-| ------------------------------ | -------------------------------------------- |
+|--------------------------------|----------------------------------------------|
 | `/`                            | Repo picker — auto-redirects for single repo |
 | `/$repo/tree/$ref/...path`     | Code browser — directory listing             |
 | `/$repo/blob/$ref/...path`     | Code browser — file viewer                   |
@@ -57,10 +57,9 @@ src/
 │   ├── code/           # Code browser components
 │   ├── content/        # Markdown renderer
 │   └── layout/         # Header + Shell
-├── graphql/            # .graphql query files — edit these, then run codegen
 ├── __generated__/      # Generated typed hooks — do not edit
 ├── assets/             # Logo SVG
-├── lib/                # apollo.ts, auth.tsx, theme.tsx, utils.ts, query-utils.ts
+├── lib/                # apollo.ts, auth.tsx, theme.tsx, utils.ts, query-utils.ts, shiki.ts
 ├── routeTree.gen.ts    # Auto-generated route tree — do not edit
 └── App.tsx             # Router instance + context
 ```
@@ -77,15 +76,18 @@ Components are organized in three layers:
 
 ### GraphQL fragments
 
-Fragments are colocated with the components that consume them in `.graphql` files:
+Fragments are defined inline using the `graphql()` tagged template in the component file that consumes them:
 
-```
-src/components/shared/
-├── identity-summary.graphql   → IdentitySummaryFragment
-├── label-badge.graphql        → LabelFieldsFragment
-├── issue-row.graphql          → BugSummaryFragment (composes above)
-src/components/bugs/
-└── timeline.graphql           → timeline event fragments
+```tsx
+// src/components/shared/label-badge.tsx
+import { graphql } from "@/__generated__/gql";
+
+graphql(`
+  fragment LabelFields on Label {
+    name
+    color { R G B }
+  }
+`);
 ```
 
 Components are typed against their fragments:
@@ -98,7 +100,7 @@ import { LabelBadge } from "@/components/shared/label-badge";
 <LabelBadge {...label} />;
 ```
 
-After changing any `.graphql` file, regenerate typed hooks:
+Codegen scans all `src/**/*.{ts,tsx}` files for `graphql()` calls. After changing any fragment or query, regenerate typed hooks:
 
 ```bash
 pnpm codegen
@@ -159,7 +161,7 @@ Every presentational component has stories. Stories use the CSF3 format with `sa
 Tests run via [Vitest 4](https://vitest.dev/) with two projects:
 
 | Project       | Environment           | What it does                                                                       |
-| ------------- | --------------------- | ---------------------------------------------------------------------------------- |
+|---------------|-----------------------|------------------------------------------------------------------------------------|
 | **storybook** | Chromium (Playwright) | Smoke tests every story + a11y checks (axe-core) + play function interaction tests |
 | **snapshot**  | happy-dom             | DOM snapshot tests via portable stories API                                        |
 
@@ -204,7 +206,7 @@ export const MyInteraction: Story = {
 ## Tooling
 
 | Tool                                                                           | Purpose                                                  |
-| ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+|--------------------------------------------------------------------------------|----------------------------------------------------------|
 | [oxlint](https://oxc.rs)                                                       | Linter with type-aware rules + storybook/router plugins  |
 | [oxfmt](https://oxc.rs)                                                        | Formatter with import + Tailwind class sorting           |
 | [Storybook 10](https://storybook.js.org)                                       | Component development + visual testing                   |
