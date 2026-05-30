@@ -14,6 +14,13 @@ import (
 //go:embed all:dist
 var assets embed.FS
 
+func init() {
+	// Override OS-specific MIME registry (Windows maps .js → application/javascript).
+	mime.AddExtensionType(".js", "text/javascript")
+	mime.AddExtensionType(".mjs", "text/javascript")
+	mime.AddExtensionType(".css", "text/css")
+}
+
 // NewHandler returns an http.Handler that serves the webui SPA.
 // Extension-less paths fall back to index.html for client-side routing.
 // Pre-compressed .gz files are served directly when the client supports gzip;
