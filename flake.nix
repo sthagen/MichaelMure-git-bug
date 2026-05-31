@@ -10,9 +10,6 @@
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    # A workaround for the currently-broken mdformat packages
-    fmt-pkgs.url = "github:nixos/nixpkgs/b024ced1aac25639f8ca8fdfc2f8c4fbd66c48ef";
   };
 
   outputs =
@@ -26,12 +23,9 @@
       imports = [ inputs.treefmt-nix.flakeModule ];
 
       perSystem =
-        { pkgs, system, ... }:
-        let
-          fp = inputs.fmt-pkgs.legacyPackages.${system};
-        in
+        { pkgs, ... }:
         {
-          treefmt = import ./treefmt.nix { pkgs = fp; };
+          treefmt = import ./treefmt.nix { inherit pkgs; };
 
           checks = pkgs.lib.attrsets.mapAttrs' (f: _: {
             name = pkgs.lib.strings.removeSuffix ".nix" f;

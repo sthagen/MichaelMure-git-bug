@@ -11,32 +11,6 @@
       enable = true;
     };
 
-    mdformat = {
-      enable = true;
-
-      package = pkgs.mdformat.withPlugins (
-        p: with p; [
-          # add support for github flavored markdown
-          mdformat-gfm
-          mdformat-gfm-alerts
-
-          # add support for markdown tables
-          mdformat-tables
-
-          # add the following comment before running `nix fmt` to generate a
-          # table of contents in markdown files:
-          #     <!-- mdformat-toc start -->
-          mdformat-toc
-        ]
-      );
-
-      settings = {
-        end-of-line = "lf";
-        number = true;
-        wrap = 80;
-      };
-    };
-
     nixfmt = {
       enable = true;
       strict = true;
@@ -75,6 +49,7 @@
       "*.txt"
       "doc/man/*.1" # generated via //doc:generate.go
       "doc/md/*" # generated via //doc:generate.go
+      "doc/spec/**"
       "misc/completion/*/*"
       "Makefile"
     ]
