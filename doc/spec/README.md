@@ -5,7 +5,7 @@ store entities (bugs, pull-requests, …) and identities inside a git repository
 
 For the motivation behind the design — why operations instead of snapshots, why Lamport
 clocks, why git objects — start with
-[Data model - the rational](../data-model-rational.md).
+[Data model - the rational](../design/data-model.md).
 
 
 ## Documents
