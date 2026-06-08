@@ -4,7 +4,7 @@ This document is the formal specification for the generic data format used by al
 git-bug (bugs, pull-requests, etc.). It is intended for contributors and for authors of
 third-party clients that read or write git-bug data.
 
-For the motivation behind these design choices, see [Data model - the rational](../data-model-rational.md).
+For the motivation behind these design choices, see [Data model - the rational](../design/data-model.md).
 
 
 ## 1. Overview
