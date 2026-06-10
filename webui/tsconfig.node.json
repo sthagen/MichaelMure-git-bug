@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/strictest/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    "noPropertyAccessFromIndexSignature": false
+  },
+  "include": ["vite.config.ts", "codegen.ts"]
+}

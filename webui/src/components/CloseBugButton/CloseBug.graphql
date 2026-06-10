@@ -1,8 +1,0 @@
-# Write your query or mutation here
-mutation closeBug($input: BugStatusCloseInput!) {
-  bugStatusClose(input: $input) {
-    bug {
-      id
-    }
-  }
-}

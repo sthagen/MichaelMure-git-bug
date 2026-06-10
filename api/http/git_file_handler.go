@@ -40,7 +40,7 @@ func (gfh *gitFileHandler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	var err error
 
 	switch repoVar := vars["repo"]; repoVar {
-	case "":
+	case "", "_":
 		repo, err = gfh.mrc.DefaultRepo()
 	default:
 		repo, err = gfh.mrc.ResolveRepo(repoVar)

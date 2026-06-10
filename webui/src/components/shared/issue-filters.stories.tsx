@@ -1,0 +1,184 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { useState } from "react";
+import { fn } from "storybook/test";
+
+import { withApollo, withCachedFragments } from "@/../.storybook/decorators";
+import { makeFragmentData } from "@/__generated__/fragment-masking";
+import type { SortValue } from "@/lib/query-utils";
+
+import { IssueFilters, type LabelItem, type IdentityItem } from "./issue-filters";
+import { LABEL_FIELDS_FRAGMENT } from "./label-badge";
+
+const sampleLabelsData = [
+  {
+    __typename: "Label" as const,
+    name: "bug",
+    color: { __typename: "Color" as const, R: 252, G: 41, B: 41 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "enhancement",
+    color: { __typename: "Color" as const, R: 0, G: 150, B: 255 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "documentation",
+    color: { __typename: "Color" as const, R: 0, G: 180, B: 80 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "help wanted",
+    color: { __typename: "Color" as const, R: 255, G: 152, B: 0 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "good first issue",
+    color: { __typename: "Color" as const, R: 124, G: 58, B: 237 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "duplicate",
+    color: { __typename: "Color" as const, R: 120, G: 120, B: 120 },
+  },
+  {
+    __typename: "Label" as const,
+    name: "wontfix",
+    color: { __typename: "Color" as const, R: 180, G: 180, B: 180 },
+  },
+];
+
+const sampleLabels: LabelItem[] = sampleLabelsData.map((l) => ({
+  ...l,
+  ...makeFragmentData(l, LABEL_FIELDS_FRAGMENT),
+}));
+
+const sampleIdentities: IdentityItem[] = [
+  {
+    id: "u1",
+    humanId: "abc1",
+    displayName: "Jane Doe",
+    login: "janedoe",
+    name: "Jane Doe",
+    email: "jane@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u2",
+    humanId: "abc2",
+    displayName: "John Smith",
+    login: "jsmith",
+    name: "John Smith",
+    email: "john@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u3",
+    humanId: "abc3",
+    displayName: "Alice Wonder",
+    login: "alice",
+    name: "Alice Wonder",
+    email: "alice@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u4",
+    humanId: "abc4",
+    displayName: "Bob Builder",
+    login: "bob",
+    name: "Bob Builder",
+    email: "bob@example.com",
+    avatarUrl: null,
+  },
+  {
+    id: "u5",
+    humanId: "abc5",
+    displayName: "Carol Tester",
+    login: "carol",
+    name: "Carol Tester",
+    email: "carol@example.com",
+    avatarUrl: null,
+  },
+];
+
+const meta = {
+  component: IssueFilters,
+  decorators: [
+    withApollo,
+    withCachedFragments(
+      ...sampleLabelsData.map((l) => [LABEL_FIELDS_FRAGMENT, "LabelFields", l] as const),
+    ),
+  ],
+  parameters: { layout: "centered", a11y: { disable: true } },
+} satisfies Meta<typeof IssueFilters>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {
+    labels: sampleLabels,
+    identities: sampleIdentities,
+    selectedLabels: [],
+    onLabelsChange: fn(),
+    selectedAuthorId: null,
+    onAuthorChange: fn(),
+    recentAuthorIds: ["abc1", "abc3"],
+    sort: "creation-desc",
+    onSortChange: fn(),
+  },
+};
+
+export const WithSelections: Story = {
+  args: {
+    labels: sampleLabels,
+    identities: sampleIdentities,
+    selectedLabels: ["bug", "enhancement"],
+    onLabelsChange: fn(),
+    selectedAuthorId: "abc2",
+    onAuthorChange: fn(),
+    recentAuthorIds: ["abc1", "abc2"],
+    sort: "edit-desc",
+    onSortChange: fn(),
+  },
+};
+
+// Interactive story with working state
+function Interactive() {
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [selectedAuthorId, setSelectedAuthorId] = useState<string | null>(null);
+  const [sort, setSort] = useState<SortValue>("creation-desc");
+
+  return (
+    <div className="flex flex-col items-start gap-4">
+      <IssueFilters
+        labels={sampleLabels}
+        identities={sampleIdentities}
+        selectedLabels={selectedLabels}
+        onLabelsChange={setSelectedLabels}
+        selectedAuthorId={selectedAuthorId}
+        onAuthorChange={(id) => setSelectedAuthorId(id)}
+        recentAuthorIds={["abc1", "abc3"]}
+        sort={sort}
+        onSortChange={setSort}
+      />
+      <div className="text-muted-foreground text-xs">
+        Labels: {selectedLabels.join(", ") || "none"} · Author: {selectedAuthorId ?? "none"} · Sort:{" "}
+        {sort}
+      </div>
+    </div>
+  );
+}
+
+export const InteractiveState: Story = {
+  args: {
+    labels: sampleLabels,
+    identities: sampleIdentities,
+    selectedLabels: [],
+    onLabelsChange: () => {},
+    selectedAuthorId: null,
+    onAuthorChange: () => {},
+    sort: "creation-desc",
+    onSortChange: () => {},
+  },
+  render: () => <Interactive />,
+};

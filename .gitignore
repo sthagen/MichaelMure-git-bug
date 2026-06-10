@@ -17,4 +17,3 @@ coverage.txt
 
 # nix output directory from `nix build` commands
 /result
-webui2

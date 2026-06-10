@@ -1,8 +1,0 @@
-#import "../../components/fragments.graphql"
-
-fragment SetTitle on BugSetTitleTimelineItem {
-  date
-  ...authored
-  title
-  was
-}

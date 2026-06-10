@@ -1,7 +1,0 @@
-mutation openBug($input: BugStatusOpenInput!) {
-  bugStatusOpen(input: $input) {
-    bug {
-      id
-    }
-  }
-}

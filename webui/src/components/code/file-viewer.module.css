@@ -1,0 +1,44 @@
+.code-block {
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+}
+
+.code-content pre {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.code-content code {
+  display: block;
+}
+
+.line {
+  display: block;
+  min-width: 100%;
+  padding-right: 1rem;
+}
+
+.line:first-child {
+  padding-top: 0.5rem;
+}
+
+.line:last-child {
+  padding-bottom: 0.5rem;
+}
+
+/* Line number gutter — injected as a <span> by the Shiki transformer */
+.line-number {
+  display: inline-block;
+  width: 3rem;
+  margin-right: 1rem;
+  text-align: right;
+  opacity: 0.4;
+  user-select: none;
+  cursor: pointer;
+}
+
+.line-number:hover {
+  opacity: 0.8;
+}

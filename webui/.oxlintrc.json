@@ -1,0 +1,47 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "import", "unicorn"],
+  "jsPlugins": ["@tanstack/eslint-plugin-router"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "@tanstack/router/create-route-property-order": "warn",
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/no-unsafe-assignment": "warn",
+    "typescript/no-unsafe-call": "warn",
+    "typescript/no-unsafe-member-access": "warn",
+    "typescript/no-unsafe-return": "warn",
+    "typescript/await-thenable": "error",
+    "typescript/no-unnecessary-type-assertion": "warn",
+    "react/react-in-jsx-scope": "off"
+  },
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  },
+  "ignorePatterns": ["src/__generated__/**", "src/routeTree.gen.ts", ".storybook/**"],
+  "overrides": [
+    {
+      "files": ["**/*.stories.tsx"],
+      "jsPlugins": ["eslint-plugin-storybook"],
+      "rules": {
+        "storybook/await-interactions": "error",
+        "storybook/context-in-play-function": "error",
+        "storybook/csf-component": "warn",
+        "storybook/default-exports": "error",
+        "storybook/hierarchy-separator": "error",
+        "storybook/no-redundant-story-name": "warn",
+        "storybook/no-renderer-packages": "error",
+        "storybook/no-stories-of": "error",
+        "storybook/no-title-property-in-meta": "warn",
+        "storybook/prefer-pascal-case": "warn",
+        "storybook/story-exports": "error",
+        "storybook/use-storybook-expect": "error",
+        "storybook/use-storybook-testing-library": "error"
+      }
+    }
+  ]
+}

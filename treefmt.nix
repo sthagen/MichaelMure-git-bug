@@ -16,15 +16,6 @@
       strict = true;
     };
 
-    prettier = {
-      enable = true;
-
-      settings = {
-        singleQuote = true;
-        trailingComma = "es5";
-      };
-    };
-
     shfmt = {
       enable = true;
     };
@@ -52,16 +43,8 @@
       "doc/spec/**"
       "misc/completion/*/*"
       "Makefile"
+      "webui/pnpm-lock.yaml"
     ]
     ++ excludes;
 
-  settings.formatter = {
-    prettier = {
-      excludes = [
-        "*.md"
-        "*.yaml"
-        "*.yml"
-      ];
-    };
-  };
 }

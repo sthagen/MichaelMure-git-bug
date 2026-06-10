@@ -1,0 +1,155 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CommentCard/Default matches snapshot 1`] = `
+<div>
+  <div
+    class="flex gap-3"
+  >
+    <span
+      class="group/avatar relative flex rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten mt-1 size-8 shrink-0"
+      data-size="default"
+      data-slot="avatar"
+    >
+      <span
+        class="flex size-full items-center justify-center rounded-full bg-muted text-muted-foreground group-data-[size=sm]/avatar:text-xs text-xs"
+        data-slot="avatar-fallback"
+      >
+        JA
+      </span>
+    </span>
+    <div
+      class="border-border min-w-0 flex-1 rounded-md border"
+    >
+      <div
+        class="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm"
+      >
+        <span
+          class="text-foreground font-medium"
+        >
+          Jane Doe
+        </span>
+        <span
+          class="text-muted-foreground"
+        >
+          2 hours ago
+        </span>
+      </div>
+      <div
+        class="px-4 py-3"
+      >
+        <p
+          class="text-sm"
+        >
+          This is a comment body with some text content.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CommentCard/EmptyBody matches snapshot 1`] = `
+<div>
+  <div
+    class="flex gap-3"
+  >
+    <span
+      class="group/avatar relative flex rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten mt-1 size-8 shrink-0"
+      data-size="default"
+      data-slot="avatar"
+    >
+      <span
+        class="flex size-full items-center justify-center rounded-full bg-muted text-muted-foreground group-data-[size=sm]/avatar:text-xs text-xs"
+        data-slot="avatar-fallback"
+      >
+        AL
+      </span>
+    </span>
+    <div
+      class="border-border min-w-0 flex-1 rounded-md border"
+    >
+      <div
+        class="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm"
+      >
+        <span
+          class="text-foreground font-medium"
+        >
+          Alice Wu
+        </span>
+        <span
+          class="text-muted-foreground"
+        >
+          just now
+        </span>
+      </div>
+      <div
+        class="px-4 py-3"
+      >
+        <p
+          class="text-muted-foreground text-sm italic"
+        >
+          No description provided.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CommentCard/WithEditButton matches snapshot 1`] = `
+<div>
+  <div
+    class="flex gap-3"
+  >
+    <span
+      class="group/avatar relative flex rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten mt-1 size-8 shrink-0"
+      data-size="default"
+      data-slot="avatar"
+    >
+      <span
+        class="flex size-full items-center justify-center rounded-full bg-muted text-muted-foreground group-data-[size=sm]/avatar:text-xs text-xs"
+        data-slot="avatar-fallback"
+      >
+        BO
+      </span>
+    </span>
+    <div
+      class="border-border min-w-0 flex-1 rounded-md border"
+    >
+      <div
+        class="border-border bg-muted/40 flex items-center gap-2 border-b px-4 py-2 text-sm"
+      >
+        <span
+          class="text-foreground font-medium"
+        >
+          Bob Smith
+        </span>
+        <span
+          class="text-muted-foreground"
+        >
+          1 day ago
+        </span>
+        <span
+          class="text-muted-foreground text-xs"
+        >
+          edited
+        </span>
+        <button
+          class="text-muted-foreground hover:bg-muted ml-auto rounded-sm px-1.5 py-0.5 text-xs"
+        >
+          Edit
+        </button>
+      </div>
+      <div
+        class="px-4 py-3"
+      >
+        <p
+          class="text-sm"
+        >
+          Updated the configuration to fix the build issue.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
