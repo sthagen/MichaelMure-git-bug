@@ -1,6 +1,7 @@
 package bug
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -74,6 +75,54 @@ func TestValidate(t *testing.T) {
 			t.Fatal("validation should have failed", i, op)
 		}
 	}
+}
+
+func TestUnknownOpUnmarshaler(t *testing.T) {
+	// An operation type that no version of this client knows about should be
+	// preserved as an UnknownOperation rather than causing a panic.
+	raw, err := json.Marshal(struct {
+		Type      dag.OperationType `json:"type"`
+		Timestamp int64             `json:"timestamp"`
+		Nonce     []byte            `json:"nonce"`
+		Extra     string            `json:"future_field"`
+	}{
+		Type:      dag.OperationType(999),
+		Timestamp: time.Now().Unix(),
+		Nonce:     make([]byte, 20),
+		Extra:     "preserved",
+	})
+	require.NoError(t, err)
+
+	op, err := operationUnmarshaler(raw, nil)
+	require.NoError(t, err)
+
+	unknown, ok := op.(*dag.UnknownOperation[*Snapshot])
+	require.True(t, ok, "expected *dag.UnknownOperation[*Snapshot]")
+	require.JSONEq(t, string(raw), string(unknown.RawJSON))
+}
+
+func TestUnknownOpMarshalRoundTrip(t *testing.T) {
+	// Fields from an unknown operation (e.g. from a future client) must survive
+	// a serialize/deserialize cycle without data loss.
+	raw, err := json.Marshal(struct {
+		Type      dag.OperationType `json:"type"`
+		Timestamp int64             `json:"timestamp"`
+		Nonce     []byte            `json:"nonce"`
+		Extra     string            `json:"future_field"`
+	}{
+		Type:      dag.OperationType(999),
+		Timestamp: time.Now().Unix(),
+		Nonce:     make([]byte, 20),
+		Extra:     "preserved",
+	})
+	require.NoError(t, err)
+
+	op, err := operationUnmarshaler(raw, nil)
+	require.NoError(t, err)
+
+	marshaled, err := json.Marshal(op)
+	require.NoError(t, err)
+	require.JSONEq(t, string(raw), string(marshaled))
 }
 
 func TestMetadata(t *testing.T) {

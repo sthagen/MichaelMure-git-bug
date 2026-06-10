@@ -22,6 +22,7 @@ git-bug webui [flags]
       --open           Automatically open the web UI in the default browser
       --no-open        Prevent the automatic opening of the web UI in the default browser
       --read-only      Whether to run the web UI in read-only mode
+      --dev            Enable development mode (enables --log-errors, GraphQL playground, relaxed WebSocket origin check)
       --log-errors     Whether to log errors
   -q, --query string   The query to open in the web UI bug list
   -h, --help           help for webui

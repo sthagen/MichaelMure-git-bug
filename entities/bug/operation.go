@@ -2,7 +2,6 @@ package bug
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/git-bug/git-bug/entity"
 	"github.com/git-bug/git-bug/entity/dag"
@@ -26,6 +25,7 @@ type Operation = dag.OperationWithApply[*Snapshot]
 // make sure that package external operations do conform to our interface
 var _ Operation = &dag.NoOpOperation[*Snapshot]{}
 var _ Operation = &dag.SetMetadataOperation[*Snapshot]{}
+var _ Operation = &dag.UnknownOperation[*Snapshot]{}
 
 func operationUnmarshaler(raw json.RawMessage, resolvers entity.Resolvers) (dag.Operation, error) {
 	var t struct {
@@ -56,7 +56,7 @@ func operationUnmarshaler(raw json.RawMessage, resolvers entity.Resolvers) (dag.
 	case SetTitleOp:
 		op = &SetTitleOperation{}
 	default:
-		panic(fmt.Sprintf("unknown operation type %v", t.OperationType))
+		return dag.NewUnknownOp[*Snapshot](raw)
 	}
 
 	err := json.Unmarshal(raw, &op)
