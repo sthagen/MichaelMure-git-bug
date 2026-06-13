@@ -4,7 +4,7 @@ import { useReadQuery } from "@apollo/client/react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { graphql } from "@/__generated__/gql";
-import { FileViewer } from "@/components/code/file-viewer";
+import { FileContent } from "@/components/code/file-content";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const BLOB_QUERY = graphql(`
@@ -43,10 +43,11 @@ export const Route = createFileRoute("/$repo/_code/blob/$ref/$")({
 });
 
 function BlobView() {
+  const { repo, ref: gitRef } = Route.useParams();
   const { blobRef } = Route.useLoaderData();
   const { data } = useReadQuery(blobRef);
 
   const blob = data?.repository?.blob;
   if (!blob) return <BlobSkeleton />;
-  return <FileViewer blob={blob} />;
+  return <FileContent blob={blob} repo={repo} gitRef={gitRef} />;
 }

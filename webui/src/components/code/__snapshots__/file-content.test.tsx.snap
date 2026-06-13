@@ -1,0 +1,378 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FileContent/MarkdownFile matches snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="mb-3 flex justify-end"
+    >
+      <div
+        class="bg-muted/40 inline-flex items-center gap-0.5 rounded-md border p-0.5"
+      >
+        <button
+          aria-pressed="true"
+          class="flex items-center gap-1.5 rounded-[min(var(--radius-md),8px)] px-2.5 py-1 text-sm font-medium transition-colors bg-background text-foreground shadow-xs"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-eye size-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="3"
+            />
+          </svg>
+          Preview
+        </button>
+        <button
+          aria-pressed="false"
+          class="flex items-center gap-1.5 rounded-[min(var(--radius-md),8px)] px-2.5 py-1 text-sm font-medium transition-colors text-muted-foreground hover:text-foreground"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="lucide lucide-code-xml size-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m18 16 4-4-4-4"
+            />
+            <path
+              d="m6 8-4 4 4 4"
+            />
+            <path
+              d="m14.5 4-5 16"
+            />
+          </svg>
+          Code
+        </button>
+      </div>
+    </div>
+    <div
+      class="rounded-md border"
+    >
+      <div
+        class="px-6 py-4"
+      >
+        <div
+          class="prose prose-sm dark:prose-invert max-w-none prose-pre:rounded-md prose-pre:border prose-pre:border-border prose-pre:bg-muted prose-pre:text-foreground prose-pre:text-sm prose-pre:overflow-x-auto prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded-sm prose-code:text-sm prose-code:before:content-none prose-code:after:content-none prose-pre:prose-code:bg-transparent prose-pre:prose-code:p-0 prose-img:inline prose-img:my-0"
+        >
+          <h1
+            id="project-title"
+          >
+            Project Title
+            <a
+              aria-hidden="true"
+              href="#project-title"
+              node="[object Object]"
+              tabindex="-1"
+            >
+              <span
+                class="icon icon-link"
+              />
+            </a>
+          </h1>
+          
+
+          <p>
+            A short description with 
+            <strong>
+              bold
+            </strong>
+            , 
+            <em>
+              italic
+            </em>
+            , and a 
+            <a
+              href="https://example.com"
+              node="[object Object]"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              link
+            </a>
+            .
+          </p>
+          
+
+          <h2
+            id="features"
+          >
+            Features
+            <a
+              aria-hidden="true"
+              href="#features"
+              node="[object Object]"
+              tabindex="-1"
+            >
+              <span
+                class="icon icon-link"
+              />
+            </a>
+          </h2>
+          
+
+          <ul>
+            
+
+            <li>
+              Rendered by default
+            </li>
+            
+
+            <li>
+              Toggle to view source
+            </li>
+            
+
+          </ul>
+          
+
+          <pre
+            class="shiki shiki-themes github-light github-dark"
+            style="--shiki-light: #24292e; --shiki-dark: #e1e4e8; --shiki-light-bg: #fff; --shiki-dark-bg: #24292e;"
+            tabindex="0"
+          >
+            <code>
+              <span
+                class="line"
+              >
+                <span
+                  style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+                >
+                  export
+                </span>
+                <span
+                  style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+                >
+                   const
+                </span>
+                <span
+                  style="--shiki-light: #005CC5; --shiki-dark: #79B8FF;"
+                >
+                   answer
+                </span>
+                <span
+                  style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+                >
+                   =
+                </span>
+                <span
+                  style="--shiki-light: #005CC5; --shiki-dark: #79B8FF;"
+                >
+                   42
+                </span>
+                <span
+                  style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+                >
+                  ;
+                </span>
+              </span>
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`FileContent/SourceFile matches snapshot 1`] = `
+<div>
+  <div
+    class="border-border overflow-hidden rounded-md border"
+  >
+    <div
+      class="border-border bg-muted/40 text-muted-foreground flex items-center justify-between border-b px-4 py-2 text-xs"
+    >
+      <span>
+        5
+         lines · 
+        64 B
+      </span>
+      <button
+        class="group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50 size-6 rounded-[min(var(--radius-md),8px)] in-data-[slot=button-group]:rounded-md [&_svg:not([class*='size-'])]:size-3"
+        data-slot="button"
+        tabindex="0"
+        title="Copy"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-copy size-3.5"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            height="14"
+            rx="2"
+            ry="2"
+            width="14"
+            x="8"
+            y="8"
+          />
+          <path
+            d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="_code-block_26d040"
+    >
+      <div
+        class="_code-content_26d040"
+      >
+        <pre
+          class="shiki shiki-themes github-light github-dark"
+          style="--shiki-light: #24292e; --shiki-dark: #e1e4e8; --shiki-light-bg: #fff; --shiki-dark-bg: #24292e;"
+          tabindex="0"
+        >
+          <code>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="1"
+              >
+                1
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                package
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 main
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="2"
+              >
+                2
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="3"
+              >
+                3
+              </span>
+              <span
+                style="--shiki-light: #D73A49; --shiki-dark: #F97583;"
+              >
+                func
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                 main
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                () {
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="4"
+              >
+                4
+              </span>
+              <span
+                style="--shiki-light: #6F42C1; --shiki-dark: #B392F0;"
+              >
+                  println
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                (
+              </span>
+              <span
+                style="--shiki-light: #032F62; --shiki-dark: #9ECBFF;"
+              >
+                "hello"
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                )
+              </span>
+              
+
+            </span>
+            <span
+              class="_line_26d040"
+            >
+              <span
+                class="_line-number_26d040"
+                data-line-number="5"
+              >
+                5
+              </span>
+              <span
+                style="--shiki-light: #24292E; --shiki-dark: #E1E4E8;"
+              >
+                }
+              </span>
+              
+
+            </span>
+          </code>
+        </pre>
+      </div>
+    </div>
+  </div>
+</div>
+`;
