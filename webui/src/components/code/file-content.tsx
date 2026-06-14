@@ -9,16 +9,11 @@ import { useState, type ReactNode } from "react";
 import { useFragment, type FragmentType } from "@/__generated__/fragment-masking";
 import { FileViewer, FILE_VIEWER_BLOB_FRAGMENT } from "@/components/code/file-viewer";
 import { Markdown } from "@/components/content/markdown";
+import { dirname } from "@/lib/path";
 import { cn } from "@/lib/utils";
 
 function isMarkdownPath(path: string): boolean {
   return /\.(?:md|markdown)$/i.test(path);
-}
-
-// Directory containing the file, used to resolve relative links/images.
-function dirname(path: string): string {
-  const slash = path.lastIndexOf("/");
-  return slash === -1 ? "" : path.slice(0, slash);
 }
 
 interface FileContentProps {
