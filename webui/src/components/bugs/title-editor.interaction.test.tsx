@@ -108,6 +108,7 @@ describe("TitleEditor — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, title: "New title", repoRef: REPO },
     });
+    await waitFor(() => expect(screen.queryByRole("textbox")).toBeNull());
   });
 
   it("fires mutation on Save button click", async () => {
@@ -133,6 +134,7 @@ describe("TitleEditor — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, title: "New title", repoRef: REPO },
     });
+    await waitFor(() => expect(screen.queryByRole("textbox")).toBeNull());
   });
 
   it("works with null repoRef (default repo)", async () => {
@@ -158,6 +160,7 @@ describe("TitleEditor — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, title: "New", repoRef: null },
     });
+    await waitFor(() => expect(screen.queryByRole("textbox")).toBeNull());
   });
 
   it("does NOT fire mutation when the title is unchanged", async () => {
