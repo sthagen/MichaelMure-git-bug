@@ -236,10 +236,10 @@ Currently local-only: the server injects the git config identity for every reque
 
 ## Build for production
 
-The Go binary embeds the compiled frontend via `//go:embed all:dist` in `webui2/handler.go`:
+The Go binary embeds the compiled frontend via `//go:embed all:dist` in `webui/handler.go`:
 
 ```bash
-pnpm build           # outputs to webui2/dist/
+pnpm build           # outputs to webui/dist/
 cd .. && go build .  # embeds dist/ into the binary
 ```
 
