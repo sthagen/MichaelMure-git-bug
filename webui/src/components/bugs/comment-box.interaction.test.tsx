@@ -129,6 +129,7 @@ describe("CommentBox — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, message: MESSAGE, repoRef: REPO },
     });
+    await waitFor(() => expect(screen.getByPlaceholderText("Leave a comment…")).toHaveValue(""));
   });
 
   it("addComment — works with null repoRef (default repo)", async () => {
@@ -151,6 +152,7 @@ describe("CommentBox — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, message: MESSAGE, repoRef: null },
     });
+    await waitFor(() => expect(screen.getByPlaceholderText("Leave a comment…")).toHaveValue(""));
   });
 
   it("addComment — trims whitespace from message", async () => {
@@ -173,6 +175,7 @@ describe("CommentBox — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, message: "my comment", repoRef: REPO },
     });
+    await waitFor(() => expect(screen.getByPlaceholderText("Leave a comment…")).toHaveValue(""));
   });
 
   it("statusClose (open, no message) — passes prefix and repoRef", async () => {
@@ -194,6 +197,9 @@ describe("CommentBox — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, repoRef: REPO },
     });
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Close issue" })).not.toBeDisabled(),
+    );
   });
 
   it("addAndClose (open, with message) — passes prefix, message, and repoRef", async () => {
@@ -216,6 +222,7 @@ describe("CommentBox — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, message: MESSAGE, repoRef: REPO },
     });
+    await waitFor(() => expect(screen.getByPlaceholderText("Leave a comment…")).toHaveValue(""));
   });
 
   it("statusOpen (closed, no message) — passes prefix and repoRef", async () => {
@@ -237,6 +244,9 @@ describe("CommentBox — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, repoRef: REPO },
     });
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Reopen issue" })).not.toBeDisabled(),
+    );
   });
 
   it("addAndReopen (closed, with message) — passes prefix, message, and repoRef", async () => {
@@ -259,6 +269,7 @@ describe("CommentBox — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { prefix: PREFIX, message: MESSAGE, repoRef: REPO },
     });
+    await waitFor(() => expect(screen.getByPlaceholderText("Leave a comment…")).toHaveValue(""));
   });
 });
 

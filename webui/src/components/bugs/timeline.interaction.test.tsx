@@ -213,6 +213,7 @@ describe("Timeline — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { targetPrefix: COMMENT_ID, message: "New message", repoRef: REPO },
     });
+    await waitFor(() => expect(screen.queryByRole("textbox")).toBeNull());
   });
 
   it("passes correct variables on Ctrl+Enter", async () => {
@@ -232,6 +233,7 @@ describe("Timeline — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { targetPrefix: COMMENT_ID, message: "New", repoRef: REPO },
     });
+    await waitFor(() => expect(screen.queryByRole("textbox")).toBeNull());
   });
 
   it("works with null repoRef (default repo)", async () => {
@@ -255,5 +257,6 @@ describe("Timeline — mutation variables", () => {
     expect(matchVars).toHaveBeenCalledWith({
       input: { targetPrefix: COMMENT_ID, message: "New", repoRef: null },
     });
+    await waitFor(() => expect(screen.queryByRole("textbox")).toBeNull());
   });
 });
